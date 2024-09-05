@@ -29,7 +29,7 @@ int main()
     Window window(resolution);
 
 	// Set simulation parameters:
-	unsigned int ballCount = 30; 
+	unsigned int ballCount = 300; 
 	float ballRadius = 0.005f;
 	float dt = 0.1f;
 	vec2<float> totalVelocity = { 10.0f, 10.0f };

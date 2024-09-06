@@ -12,12 +12,8 @@ class Simulation
 public:
 	//Constructor that randomly populates initial positions and velocities of balls
 	//The sum of all velocities is guaranteed to be totalVelocity
-	Simulation(unsigned int ballCount, float smallRadius, float bigRadius, float dt, vec2<float> totalVelocity);
+	Simulation(unsigned int ballCount, float smallRadius, float bigRadius, float smallMass, float bigMass, float dt, vec2<float> totalVelocity);
 
-	/*
-	//Constructor that takes initial positions and velocities of balls as input
-	Simulation(unsigned int ballCount, float ballRadius, float dt, std::vector<vec2<float>> positions, std::vector<vec2<float>> velocities);
-	*/
 	~Simulation();
 
 	//Increment time in the simulation
@@ -37,6 +33,7 @@ public:
 	inline const			  vec2<float>& getBigPosition()	   const { return m_bigPosition; }
 	inline					  unsigned int getBallCount()	   const { return m_ballCount; }
 	inline							 float getSmallRadius()	   const { return m_smallRadius; }
+	inline							 float getBigRadius()	   const { return m_bigRadius; }
 
 private:
 	//Simulation properties
@@ -46,9 +43,14 @@ private:
 	vec2<float> m_bigVelocity;
 	float m_smallRadius;
 	float m_bigRadius;
+	float m_smallMass;
+	float m_bigMass;
 	unsigned int m_ballCount;
 	float m_dt;
 
 	// Collide small balls with indices i, j in m_smallPositions
 	void collideSmalls(unsigned int i, unsigned int j); 
+	
+	// Collide large ball with small ball having index i in m_smallPositions
+	void collideBig(unsigned int i);
 };

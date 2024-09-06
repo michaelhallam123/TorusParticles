@@ -10,13 +10,16 @@
 
 #include "GLVertex.h"
 
+// TO DO: Change m_bigVertexData to be stack allocated rather than heap allocated
+
 
 Renderer::Renderer(const Simulation& simulation)
-	: m_simulation(simulation), m_vbo(0), m_vao(0), m_ebo(0), m_indices(nullptr), m_vertexData(nullptr)
+	: m_simulation(simulation), m_vbo(0), m_vao(0), m_ebo(0), m_indices(nullptr), m_smallVertexData(nullptr), m_bigVertexData(nullptr)
 {
     // Reserve space for vertex data
     unsigned int ballCount = m_simulation.getBallCount();
-    m_vertexData = new GLVertex[ballCount * 4];
+    m_smallVertexData = new GLVertex[ballCount * 4];
+    m_bigVertexData = new GLVertex[4];
 	
 	// Create and bind vertex array object
     glGenVertexArrays(1, &m_vao);
@@ -63,49 +66,81 @@ Renderer::Renderer(const Simulation& simulation)
 
 Renderer::~Renderer()
 {
-	delete[] m_vertexData;
+	delete[] m_smallVertexData;
     delete[] m_indices;
 }
 
 void Renderer::Draw()
 {
-    // Update m_vertexData according to particle positions
+    // Update vertex data according to particle positions
 
+    // Small balls
     const auto& positions = m_simulation.getSmallPositions();
     unsigned int i = 0;
-    float ballRadius = m_simulation.getSmallRadius();
+    float smallRadius = m_simulation.getSmallRadius();
     unsigned int ballCount = m_simulation.getBallCount();
     for (const auto& p : positions)
     {
         // Bottom left of quad
-        m_vertexData[4 * i + 0].position[0] = p.x - 1.1f * ballRadius;
-        m_vertexData[4 * i + 0].position[1] = p.y - 1.1f * ballRadius;
-        m_vertexData[4 * i + 0].textureCoords[0] = 0.0f;
-        m_vertexData[4 * i + 0].textureCoords[1] = 0.0f;
+        m_smallVertexData[4 * i + 0].position[0] = p.x - 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 0].position[1] = p.y - 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 0].textureCoords[0] = 0.0f;
+        m_smallVertexData[4 * i + 0].textureCoords[1] = 0.0f;
 
         // Top left of quad
-        m_vertexData[4 * i + 1].position[0] = p.x - 1.1f * ballRadius;
-        m_vertexData[4 * i + 1].position[1] = p.y + 1.1f * ballRadius;
-        m_vertexData[4 * i + 1].textureCoords[0] = 0.0f;
-        m_vertexData[4 * i + 1].textureCoords[1] = 1.0f;
+        m_smallVertexData[4 * i + 1].position[0] = p.x - 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 1].position[1] = p.y + 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 1].textureCoords[0] = 0.0f;
+        m_smallVertexData[4 * i + 1].textureCoords[1] = 1.0f;
 
         // Bottom right of quad
-        m_vertexData[4 * i + 2].position[0] = p.x + 1.1f * ballRadius;
-        m_vertexData[4 * i + 2].position[1] = p.y - 1.1f * ballRadius;
-        m_vertexData[4 * i + 2].textureCoords[0] = 1.0f;
-        m_vertexData[4 * i + 2].textureCoords[1] = 0.0f;
+        m_smallVertexData[4 * i + 2].position[0] = p.x + 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 2].position[1] = p.y - 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 2].textureCoords[0] = 1.0f;
+        m_smallVertexData[4 * i + 2].textureCoords[1] = 0.0f;
 
         // Top right of quad
-        m_vertexData[4 * i + 3].position[0] = p.x + 1.1f * ballRadius;
-        m_vertexData[4 * i + 3].position[1] = p.y + 1.1f * ballRadius;
-        m_vertexData[4 * i + 3].textureCoords[0] = 1.0f;
-        m_vertexData[4 * i + 3].textureCoords[1] = 1.0f;
+        m_smallVertexData[4 * i + 3].position[0] = p.x + 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 3].position[1] = p.y + 1.1f * smallRadius;
+        m_smallVertexData[4 * i + 3].textureCoords[0] = 1.0f;
+        m_smallVertexData[4 * i + 3].textureCoords[1] = 1.0f;
 
         i++;
     }
 
+    float bigRadius = m_simulation.getBigRadius();
+    vec2<float> p = m_simulation.getBigPosition();
+
+    // Bottom left of quad
+    m_bigVertexData[0].position[0] = p.x - 1.1f * bigRadius;
+    m_bigVertexData[0].position[1] = p.y - 1.1f * bigRadius;
+    m_bigVertexData[0].textureCoords[0] = 0.0f;
+    m_bigVertexData[0].textureCoords[1] = 0.0f;
+
+    // Top left of quad
+    m_bigVertexData[1].position[0] = p.x - 1.1f * bigRadius;
+    m_bigVertexData[1].position[1] = p.y + 1.1f * bigRadius;
+    m_bigVertexData[1].textureCoords[0] = 0.0f;
+    m_bigVertexData[1].textureCoords[1] = 1.0f;
+
+    // Bottom right of quad
+    m_bigVertexData[2].position[0] = p.x + 1.1f * bigRadius;
+    m_bigVertexData[2].position[1] = p.y - 1.1f * bigRadius;
+    m_bigVertexData[2].textureCoords[0] = 1.0f;
+    m_bigVertexData[2].textureCoords[1] = 0.0f;
+
+    // Top right of quad
+    m_bigVertexData[3].position[0] = p.x + 1.1f * bigRadius;
+    m_bigVertexData[3].position[1] = p.y + 1.1f * bigRadius;
+    m_bigVertexData[3].textureCoords[0] = 1.0f;
+    m_bigVertexData[3].textureCoords[1] = 1.0f;
+
+    // Large ball
+
     // Draw to screen
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 16 * ballCount * sizeof(float), m_vertexData);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 16 * ballCount * sizeof(float), m_smallVertexData);
+    glDrawElements(GL_TRIANGLES, 8 * ballCount, GL_UNSIGNED_INT, 0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 16 * sizeof(float), m_bigVertexData);
     glDrawElements(GL_TRIANGLES, 8 * ballCount, GL_UNSIGNED_INT, 0);
     
 }

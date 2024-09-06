@@ -11,7 +11,8 @@ private:
 	unsigned int m_vao;
 	unsigned int m_vbo;
 	unsigned int m_ebo;
-	GLVertex* m_vertexData;
+	GLVertex* m_smallVertexData;
+	GLVertex* m_bigVertexData;
 	unsigned int* m_indices;
 public:
 	Renderer(const Simulation& simulation);

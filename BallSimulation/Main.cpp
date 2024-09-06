@@ -11,6 +11,9 @@
     // Speed up simulation using multithreading
     // Add pause and step through simulation functionality
     // Add cute window icon
+    // Make a struct for storing simulation parameters
+    // Make a struct for storing graphics parameters
+    // Make the main file cleaner, maybe just give simulation a run method containing the while loop
 
 // C++ includes
 #include <iostream>
@@ -29,14 +32,17 @@ int main()
     Window window(resolution);
 
 	// Set simulation parameters:
+    // TO DO: make a struct for simulation parameters
 	unsigned int ballCount = 300; 
-	float smallRadius = 0.005f;
-    float bigRadius = 0.8f;
+	float smallRadius = 0.02f;
+    float bigRadius = 0.1f;
+    float smallMass = 0.5f;
+    float bigMass = (bigRadius / smallRadius) * (bigRadius / smallRadius) * smallMass;
 	float dt = 0.1f;
 	vec2<float> totalVelocity = { 10.0f, 10.0f };
 
 	// Initialise simulation and renderer
-	Simulation simulation(ballCount, smallRadius, bigRadius, dt, totalVelocity);
+	Simulation simulation(ballCount, smallRadius, bigRadius, smallMass, bigMass, dt, totalVelocity);
     Renderer renderer(simulation);
 
     float lastTime = 0.0f;

@@ -1,6 +1,5 @@
 #pragma once
 
-
 struct GLVertex
 {
 	float position[2];

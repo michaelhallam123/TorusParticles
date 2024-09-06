@@ -4,10 +4,11 @@
 #include <iostream>
 #include <cmath>
 
-Simulation::Simulation(unsigned int ballCount, float smallRadius, float bigRadius, float dt, vec2<float> totalVelocity)
-	: m_ballCount(ballCount), m_smallRadius(smallRadius), m_bigRadius(bigRadius), m_bigPosition({ 0.0f, 0.0f }), m_dt(dt)
+Simulation::Simulation(unsigned int ballCount, float smallRadius, float bigRadius, float smallMass, float bigMass, float dt, vec2<float> totalVelocity)
+	: m_ballCount(ballCount), m_smallRadius(smallRadius), m_bigRadius(bigRadius),
+	  m_smallMass(smallMass), m_bigMass(bigMass), m_bigPosition({ 0.0f, 0.0f }), m_dt(dt)
 {
-	//Error checking:
+	// Error checking
 	if (ballCount == 0)
 		std::cout << "Error: ballCount must be a positive integer!" << std::endl;
 	if (smallRadius <= 0)
@@ -17,21 +18,19 @@ Simulation::Simulation(unsigned int ballCount, float smallRadius, float bigRadiu
 	if (dt <= 0)
 		std::cout << "Error: dt must be a positive float!" << std::endl;
 
-	//Randomly populate position and velocity vectors:
+	// Randomly populate position and velocity vectors
 	m_smallPositions.reserve(ballCount);
 	m_smallVelocities.reserve(ballCount);
 
 	float x_meanVelocity = totalVelocity.x / (float)ballCount;
 	float y_meanVelocity = totalVelocity.y / (float)ballCount;
 
-	// Generate positions from uniform distribution and velocities from normal distribution
-	std::random_device rd; // Set random seed
-	std::mt19937 gen(rd()); // Initialise random number generator
+	// Initialise random number generators
+	std::random_device rd;
+	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> posDistribution(-1.0f, 1.0f);
 	std::normal_distribution<float> x_velDistribution(x_meanVelocity, 1.0f);
 	std::normal_distribution<float> y_velDistribution(y_meanVelocity, 1.0f);
-
-	
 
 	vec2<float> runningVelocity(0.0f, 0.0f);
 
@@ -68,36 +67,30 @@ Simulation::Simulation(unsigned int ballCount, float smallRadius, float bigRadiu
 
 }
 
-/*
-//Constructor that takes as input a list of initial positions and velocities of balls
-Simulation::Simulation(unsigned int ballCount, float ballRadius, float dt, std::vector<vec2<float>> positions, std::vector<vec2<float>> velocities)
-	: m_ballCount(ballCount), m_ballRadius(ballRadius), m_dt(dt), m_positions(positions), m_velocities(velocities)
-{
-	//Error checking:
-	if (ballCount == 0)
-		std::cout << "Error: ballCount must be a positive integer!" << std::endl;
-	if (ballRadius <= 0)
-		std::cout << "Error: ballRadius must be a positive float!" << std::endl;
-	if (dt <= 0)
-		std::cout << "Error: dt must be a positive float!" << std::endl;
-
-}
-*/
 
 Simulation::~Simulation()
 {
 
 }
 
-void Simulation::Update(float timeStep) //TO DO: Speed this up using hash map
+void Simulation::Update(float timeStep) // TO DO: Speed this up
 {
-	//Check for collisions, and update velocities using Collide() if collision found
+	// Check for collisions between small balls, and update velocities accordingly
 	for (unsigned int i = 0; i < m_ballCount; i++)
 	{
 		for (unsigned int j = i+1; j < m_ballCount; j++)
 		{
 			if (distSquared(m_smallPositions[i], m_smallPositions[j]) <= (2.0f * m_smallRadius) * (2.0f * m_smallRadius))
 				collideSmalls(i, j);
+		}
+	}
+
+	// Check for collisions between large and small balls, and update velocities accordingly
+	for (unsigned int i = 0; i < m_ballCount; i++)
+	{
+		if (distSquared(m_bigPosition, m_smallPositions[i]) <= (m_smallRadius + m_bigRadius) * (m_smallRadius + m_bigRadius))
+		{
+			collideBig(i);
 		}
 	}
 
@@ -119,6 +112,20 @@ void Simulation::Update(float timeStep) //TO DO: Speed this up using hash map
 		else if (p.y > 1.0f)
 			p.y -= 2.0f;
 	}
+
+	vec2<float>& p = m_bigPosition;
+	p.Add(m_bigVelocity * (timeStep * m_dt));
+
+	// Normalise positions to lie in [-1,1]x[-1,1]
+	if (p.x < -1.0f)
+		p.x += 2.0f;
+	else if (p.x > 1.0f)
+		p.x -= 2.0f;
+
+	if (p.y < -1.0f)
+		p.y += 2.0f;
+	else if (p.y > 1.0f)
+		p.y -= 2.0f;
 }
 
 void Simulation::collideSmalls(unsigned int i, unsigned int j)
@@ -136,4 +143,21 @@ void Simulation::collideSmalls(unsigned int i, unsigned int j)
 	float dislodgeFactor = m_smallRadius / std::sqrt(deltaPos.dot(deltaPos)) - 0.5f;
 	m_smallPositions[i].Add(deltaPos * dislodgeFactor );
 	m_smallPositions[j].Add(deltaPos * (-dislodgeFactor) );
+}
+
+void Simulation::collideBig(unsigned int i)
+{
+	// Update velocities according to collision physics
+	vec2<float> deltaPos = m_smallPositions[i] - m_bigPosition;
+	vec2<float> deltaVel = m_smallVelocities[i] - m_bigVelocity;
+
+	float a = -((2.0f * m_bigMass) / (m_bigMass + m_smallMass)) * (deltaVel.dot(deltaPos) / deltaPos.dot(deltaPos));
+	float b = -(m_smallMass / m_bigMass) * a;
+
+	m_smallVelocities[i].Add(deltaPos * a);
+	m_bigVelocity.Add(deltaPos * b);
+
+	// Dislodge balls so they don't stick together
+	float dislodgeFactor = (m_smallRadius + m_bigRadius) / std::sqrt(deltaPos.dot(deltaPos)) - 1.0f;
+	m_smallPositions[i].Add(deltaPos * dislodgeFactor);
 }

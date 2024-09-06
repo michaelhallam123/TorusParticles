@@ -71,9 +71,9 @@ void Renderer::Draw()
 {
     // Update m_vertexData according to particle positions
 
-    const auto& positions = m_simulation.getPositions();
+    const auto& positions = m_simulation.getSmallPositions();
     unsigned int i = 0;
-    float ballRadius = m_simulation.getBallRadius();
+    float ballRadius = m_simulation.getSmallRadius();
     unsigned int ballCount = m_simulation.getBallCount();
     for (const auto& p : positions)
     {

@@ -24,18 +24,19 @@
 
 int main()
 {
-    // Create window
+    // Create window (this should be tied to the renderer class - otherwise might create renderer before window which would be bad)
     int resolution = 860;
     Window window(resolution);
 
 	// Set simulation parameters:
 	unsigned int ballCount = 300; 
-	float ballRadius = 0.005f;
+	float smallRadius = 0.005f;
+    float bigRadius = 0.8f;
 	float dt = 0.1f;
 	vec2<float> totalVelocity = { 10.0f, 10.0f };
 
 	// Initialise simulation and renderer
-	Simulation simulation(ballCount, ballRadius, dt, totalVelocity);
+	Simulation simulation(ballCount, smallRadius, bigRadius, dt, totalVelocity);
     Renderer renderer(simulation);
 
     float lastTime = 0.0f;

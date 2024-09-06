@@ -19,9 +19,3 @@ public:
 
 	void Draw();
 };
-
-//Renderer should construct and maintain data from:
-	//vao
-	//vbo
-	//ebo
-	//shaders

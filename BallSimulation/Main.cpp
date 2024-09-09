@@ -4,23 +4,17 @@
     // Allow for screen resizing
     // Separate physics from framerate (!)
     // Speed up simulation using caching to get large number of particles
-    // Add in a larger particle that is the subject of Brownian motion
     // Make circles loop smoothly from one side of the screen to the opposite (probably much easier using shader)
-    // Add mass to balls
     // Add gui for easier control of parameters
     // Speed up simulation using multithreading
     // Add pause and step through simulation functionality
     // Add cute window icon
-    // Make a struct for storing simulation parameters
-    // Make a struct for storing graphics parameters
     // Make the main file cleaner, maybe just give simulation a run method containing the while loop
 
-// C++ includes
 #include <iostream>
 
-// External includes
-// Project includes
 #include "vec2.h"
+#include "ball.h"
 #include "Simulation.h"
 #include "Renderer.h"
 #include "Window.h"
@@ -32,17 +26,31 @@ int main()
     Window window(resolution);
 
 	// Set simulation parameters:
-    // TO DO: make a struct for simulation parameters
-	unsigned int ballCount = 300; 
-	float smallRadius = 0.02f;
-    float bigRadius = 0.1f;
-    float smallMass = 0.5f;
-    float bigMass = (bigRadius / smallRadius) * (bigRadius / smallRadius) * smallMass;
-	float dt = 0.1f;
-	vec2<float> totalVelocity = { 10.0f, 10.0f };
+	float dt = 0.2f;
+
+    ball b1;
+    b1.radius = 0.2f;
+    b1.mass = 0.5f;
+    b1.count = 4;
+    b1.rgba = { 1.0f, 0.5f, 0.2f, 1.0f };
+    b1.totalMomentum = { 0.0f, 0.0f };
+
+    ball b2;
+    b2.radius = 0.1f;
+    b2.mass = 0.1f;
+    b2.count = 4;
+    b2.rgba = { 0.0f, 0.5f, 0.8f, 1.0f };
+    b2.totalMomentum = { 0.0f, 0.0f };
+
+    ball b3;
+    b3.radius = 0.02f;
+    b3.mass = 0.1f;
+    b3.count = 200;
+    b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
+    b3.totalMomentum = { 0.0f, 0.0f };
 
 	// Initialise simulation and renderer
-	Simulation simulation(ballCount, smallRadius, bigRadius, smallMass, bigMass, dt, totalVelocity);
+    Simulation simulation({b1, b2, b3}, dt);
     Renderer renderer(simulation);
 
     float lastTime = 0.0f;
@@ -55,13 +63,15 @@ int main()
         lastTime = time;
 
         // Draw simulation to window
-        renderer.Draw();
+        renderer.Draw(window.getID());
 
         // Update window events, swap buffers
         window.update();
 
         // Update physics simulation
         simulation.Update(timeStep);
+
+        //simulation.print();
     }
 
     return 0;

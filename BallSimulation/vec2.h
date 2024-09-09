@@ -38,6 +38,12 @@ struct vec2
 		this->y += v2.y;
 	}
 
+	void Subtract(const vec2<T>& v2)
+	{
+		this->x -= v2.x;
+		this->y -= v2.y;
+	}
+
 	void Multiply(const T a)
 	{
 		this->x *= a;

@@ -2,6 +2,8 @@
 
 #include <string>
 #include <unordered_map>
+#include <array>
+#include <iostream>
 
 class Shader
 {
@@ -21,6 +23,7 @@ public:
 	//Set uniforms
 	void SetUniform1i(const std::string& name, int value);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniform4f(const std::string& name, std::array<float, 4> v);
 
 private:
 	int GetUniformLocation(const std::string& name);

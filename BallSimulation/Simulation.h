@@ -6,51 +6,41 @@
 #include <iostream>
 
 #include "vec2.h"
+#include "ball.h"
 
 class Simulation
 {
 public:
-	//Constructor that randomly populates initial positions and velocities of balls
-	//The sum of all velocities is guaranteed to be totalVelocity
-	Simulation(unsigned int ballCount, float smallRadius, float bigRadius, float smallMass, float bigMass, float dt, vec2<float> totalVelocity);
-
-	~Simulation();
+	Simulation(std::vector<ball> ballData, float dt);
 
 	//Increment time in the simulation
 	void Update(float timeStep);
 
-	void Print()//Print ball locations for debugging
+	// Getter methods
+	inline const std::vector<std::vector<vec2<float>>>& getPositions() const { return m_positions; }
+	inline unsigned int getBallCount(unsigned int i) const { return m_ballData[i].count; }
+	inline float getRadius(unsigned int i) const { return m_ballData[i].radius; }
+	inline const std::vector<ball>& getBallData() const { return m_ballData; }
+
+	void print()
 	{
-		for (auto& p : m_smallPositions)
-		{
+		for (auto p : m_positions[0])
 			std::cout << p.x << " " << p.y << std::endl;
-		}
 		std::cout << std::endl;
 	}
 
-	// Getter methods
-	inline const std::vector<vec2<float>>& getSmallPositions() const { return m_smallPositions; }
-	inline const			  vec2<float>& getBigPosition()	   const { return m_bigPosition; }
-	inline					  unsigned int getBallCount()	   const { return m_ballCount; }
-	inline							 float getSmallRadius()	   const { return m_smallRadius; }
-	inline							 float getBigRadius()	   const { return m_bigRadius; }
-
 private:
-	//Simulation properties
-	std::vector<vec2<float>> m_smallPositions;
-	std::vector<vec2<float>> m_smallVelocities;
-	vec2<float> m_bigPosition;
-	vec2<float> m_bigVelocity;
-	float m_smallRadius;
-	float m_bigRadius;
-	float m_smallMass;
-	float m_bigMass;
-	unsigned int m_ballCount;
+	// Simulation properties
+	std::vector<ball> m_ballData;
+	std::vector<std::vector<vec2<float>>> m_positions;
+	std::vector<std::vector<vec2<float>>> m_velocities;
+		// May be better to change these to 1D vectors - try this later and see what's faster
+		// Would involve either an index fetcher function or just storing all indices in a vector
+		// Latter is faster but potentially wastes a lot of memory for no reason
 	float m_dt;
 
-	// Collide small balls with indices i, j in m_smallPositions
-	void collideSmalls(unsigned int i, unsigned int j); 
+	// Collide balls with indices (i1,j1) and (i2, j2) in m_positions
+	void collide(unsigned int i1, unsigned int j1, unsigned int i2, unsigned int j2);
+
 	
-	// Collide large ball with small ball having index i in m_smallPositions
-	void collideBig(unsigned int i);
 };

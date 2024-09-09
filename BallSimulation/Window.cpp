@@ -54,9 +54,5 @@ bool Window::isOpen()
 
 void Window::update()
 {
-    glfwSwapBuffers(m_WindowID);
-
-    glfwPollEvents();
-
-    glClear(GL_COLOR_BUFFER_BIT);
+    
 }

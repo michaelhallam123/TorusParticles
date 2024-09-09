@@ -50,6 +50,12 @@
     <ClInclude Include="GLVertex.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ball.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLDebug.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">

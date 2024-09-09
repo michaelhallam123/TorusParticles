@@ -14,4 +14,6 @@ public:
 	bool isOpen();
 
 	void update();
+
+	GLFWwindow* getID() { return m_WindowID; }
 };

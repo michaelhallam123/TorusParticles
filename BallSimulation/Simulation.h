@@ -4,9 +4,11 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <deque>
 
 #include "vec2.h"
 #include "ball.h"
+#include "lineSweepData.h"
 
 class Simulation
 {
@@ -34,13 +36,14 @@ private:
 	std::vector<ball> m_ballData;
 	std::vector<std::vector<vec2<float>>> m_positions;
 	std::vector<std::vector<vec2<float>>> m_velocities;
-		// May be better to change these to 1D vectors - try this later and see what's faster
-		// Would involve either an index fetcher function or just storing all indices in a vector
-		// Latter is faster but potentially wastes a lot of memory for no reason
 	float m_dt;
+
+	// Deques for implementing line sweep algorithm
+	std::vector<std::deque<lineSweepData>> m_sweepQueues;
+	std::vector<lineSweepData> m_sortedSweepData;
 
 	// Collide balls with indices (i1,j1) and (i2, j2) in m_positions
 	void collide(unsigned int i1, unsigned int j1, unsigned int i2, unsigned int j2);
 
-	
+	void insertionSort();
 };

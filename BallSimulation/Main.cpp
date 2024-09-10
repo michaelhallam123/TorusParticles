@@ -29,28 +29,28 @@ int main()
 	float dt = 0.2f;
 
     ball b1;
-    b1.radius = 0.2f;
-    b1.mass = 0.5f;
-    b1.count = 4;
+    b1.radius = 0.15f;
+    b1.mass = 6.4f;
+    b1.count = 1;
     b1.rgba = { 1.0f, 0.5f, 0.2f, 1.0f };
     b1.totalMomentum = { 0.0f, 0.0f };
 
     ball b2;
-    b2.radius = 0.1f;
-    b2.mass = 0.1f;
+    b2.radius = 0.07f;
+    b2.mass = 0.9f;
     b2.count = 4;
     b2.rgba = { 0.0f, 0.5f, 0.8f, 1.0f };
     b2.totalMomentum = { 0.0f, 0.0f };
 
     ball b3;
-    b3.radius = 0.02f;
+    b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 200;
+    b3.count = 7500;
     b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
     b3.totalMomentum = { 0.0f, 0.0f };
 
 	// Initialise simulation and renderer
-    Simulation simulation({b1, b2, b3}, dt);
+    Simulation simulation({b3}, dt);
     Renderer renderer(simulation);
 
     float lastTime = 0.0f;

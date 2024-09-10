@@ -55,15 +55,80 @@ Simulation::Simulation(std::vector<ball> ballData, float dt)
 		}
 
 		// Adjust final velocity so that sum of velocities is totalVelocity
-		m_velocities[i].back().x = b.totalMomentum.x / b.mass - runningVelocity.x;
-		m_velocities[i].back().y = b.totalMomentum.y / b.mass - runningVelocity.y;
+		m_velocities[i].back().x += b.totalMomentum.x / b.mass - runningVelocity.x;
+		m_velocities[i].back().y += b.totalMomentum.y / b.mass - runningVelocity.y;
 	}
+
+	// Initialise m_sortedSweepData to implement line sweep algorithm
+	for (unsigned int i = 0; i < m_ballData.size(); i++)
+	{
+		m_sortedSweepData.push_back({});
+
+		for (int j = 0; j < m_positions[i].size(); j++)
+		{
+			lineSweepData data;
+
+			data.left = m_positions[i][j].x - m_ballData[i].radius;
+			data.right = m_positions[i][j].x + m_ballData[i].radius;
+			data.ballTypeInd = i;
+			data.vecInd = j;
+
+			m_sortedSweepData.push_back(data);
+		}
+	}
+
+	std::sort(m_sortedSweepData.begin(), m_sortedSweepData.end(), leftComparison);
+
+	// Create space for m_sweepQueues
+	for (int i = 0; i < m_ballData.size(); i++)
+		m_sweepQueues.push_back({});
+
 }
 
 // Check for collisions, update velocities of colliding balls, then update positions of balls
 void Simulation::Update(float timeStep)
 {
-	// Loop pretty ugly now, but implementing a proper algorithm should make this cleaner
+	// Check for collisions using line sweep algorithm
+	// If collision is found, update velocities using collide() method
+
+	insertionSort();
+	
+	for (int i = 0; i < m_ballData.size(); i++)
+		m_sweepQueues[i].clear();
+
+	for (auto& b1 : m_sortedSweepData)
+	{
+		for (int i = 0; i < m_sweepQueues.size(); i++)
+		{
+			auto& q = m_sweepQueues[i];
+
+
+			while (!q.empty() && (b1.left > q.front().right))
+				q.pop_front();
+
+
+			for (auto& b2 : q)
+			{
+				const unsigned int& i1 = b1.ballTypeInd;
+				const unsigned int& i2 = b2.ballTypeInd;
+
+				const unsigned int& j1 = b1.vecInd;
+				const unsigned int& j2 = b2.vecInd;
+
+				const float& r1 = m_ballData[i1].radius;
+				const float& r2 = m_ballData[i2].radius;
+
+				if (distSquared(m_positions[i1][j1], m_positions[i2][j2]) <= (r1 + r2) * (r1 + r2))
+				{
+					collide(i1, j1, i2, j2);
+				}
+			}
+		}
+
+		m_sweepQueues[b1.ballTypeInd].push_back(b1);
+	}
+
+	/*
 	// Check for collisions and update velocities
 	for (unsigned int i1 = 0; i1 < m_ballData.size(); i1++)
 	{
@@ -89,25 +154,45 @@ void Simulation::Update(float timeStep)
 			}
 		}
 	}
+	*/
 
 	//Update positions
-	for (unsigned int i1 = 0; i1 < m_ballData.size(); i1++)
+
+	for (auto& b : m_sortedSweepData)
 	{
-		for (unsigned int j1 = 0; j1 < m_positions[i1].size(); j1++)
+		int i = b.ballTypeInd;
+		int j = b.vecInd;
+
+		vec2<float>& p = m_positions[i][j];
+		p.Add(m_velocities[i][j] * (timeStep * m_dt));
+
+		// Normalise positions to lie in [-1,1]x[-1,1]
+		if (p.x < -1.0f)
+			p.x += 2.0f;
+		else if (p.x > 1.0f)
+			p.x -= 2.0f;
+
+		if (p.y < -1.0f)
+			p.y += 2.0f;
+		else if (p.y > 1.0f)
+			p.y -= 2.0f;
+
+		b.left = p.x - m_ballData[i].radius;
+		b.right = p.x + m_ballData[i].radius;
+
+	}
+}
+
+void Simulation::insertionSort()
+{
+	for (int i = 0; i < m_sortedSweepData.size(); i++)
+	{
+		int j = i - 1;
+
+		while (j >= 0 && m_sortedSweepData[j].left > m_sortedSweepData[j+1].left)
 		{
-			vec2<float>& p = m_positions[i1][j1];
-			p.Add(m_velocities[i1][j1] * (timeStep * m_dt));
-
-			// Normalise positions to lie in [-1,1]x[-1,1]
-			if (p.x < -1.0f)
-				p.x += 2.0f;
-			else if (p.x > 1.0f)
-				p.x -= 2.0f;
-
-			if (p.y < -1.0f)
-				p.y += 2.0f;
-			else if (p.y > 1.0f)
-				p.y -= 2.0f;
+			std::swap(m_sortedSweepData[j], m_sortedSweepData[j + 1]);
+			j--;
 		}
 	}
 }
@@ -118,7 +203,6 @@ void Simulation::collide(unsigned int i1, unsigned int j1, unsigned int i2, unsi
 	const ball& b1 = m_ballData[i1];
 	const ball& b2 = m_ballData[i2];
 
-	// Small becomes i1, j1, big becomes i2, j2
 	// Update velocities according to collision physics
 	vec2<float> deltaPos = m_positions[i1][j1] - m_positions[i2][j2];
 	vec2<float> deltaVel = m_velocities[i1][j1] - m_velocities[i2][j2];
@@ -130,7 +214,6 @@ void Simulation::collide(unsigned int i1, unsigned int j1, unsigned int i2, unsi
 	m_velocities[i2][j2].Add(deltaPos * b);
 
 	// Dislodge balls so they don't stick together
-	float dislodgeFactor = 0.5f * (b1.radius + b2.radius) / std::sqrt(deltaPos.dot(deltaPos)) - 0.5f;
+	float dislodgeFactor =  (b1.radius + b2.radius) / std::sqrt(deltaPos.dot(deltaPos)) - 1.0f;
 	m_positions[i1][j1].Add(deltaPos * dislodgeFactor);
-	m_positions[i2][j2].Subtract(deltaPos * dislodgeFactor);
 }

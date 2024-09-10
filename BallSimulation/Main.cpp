@@ -45,12 +45,12 @@ int main()
     ball b3;
     b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 7500;
+    b3.count = 4000;
     b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
     b3.totalMomentum = { 0.0f, 0.0f };
 
 	// Initialise simulation and renderer
-    Simulation simulation({b3}, dt);
+    Simulation simulation({b1, b2, b3}, dt);
     Renderer renderer(simulation);
 
     float lastTime = 0.0f;

@@ -15,3 +15,9 @@ struct
 	bool operator()(const lineSweepData& a, const lineSweepData& b) const { return a.left < b.left; }
 }
 leftComparison;
+
+struct
+{
+	bool operator()(const lineSweepData& a, const lineSweepData& b) const { return a.right > b.right; }
+}
+rightComparison;

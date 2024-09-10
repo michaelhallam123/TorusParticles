@@ -40,10 +40,13 @@ private:
 
 	// Deques for implementing line sweep algorithm
 	std::vector<std::deque<lineSweepData>> m_sweepQueues;
-	std::vector<lineSweepData> m_sortedSweepData;
+	std::vector<lineSweepData> m_leftSortedBalls;
+	std::vector<lineSweepData> m_rightSortedBalls;
 
 	// Collide balls with indices (i1,j1) and (i2, j2) in m_positions
+	void checkCollision(unsigned int i1, unsigned int j1, unsigned int i2, unsigned int j2);
 	void collide(unsigned int i1, unsigned int j1, unsigned int i2, unsigned int j2);
 
-	void insertionSort();
+	void insertionSortLeft();
+	void insertionSortRight();
 };

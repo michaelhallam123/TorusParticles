@@ -314,6 +314,7 @@ void Simulation::collide(unsigned int i1, unsigned int j1, unsigned int i2, unsi
 	m_velocities[i2][j2].Add(deltaPos * b);
 
 	// Dislodge balls so they don't stick together
-	float dislodgeFactor =  (b1.radius + b2.radius) / std::sqrt(deltaPos.dot(deltaPos)) - 1.0f;
+	float dislodgeFactor =  0.5f * (b1.radius + b2.radius) / std::sqrt(deltaPos.dot(deltaPos)) - 0.5f;
 	m_positions[i1][j1].Add(deltaPos * dislodgeFactor);
+	m_positions[i2][j2].Subtract(deltaPos * dislodgeFactor);
 }

@@ -75,6 +75,34 @@ Renderer::Renderer(const Simulation& simulation)
 
     m_shader.Bind();
 
+    const std::vector<std::vector<vec2<float>>>& positionsVector = m_simulation.getPositions();
+
+    // Set texture coordinates
+    for (int i = 0; i < ballData.size(); i++)
+    {
+        const auto& positions = positionsVector[i];
+        unsigned int j = 0;
+
+        for (int j = 0; j < positionsVector[i].size(); j++)
+        {
+            // Bottom left of quad
+            m_vertexData[i][4 * j + 0].textureCoords[0] = 0.0f;
+            m_vertexData[i][4 * j + 0].textureCoords[1] = 0.0f;
+
+            // Top left of quad
+            m_vertexData[i][4 * j + 1].textureCoords[0] = 0.0f;
+            m_vertexData[i][4 * j + 1].textureCoords[1] = 1.0f;
+
+            // Bottom right of quad
+            m_vertexData[i][4 * j + 2].textureCoords[0] = 1.0f;
+            m_vertexData[i][4 * j + 2].textureCoords[1] = 0.0f;
+
+            // Top right of quad
+            m_vertexData[i][4 * j + 3].textureCoords[0] = 1.0f;
+            m_vertexData[i][4 * j + 3].textureCoords[1] = 1.0f;
+
+        }
+    }
 
 }
 
@@ -98,33 +126,24 @@ void Renderer::Draw(GLFWwindow* window)
         float radius = ballData[i].radius;
         unsigned int j = 0;
 
-
-        // TO DO: stop updating texture coords every frame, there's no reason to do this!
+        // TO DO: See if this updating can be avoided by passing in positions directly
         for (const auto& p : positions)
         {
             // Bottom left of quad
             m_vertexData[i][4 * j + 0].position[0] = p.x - 1.1f * radius;
             m_vertexData[i][4 * j + 0].position[1] = p.y - 1.1f * radius;
-            m_vertexData[i][4 * j + 0].textureCoords[0] = 0.0f;
-            m_vertexData[i][4 * j + 0].textureCoords[1] = 0.0f;
 
             // Top left of quad
             m_vertexData[i][4 * j + 1].position[0] = p.x - 1.1f * radius;
             m_vertexData[i][4 * j + 1].position[1] = p.y + 1.1f * radius;
-            m_vertexData[i][4 * j + 1].textureCoords[0] = 0.0f;
-            m_vertexData[i][4 * j + 1].textureCoords[1] = 1.0f;
 
             // Bottom right of quad
             m_vertexData[i][4 * j + 2].position[0] = p.x + 1.1f * radius;
             m_vertexData[i][4 * j + 2].position[1] = p.y - 1.1f * radius;
-            m_vertexData[i][4 * j + 2].textureCoords[0] = 1.0f;
-            m_vertexData[i][4 * j + 2].textureCoords[1] = 0.0f;
 
             // Top right of quad
             m_vertexData[i][4 * j + 3].position[0] = p.x + 1.1f * radius;
             m_vertexData[i][4 * j + 3].position[1] = p.y + 1.1f * radius;
-            m_vertexData[i][4 * j + 3].textureCoords[0] = 1.0f;
-            m_vertexData[i][4 * j + 3].textureCoords[1] = 1.0f;
 
             j++;
         }

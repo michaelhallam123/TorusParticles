@@ -30,6 +30,18 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Solver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PruneAndSweepSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BruteForceSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation.h">
@@ -50,13 +62,28 @@
     <ClInclude Include="GLVertex.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ball.h">
+    <ClInclude Include="balltype.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="GLDebug.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="lineSweepData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="State.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ball.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Solver.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PruneAndSweepSolver.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BruteForceSolver.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include <array>
 #include <vector>
 #include <unordered_map>
@@ -7,7 +7,6 @@
 #include <deque>
 
 #include "vec2.h"
-#include "ball.h"
 #include "lineSweepData.h"
 
 class Simulation
@@ -50,3 +49,4 @@ private:
 	void insertionSortLeft();
 	void insertionSortRight();
 };
+*/

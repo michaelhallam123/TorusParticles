@@ -27,6 +27,25 @@ struct vec2
 		return { this->x * a, this->y * a };
 	}
 
+	vec2 operator/(T a) const
+	{
+		return { this->x / a, this->y / a };
+	}
+
+	vec2& operator+=(const vec2<T>& rhs)
+	{
+		this->x += rhs.x;
+		this->y += rhs.y;
+		return *this;
+	}
+
+	vec2& operator-=(const vec2<T>& rhs)
+	{
+		this->x -= rhs.x;
+		this->y -= rhs.y;
+		return *this;
+	}
+
 	T dot(vec2<T>& v)
 	{
 		return this->x * v.x + this->y * v.y;

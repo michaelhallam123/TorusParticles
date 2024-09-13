@@ -9,30 +9,29 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "GLVertex.h"
-#include "ball.h"
+#include "balltype.hpp"
 #include "GLDebug.h"
 
+// TO DO: create a GLQuad class
+// TO DO: change to smart pointers
 
 // Paths for gl shader programs
 const char* vertexShaderPath = "../BallSimulation/shader.vs";
 const char* fragmentShaderPath = "../BallSimulation/shader.fs";
 
-// TO DO: create a GLQuad class
-
-Renderer::Renderer(const Simulation& simulation)
-	: m_simulation(simulation), m_shader(vertexShaderPath, fragmentShaderPath)
+Renderer::Renderer(const Solver& solver)
+	: m_state(solver.getState()), m_ballTypes(m_state.ballTypes), m_shader(vertexShaderPath, fragmentShaderPath)
 {
     // Reserve space for vertex data
-    const std::vector<ball>& ballData = simulation.getBallData();
-    m_vao.reserve(ballData.size());
-    m_vbo.reserve(ballData.size());
-    m_ebo.reserve(ballData.size());
-    m_vertexData.reserve(ballData.size());
-    m_indices.reserve(ballData.size());
+    m_vao.reserve(m_ballTypes.size());
+    m_vbo.reserve(m_ballTypes.size());
+    m_ebo.reserve(m_ballTypes.size());
+    m_vertexData.reserve(m_ballTypes.size());
+    m_indices.reserve(m_ballTypes.size());
 
-    for (int i = 0; i < ballData.size(); i++)
+    for (int i = 0; i < m_ballTypes.size(); i++)
     {
-        m_vertexData.push_back(new GLVertex[ballData[i].count * 4]);
+        m_vertexData.push_back(new GLVertex[m_ballTypes[i].count * 4]);
 
         // Create vertex array objects
         m_vao.push_back(0);
@@ -43,7 +42,7 @@ Renderer::Renderer(const Simulation& simulation)
         m_vbo.push_back(0);
         GLCall(glGenBuffers(1, &m_vbo[i]));
         GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_vbo[i]));
-        GLCall(glBufferData(GL_ARRAY_BUFFER, ballData[i].count * 4 * sizeof(GLVertex), nullptr, GL_DYNAMIC_DRAW));
+        GLCall(glBufferData(GL_ARRAY_BUFFER, m_ballTypes[i].count * 4 * sizeof(GLVertex), nullptr, GL_DYNAMIC_DRAW));
 
         // Quad coordinates attribute
         GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0));
@@ -53,8 +52,8 @@ Renderer::Renderer(const Simulation& simulation)
         GLCall(glEnableVertexAttribArray(1));
 
         // Create and set up index data
-        m_indices.push_back(new unsigned int[6 * ballData[i].count]);
-        for (unsigned int j = 0; j < ballData[i].count; j++)
+        m_indices.push_back(new unsigned int[6 * m_ballTypes[i].count]);
+        for (unsigned int j = 0; j < m_ballTypes[i].count; j++)
         {
             m_indices[i][6 * j + 0] = 4 * j + 0;
             m_indices[i][6 * j + 1] = 4 * j + 1;
@@ -68,22 +67,16 @@ Renderer::Renderer(const Simulation& simulation)
         m_ebo.push_back(0);
         GLCall(glGenBuffers(1, &m_ebo[i]));
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo[i]));
-        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * ballData[i].count * sizeof(unsigned int), m_indices[i], GL_DYNAMIC_DRAW));     
+        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * m_ballTypes[i].count * sizeof(unsigned int), m_indices[i], GL_DYNAMIC_DRAW));     
 
     }
 
-
     m_shader.Bind();
 
-    const std::vector<std::vector<vec2<float>>>& positionsVector = m_simulation.getPositions();
-
     // Set texture coordinates
-    for (int i = 0; i < ballData.size(); i++)
+    for (int i = 0; i < m_ballTypes.size(); i++)
     {
-        const auto& positions = positionsVector[i];
-        unsigned int j = 0;
-
-        for (int j = 0; j < positionsVector[i].size(); j++)
+        for (int j = 0; j < m_ballTypes[i].count; j++)
         {
             // Bottom left of quad
             m_vertexData[i][4 * j + 0].textureCoords[0] = 0.0f;
@@ -100,10 +93,8 @@ Renderer::Renderer(const Simulation& simulation)
             // Top right of quad
             m_vertexData[i][4 * j + 3].textureCoords[0] = 1.0f;
             m_vertexData[i][4 * j + 3].textureCoords[1] = 1.0f;
-
         }
     }
-
 }
 
 Renderer::~Renderer()
@@ -116,19 +107,20 @@ Renderer::~Renderer()
 
 void Renderer::Draw(GLFWwindow* window)
 {
-    const std::vector<ball>& ballData = m_simulation.getBallData();
-    const std::vector<std::vector<vec2<float>>>& positionsVector = m_simulation.getPositions();
+    const std::vector<ball>& balls = m_state.balls;
+    int k = 0;
 
     // Update vertex data according to particle positions
-    for (int i = 0; i < ballData.size(); i++)
+    for (int i = 0; i < m_ballTypes.size(); i++)
     {
-        const auto& positions = positionsVector[i];
-        float radius = ballData[i].radius;
-        unsigned int j = 0;
+        float radius = m_ballTypes[i].radius;
+
 
         // TO DO: See if this updating can be avoided by passing in positions directly
-        for (const auto& p : positions)
+        for (int j = 0; j < m_ballTypes[i].count; j++)
         {
+            const vec2<float>& p = m_state.balls[k].position;
+
             // Bottom left of quad
             m_vertexData[i][4 * j + 0].position[0] = p.x - 1.1f * radius;
             m_vertexData[i][4 * j + 0].position[1] = p.y - 1.1f * radius;
@@ -145,23 +137,23 @@ void Renderer::Draw(GLFWwindow* window)
             m_vertexData[i][4 * j + 3].position[0] = p.x + 1.1f * radius;
             m_vertexData[i][4 * j + 3].position[1] = p.y + 1.1f * radius;
 
-            j++;
+            k++;
         }
     }
 
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw balls to screen
-    for (int i = 0; i < ballData.size(); i++)
+    for (int i = 0; i < m_ballTypes.size(); i++)
     {
 
-        m_shader.SetUniform4f("u_ballColor", ballData[i].rgba);
+        m_shader.SetUniform4f("u_ballColor", m_ballTypes[i].rgba);
         GLCall(glBindVertexArray(m_vao[i]));
 
         // Draw to screen
         GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_vbo[i]));
-        GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0,  ballData[i].count * sizeof(GLVertex) * 4, m_vertexData[i]));
-        GLCall(glDrawElements(GL_TRIANGLES, 6 * ballData[i].count, GL_UNSIGNED_INT, 0));
+        GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0,  m_ballTypes[i].count * sizeof(GLVertex) * 4, m_vertexData[i]));
+        GLCall(glDrawElements(GL_TRIANGLES, 6 * m_ballTypes[i].count, GL_UNSIGNED_INT, 0));
     }
 
     glfwSwapBuffers(window);

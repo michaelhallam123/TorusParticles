@@ -1,6 +1,8 @@
 # Project specific
 
 Dependencies/
+BallSimulation/Debug
+BallSimulation/Release
 
 # Ignore C++ intermediate files, etc.
 

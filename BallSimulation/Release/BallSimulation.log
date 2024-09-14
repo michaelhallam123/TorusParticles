@@ -1,15 +1,11 @@
-﻿  Renderer.cpp
-C:\Dev\CppLearning\BallSimulation\BallSimulation\Renderer.cpp(32,23): warning C4018: '<': signed/unsigned mismatch
-C:\Dev\CppLearning\BallSimulation\BallSimulation\Renderer.cpp(77,23): warning C4018: '<': signed/unsigned mismatch
-C:\Dev\CppLearning\BallSimulation\BallSimulation\Renderer.cpp(79,27): warning C4018: '<': signed/unsigned mismatch
-C:\Dev\CppLearning\BallSimulation\BallSimulation\Renderer.cpp(114,23): warning C4018: '<': signed/unsigned mismatch
-C:\Dev\CppLearning\BallSimulation\BallSimulation\Renderer.cpp(120,27): warning C4018: '<': signed/unsigned mismatch
-C:\Dev\CppLearning\BallSimulation\BallSimulation\Renderer.cpp(147,23): warning C4018: '<': signed/unsigned mismatch
+﻿  BruteForceSolver.cpp
+C:\Dev\CppLearning\BallSimulation\BallSimulation\BruteForceSolver.cpp(16,20): warning C4018: '<': signed/unsigned mismatch
+C:\Dev\CppLearning\BallSimulation\BallSimulation\BruteForceSolver.cpp(18,23): warning C4018: '<': signed/unsigned mismatch
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  2 of 725 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  55 of 722 functions ( 7.6%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    23 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'C:\Dev\CppLearning\BallSimulation\Release\vc120.pdb'; linking object as if no debug info
   BallSimulation.vcxproj -> C:\Dev\CppLearning\BallSimulation\Release\BallSimulation.exe

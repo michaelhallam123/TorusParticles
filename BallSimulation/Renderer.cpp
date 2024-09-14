@@ -20,7 +20,7 @@ const char* vertexShaderPath = "../BallSimulation/shader.vs";
 const char* fragmentShaderPath = "../BallSimulation/shader.fs";
 
 Renderer::Renderer(const Solver& solver)
-	: m_state(solver.getState()), m_ballTypes(m_state.ballTypes), m_shader(vertexShaderPath, fragmentShaderPath)
+	: m_ballTypes(solver.getBallTypes()), m_balls(solver.getBalls()), m_shader(vertexShaderPath, fragmentShaderPath)
 {
     // Reserve space for vertex data
     m_vao.reserve(m_ballTypes.size());
@@ -107,7 +107,6 @@ Renderer::~Renderer()
 
 void Renderer::Draw(GLFWwindow* window)
 {
-    const std::vector<ball>& balls = m_state.balls;
     int k = 0;
 
     // Update vertex data according to particle positions
@@ -119,7 +118,7 @@ void Renderer::Draw(GLFWwindow* window)
         // TO DO: See if this updating can be avoided by passing in positions directly
         for (int j = 0; j < m_ballTypes[i].count; j++)
         {
-            const vec2<float>& p = m_state.balls[k].position;
+            const vec2<float>& p = m_balls[k].position;
 
             // Bottom left of quad
             m_vertexData[i][4 * j + 0].position[0] = p.x - 1.1f * radius;

@@ -19,6 +19,7 @@
 #include "Window.h"
 #include "Solver.hpp"
 #include "BruteForceSolver.hpp"
+#include "PruneAndSweepSolver.hpp"
 
 int main()
 {
@@ -29,7 +30,7 @@ int main()
 
 	// Set simulation parameters
 
-	float dt = 0.002f;
+	float dt = 0.2f;
 
     balltype b1;
     b1.radius = 0.15f;
@@ -41,14 +42,14 @@ int main()
     balltype b2;
     b2.radius = 0.04f;
     b2.mass = 0.9f;
-    b2.count = 4;
+    b2.count = 50;
     b2.rgba = { 0.0f, 0.5f, 0.8f, 1.0f };
     b2.totalMomentum = { 0.0f, 0.0f };
 
     balltype b3;
     b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 10;
+    b3.count = 100;
     b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
     b3.totalMomentum = { 0.0f, 0.0f };
 

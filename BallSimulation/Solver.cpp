@@ -1,15 +1,66 @@
 #include "Solver.hpp"
 
+#include <random>
+#include <iostream>
+
 Solver::Solver(std::vector<balltype> ballTypes)
-	: m_state(ballTypes) {}
+	: m_ballTypes(ballTypes)
+{
+	// TO DO: Error checking (parameters within correct bounds, e.g. mass > 0)
+
+	// Initialise random number generators
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> posDistribution(-1.0f, 1.0f);
+
+	// Randomly populate position and velocity data in m_balls
+	for (unsigned int i = 0; i < ballTypes.size(); i++)
+	{
+		balltype& bt = ballTypes[i];
+
+		float x_meanVelocity = bt.totalMomentum.x / (bt.mass * (float)bt.count);
+		float y_meanVelocity = bt.totalMomentum.y / (bt.mass * (float)bt.count);
+
+		std::normal_distribution<float> x_velDistribution(x_meanVelocity, 1.0f);
+		std::normal_distribution<float> y_velDistribution(y_meanVelocity, 1.0f);
+
+		vec2<float> runningVelocity(0.0f, 0.0f);
+
+		for (unsigned int j = 0; j < bt.count; j++)
+		{
+			float xVel = x_velDistribution(gen);
+			float yVel = y_velDistribution(gen);
+			vec2<float> vel = { xVel, yVel };
+
+			float xPos = posDistribution(gen);
+			float yPos = posDistribution(gen);
+			vec2<float> pos = { xPos, yPos };
+
+			runningVelocity.x += xVel;
+			runningVelocity.y += yVel;
+
+			ball b;
+			b.position = pos;
+			b.velocity = vel;
+			b.typeindex = i;
+
+			m_balls.push_back(b);
+		}
+
+		// Adjust final velocity so that sum of velocities of balls of type bt is totalVelocity
+		m_balls.back().velocity += bt.totalMomentum / bt.mass - runningVelocity;
+
+	}
+}
 
 bool Solver::overlap(unsigned int i, unsigned int j)
 {
-	float r1 = m_state.getRadius(i);
-	float r2 = m_state.getRadius(j);
+	const ball b1 = m_balls[i];
+	const ball b2 = m_balls[j];
 
-	ball& b1 = m_state.balls[i];
-	ball& b2 = m_state.balls[j];
+	float r1 = m_ballTypes[b1.typeindex].radius;
+	float r2 = m_ballTypes[b2.typeindex].radius;
+
 
 	return distSquared(b1.position, b2.position) <= (r1 + r2) * (r1 + r2);
 }
@@ -17,14 +68,14 @@ bool Solver::overlap(unsigned int i, unsigned int j)
 
 void Solver::resolveCollision(unsigned int i, unsigned int j)
 {
-	ball& b1 = m_state.balls[i];
-	ball& b2 = m_state.balls[j];
+	ball& b1 = m_balls[i];
+	ball& b2 = m_balls[j];
 
-	float m1 = m_state.getMass(i);
-	float m2 = m_state.getMass(j);
+	float m1 = m_ballTypes[b1.typeindex].mass;
+	float m2 = m_ballTypes[b2.typeindex].mass;
 
-	float r1 = m_state.getRadius(i);
-	float r2 = m_state.getRadius(j);
+	float r1 = m_ballTypes[b1.typeindex].radius;
+	float r2 = m_ballTypes[b2.typeindex].radius;
 
 	// Update velocities according to collision physics
 
@@ -52,7 +103,7 @@ void Solver::update(float dt)
 
 	// Update positions
 
-	for (ball& b : m_state.balls)
+	for (ball& b : m_balls)
 	{
 		b.position += b.velocity * dt;
 

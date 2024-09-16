@@ -1,10 +1,10 @@
 
-#include "PruneAndSweepSolver.hpp"
+#include "PruneAndSweep2DSolver.hpp"
 
 #include <algorithm>
 #include <iostream>
 
-PruneAndSweepSolver::PruneAndSweepSolver(std::vector<balltype> ballTypes)
+PruneAndSweep2DSolver::PruneAndSweep2DSolver(std::vector<balltype> ballTypes)
 	: Solver(ballTypes)
 {
 	for (unsigned int i = 0; i < m_balls.size(); i++)
@@ -21,7 +21,7 @@ PruneAndSweepSolver::PruneAndSweepSolver(std::vector<balltype> ballTypes)
 	std::sort(m_xSorted.begin(), m_xSorted.end());
 	std::sort(m_ySorted.begin(), m_ySorted.end());
 
-	// Check for overlapping boxes
+	// Check for overlapping boxes without wrapping
 	for (unsigned int i = 0; i < m_balls.size(); i++)
 	{
 		ball b1 = m_balls[i];
@@ -31,14 +31,18 @@ PruneAndSweepSolver::PruneAndSweepSolver(std::vector<balltype> ballTypes)
 			ball b2 = m_balls[j];
 			float r2 = m_ballTypes[b2.typeindex].radius;
 
-			if      (b1.position.x - r1 > b2.position.x - r2 && b1.position.x - r1 < b2.position.x + r2 ||
-				     b2.position.x - r2 > b1.position.x - r1 && b2.position.x - r2 < b1.position.x + r1)
+			// Check x-overlap between balls i and j
+
+			if (b2.position.x - r2 < b1.position.x - r1 && b1.position.x - r1 < b2.position.x + r2 ||
+				b1.position.x - r1 < b2.position.x - r2 && b2.position.x - r2 < b1.position.x + r1)
 			{
 				m_overlapCounts[{i, j}]++;
 			}
 
-			if (b1.position.y - r1 > b2.position.y - r2 && b1.position.y - r1 < b2.position.y + r2 ||
-				b2.position.y - r2 > b1.position.y - r1 && b2.position.y - r2 < b1.position.y + r1)
+			// Check y-overlap between balls i and j
+
+			if (b2.position.y - r2 < b1.position.y - r1 && b1.position.y - r1 < b2.position.y + r2 ||
+				b1.position.y - r1 < b2.position.y - r2 && b2.position.y - r2 < b1.position.y + r1)
 			{
 				m_overlapCounts[{i, j}]++;
 				if (m_overlapCounts[{i, j}] == 2)
@@ -51,7 +55,7 @@ PruneAndSweepSolver::PruneAndSweepSolver(std::vector<balltype> ballTypes)
 	wrapPositions(m_ySorted);
 }
 
-void PruneAndSweepSolver::solve()
+void PruneAndSweep2DSolver::solve()
 {
 	sortAndTrack(m_xSorted, 0, m_xSorted.size());
 	sortAndTrack(m_ySorted, 0, m_ySorted.size());
@@ -62,7 +66,6 @@ void PruneAndSweepSolver::solve()
 	// TO DO: incorporate this into wrap positions
 	sortAndTrack(m_xSorted, 0, m_xSorted.size());
 	sortAndTrack(m_ySorted, 0, m_ySorted.size());
-
 
 	for (auto& p : m_overlaps)
 	{
@@ -75,7 +78,7 @@ void PruneAndSweepSolver::solve()
 
 // Deal with case where endpoints go beyond boundaries
 
-void PruneAndSweepSolver::wrapPositions(std::deque<endpoint>& sorted)
+void PruneAndSweep2DSolver::wrapPositions(std::deque<endpoint>& sorted)
 {
 	std::vector<endpoint> lefts;
 	std::vector<endpoint> rights;
@@ -118,14 +121,12 @@ void PruneAndSweepSolver::wrapPositions(std::deque<endpoint>& sorted)
 			if (x.lr == 'l' && y.lr == 'r')
 			{
 				m_overlapCounts[p]++;
-				std::cout << m_overlapCounts[p];
 				if (m_overlapCounts[p] == 2)
 					m_overlaps.insert(p);
 			}
 			else if (x.lr == 'r' && y.lr == 'l')
 			{
 				m_overlapCounts[p]--;
-				std::cout << m_overlapCounts[p];
 				m_overlaps.erase(p);
 			}
 		}
@@ -136,7 +137,7 @@ void PruneAndSweepSolver::wrapPositions(std::deque<endpoint>& sorted)
 		sorted.push_back(lefts[i]);
 	}
 
-	for (int i = rights.size() - 1; i >= 0; i--)
+	for (int i = 0; i < rights.size(); i++)
 	{
 		sorted.push_front(rights[i]);
 	}
@@ -144,7 +145,7 @@ void PruneAndSweepSolver::wrapPositions(std::deque<endpoint>& sorted)
 
 // Sort unsorted between indices [l,r), and track overlaps
 
-void PruneAndSweepSolver::sortAndTrack(std::deque<endpoint>& unsorted, unsigned int l, unsigned int r)
+void PruneAndSweep2DSolver::sortAndTrack(std::deque<endpoint>& unsorted, unsigned int l, unsigned int r)
 {
 	for (unsigned int i = l+1; i < r; i++)
 	{
@@ -157,7 +158,7 @@ void PruneAndSweepSolver::sortAndTrack(std::deque<endpoint>& unsorted, unsigned 
 				if (unsorted[j].ind < unsorted[j-1].ind)
 					p = std::make_pair(unsorted[j].ind, unsorted[j - 1].ind);
 				else
-					p = std::make_pair(unsorted[j-1].ind, unsorted[j].ind);
+					p = std::make_pair(unsorted[j - 1].ind, unsorted[j].ind);
 
 				if (unsorted[j - 1].lr == 'l' && unsorted[j].lr == 'r')
 				{
@@ -178,7 +179,7 @@ void PruneAndSweepSolver::sortAndTrack(std::deque<endpoint>& unsorted, unsigned 
 	}
 }
 
-void PruneAndSweepSolver::update(float dt)
+void PruneAndSweep2DSolver::update(float dt)
 {
 	// Update positions in m_balls using base class updater
 

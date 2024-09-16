@@ -25,8 +25,7 @@ protected:
 	std::vector<balltype> m_ballTypes;
 	std::vector<ball> m_balls;
 
-	bool          overlap(unsigned int i, unsigned int j); // Test whether balls at indices i, j overlap
+	virtual bool overlap(unsigned int i, unsigned int j);  // Test whether balls at indices i, j overlap
 	void resolveCollision(unsigned int i, unsigned int j); // Resolve collision between i, j
-
 	virtual void solve() = 0;                              // Check collisions and update velocities
 };

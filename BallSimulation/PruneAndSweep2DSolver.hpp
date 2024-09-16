@@ -31,10 +31,10 @@ struct std::hash<std::pair<unsigned int, unsigned int>>
 };
 
 
-class PruneAndSweepSolver : public Solver
+class PruneAndSweep2DSolver : public Solver
 {
 public:
-	PruneAndSweepSolver(std::vector<balltype> ballTypes);
+	PruneAndSweep2DSolver(std::vector<balltype> ballTypes);
 	void solve() override;
 	void update(float dt) override;
 

@@ -14,12 +14,12 @@
 
 #include "vec2.h"
 #include "balltype.hpp"
-#include "Simulation.h"
 #include "Renderer.h"
 #include "Window.h"
 #include "Solver.hpp"
 #include "BruteForceSolver.hpp"
-#include "PruneAndSweepSolver.hpp"
+#include "PruneAndSweep1DSolver.hpp"
+#include "PruneAndSweep2DSolver.hpp"
 
 int main()
 {
@@ -30,31 +30,31 @@ int main()
 
 	// Set simulation parameters
 
-	float dt = 0.2f;
+	float dt = 0.002f;
 
     balltype b1;
     b1.radius = 0.15f;
-    b1.mass = 6.4f;
-    b1.count = 4;
+    b1.mass = 4.4f;
+    b1.count = 1;
     b1.rgba = { 1.0f, 0.5f, 0.2f, 1.0f };
-    b1.totalMomentum = { 0.0f, 0.0f };
+    b1.totalMomentum = { -100.0f, 0.0f };
 
     balltype b2;
     b2.radius = 0.04f;
     b2.mass = 0.9f;
-    b2.count = 50;
+    b2.count = 40;
     b2.rgba = { 0.0f, 0.5f, 0.8f, 1.0f };
     b2.totalMomentum = { 0.0f, 0.0f };
 
     balltype b3;
     b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 100;
+    b3.count = 5000;
     b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
     b3.totalMomentum = { 0.0f, 0.0f };
 
 	// Initialise simulation and renderer
-    BruteForceSolver solver({b1, b2});
+    PruneAndSweep1DSolver solver({b1, b3});
     Renderer renderer(solver);
 
     float lastTime = 0.0f;

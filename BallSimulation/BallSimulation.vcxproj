@@ -147,12 +147,11 @@
   <ItemGroup>
     <ClCompile Include="BruteForceSolver.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="PruneAndSweepSolver.cpp" />
+    <ClCompile Include="PruneAndSweep1DSolver.cpp" />
+    <ClCompile Include="PruneAndSweep2DSolver.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="Solver.cpp" />
-    <ClCompile Include="State.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,12 +161,11 @@
     <ClInclude Include="GLVertex.h" />
     <ClInclude Include="GLDebug.h" />
     <ClInclude Include="lineSweepData.h" />
-    <ClInclude Include="PruneAndSweepSolver.hpp" />
+    <ClInclude Include="PruneAndSweep1DSolver.hpp" />
+    <ClInclude Include="PruneAndSweep2DSolver.hpp" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="Simulation.h" />
     <ClInclude Include="Solver.hpp" />
-    <ClInclude Include="State.hpp" />
     <ClInclude Include="vec2.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

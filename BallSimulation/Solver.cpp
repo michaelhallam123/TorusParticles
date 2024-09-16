@@ -8,6 +8,9 @@ Solver::Solver(std::vector<balltype> ballTypes)
 {
 	// TO DO: Error checking (parameters within correct bounds, e.g. mass > 0)
 
+	// Sort ball types by decreasing radius
+	std::sort(m_ballTypes.begin(), m_ballTypes.end(), sortByRadiusDecreasing);
+
 	// Initialise random number generators
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -90,9 +93,10 @@ void Solver::resolveCollision(unsigned int i, unsigned int j)
 
 	// Dislodge balls to prevent sticking
 
-	float dislodgeFactor = 0.5f * (r1 + r2) / std::sqrt(deltaPos.dot(deltaPos)) - 0.5f;
-	b1.position.Add(deltaPos * dislodgeFactor);
-	b2.position.Subtract(deltaPos * dislodgeFactor);
+	float dislodgeFactor1 = r2 / std::sqrt(deltaPos.dot(deltaPos)) - r2/(r1+r2);
+	float dislodgeFactor2 = r1 / std::sqrt(deltaPos.dot(deltaPos)) - r1/(r1+r2);
+	b1.position.Add(deltaPos * dislodgeFactor1);
+	b2.position.Subtract(deltaPos * dislodgeFactor2);
 }
 
 void Solver::update(float dt)

@@ -160,9 +160,10 @@
     <ClInclude Include="BruteForceSolver.hpp" />
     <ClInclude Include="GLVertex.h" />
     <ClInclude Include="GLDebug.h" />
-    <ClInclude Include="lineSweepData.h" />
+    <ClInclude Include="endpoints.hpp" />
     <ClInclude Include="PruneAndSweep1DSolver.hpp" />
     <ClInclude Include="PruneAndSweep2DSolver.hpp" />
+    <ClInclude Include="queue.hpp" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Solver.hpp" />

@@ -62,7 +62,7 @@
     <ClInclude Include="GLDebug.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="lineSweepData.h">
+    <ClInclude Include="endpoints.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ball.hpp">
@@ -78,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="PruneAndSweep1DSolver.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="queue.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

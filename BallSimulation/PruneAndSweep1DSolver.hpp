@@ -2,7 +2,8 @@
 
 #include "Solver.hpp"
 #include "balltype.hpp"
-#include "lineSweepData.h"
+#include "endpoints.hpp"
+#include "queue.hpp"
 
 #include <vector>
 
@@ -14,11 +15,12 @@ public:
 	void update(float dt) override;
 
 private:
-	std::vector<std::vector<lineSweepData>> m_sweepQueues;
-	std::vector<unsigned int>               m_sweepQueuesStarts;
-	std::vector<lineSweepData>              m_leftSortedBalls;
-	std::vector<lineSweepData>              m_rightSortedBalls;
+	std::vector<queue<endpoints>>       m_sweepQueues; // Custom queue implementation in queue.hpp
+	std::vector<std::vector<endpoints>> m_sweepStacks;
+	std::vector<endpoints>              m_leftSortedEnds;
+	std::vector<endpoints>              m_rightSortedEnds;
 
-	void insertionSortLeft();
-	void insertionSortRight();
+	void insertionSort();
+
+	void clearQueues();
 };

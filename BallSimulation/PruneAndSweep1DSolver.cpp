@@ -6,69 +6,65 @@
 PruneAndSweep1DSolver::PruneAndSweep1DSolver(std::vector<balltype> ballTypes)
 	: Solver(ballTypes)
 {
-	// Initialise m_leftSortedBalls to implement line sweep algorithm
+	// Initialise and sort m_leftSortedEnds and m_rightSortedEnds
+
 	for (unsigned int i = 0; i < m_balls.size(); i++)
 	{
 		const ball& b = m_balls[i];
 		float r = m_ballTypes[b.typeindex].radius;
 
-		lineSweepData data;
+		endpoints e;
 
-		data.left  = b.position.x - r;
-		data.right = b.position.x + r;
-		data.ind   = i;
+		e.left  = b.position.x - r;
+		e.right = b.position.x + r;
+		e.ind   = i;
 
-		m_leftSortedBalls.push_back(data);
-		m_rightSortedBalls.push_back(data);
+		m_leftSortedEnds.push_back(e);
+		m_rightSortedEnds.push_back(e);
 	}
 
-	std::sort(m_leftSortedBalls.begin(),  m_leftSortedBalls.end(),  leftComparison);
-	std::sort(m_rightSortedBalls.begin(), m_rightSortedBalls.end(), rightComparison);
+	std::sort(m_leftSortedEnds.begin(),  m_leftSortedEnds.end(),  leftComparison);
+	std::sort(m_rightSortedEnds.begin(), m_rightSortedEnds.end(), rightComparison);
 
-	// Initialise sweep queues
+	// Initialise empty sweep queues and stacks (one for each balltype)
 
 	for (int i = 0; i < m_ballTypes.size(); i++)
 	{
 		m_sweepQueues.push_back({});
 		m_sweepQueues.back().reserve(m_ballTypes[i].count);
-		m_sweepQueuesStarts.push_back(0);
+
+		m_sweepStacks.push_back({});
+		m_sweepStacks.back().reserve(m_ballTypes[i].count);
 	}
 }
 
 
 void PruneAndSweep1DSolver::solve()
 {
-	insertionSortLeft();
-	insertionSortRight();
+	// Insertion sort m_leftSortedEnds and m_rightSorted balls
+	// By temporal coherence (i.e. balls moving very little between frames), sorting time is roughly O(n)
+	insertionSort();
 
 	const vec2<float>  leftTranslate(-2.0f, 0.0f);
 	const vec2<float> rightTranslate( 2.0f, 0.0f);
 
 	const std::vector<vec2<float>> verticalTranslates = { {0.0f, -2.0f}, {0.0f, 0.0f}, {0.0f, 2.0f} };
 
-	for (int i = 0; i < m_sweepQueues.size(); i++)
-	{
-		m_sweepQueues[i].clear();
-		m_sweepQueuesStarts[i] = 0;
-	}
+	clearQueues();
 
 	// First sweep (bulk of calculations, excluding left and right overlaps)
 
-	for (auto& b1 : m_leftSortedBalls)
+	for (endpoints& b1 : m_leftSortedEnds)
 	{
 		const unsigned int& i1 = b1.ind;
-		for (int i = 0; i < m_sweepQueues.size(); i++)
+		for (queue<endpoints>& q : m_sweepQueues)
 		{
-			auto& q = m_sweepQueues[i];
-			unsigned int& start = m_sweepQueuesStarts[i];
 
-			while (start < q.size() && (b1.left > q[start].right))
-				start++;
+			while (!q.empty() && (b1.left > q.front().right))
+				q.pop();
 
-			for (int j = start; j < q.size(); j++)
+			for (endpoints& b2 : q)
 			{
-				auto& b2 = q[j];
-
 				const unsigned int& i2 = b2.ind;
 
 				for (vec2<float> translate : verticalTranslates)
@@ -80,19 +76,18 @@ void PruneAndSweep1DSolver::solve()
 					}
 					m_balls[i1].position.Subtract(translate);
 				}
-				
 			}
 		}
-		m_sweepQueues[m_balls[b1.ind].typeindex].push_back(b1);
+		m_sweepQueues[m_balls[b1.ind].typeindex].push(b1);
 	}
 
 	// Second sweep (deal with overlaps on right-hand side and all balls on left-hand side)
 	// Note right hand overlaps are already stored in the queues after the first sweep
 
-	float leftEnd = m_leftSortedBalls[0].left;    // potentially less than -1.0f
-	float rightEnd = m_rightSortedBalls[0].right; // potentially greater than 1.0f
+	float leftEnd = m_leftSortedEnds[0].left;    // potentially less than -1.0f
+	float rightEnd = m_rightSortedEnds[0].right; // potentially greater than 1.0f
 
-	for (auto& b1 : m_leftSortedBalls)
+	for (endpoints& b1 : m_leftSortedEnds)
 	{
 		if (b1.left >= rightEnd - 2.0f)
 			break;
@@ -100,19 +95,15 @@ void PruneAndSweep1DSolver::solve()
 		const unsigned int& i1 = b1.ind;
 
 		m_balls[i1].position.Add(rightTranslate);
-		b1.left += 2.0f;
 
-		for (int i = 0; i < m_sweepQueues.size(); i++)
+		for (queue<endpoints>& q : m_sweepQueues)
 		{
-			auto& q = m_sweepQueues[i];
-			unsigned int& start = m_sweepQueuesStarts[i];
 
-			while (start < q.size() && (b1.left > q[start].right))
-				start++;
+			while (!q.empty() && (b1.left + 2.0f > q.front().right))
+				q.pop();
 
-			for (int j = start; j < q.size(); j++)
+			for (endpoints& b2 : q)
 			{
-				auto& b2 = q[j];
 				const unsigned int& i2 = b2.ind;
 				for (vec2<float> translate : verticalTranslates)
 				{
@@ -130,110 +121,143 @@ void PruneAndSweep1DSolver::solve()
 			}
 		}
 		m_balls[i1].position.Subtract(rightTranslate);
-		b1.left -= 2.0f;
 	}
 
-	// Third sweep (deal with overlaps on left-hand side and non-overlaps on right-hand side)
+	// Third and final sweep (deal with overlaps on left-hand side and non-overlaps on right-hand side)
 	// Queues are empty at this point
 
 	// Find balls on right-hand side that do not cross boundary, but may overlap with left overlaps
 
-	static int i = 0;
-	while (i > 0 && m_rightSortedBalls[i].right < 1.0f)
-		i--;
-	while (m_rightSortedBalls[i].right >= 1.0f)
-		i++;
-
-	static int j = i + 1;
-	std::cout << j << std::endl;
-	while (m_rightSortedBalls[j].right < leftEnd + 2.0f)
-		j--;
-	while (m_rightSortedBalls[j].right >= leftEnd + 2.0f)
-		j++;
-
-	for (auto& b1 : m_leftSortedBalls)
+	for (endpoints& b : m_leftSortedEnds)
 	{
-		if (b1.left >= 0.0f)
+		if (b.left >= 0)
 			break;
 
+		// Shift ball to the right
+		m_balls[b.ind].position.Add(rightTranslate);
+
+		// Add ball to queue
+		m_sweepStacks[m_balls[b.ind].typeindex].push_back(b);
+	}
+
+	int startind = 0;
+
+	while (startind < m_rightSortedEnds.size() && m_rightSortedEnds[startind].right > 1.0f)
+		startind++;
+
+	for (int i = startind; i < m_rightSortedEnds.size(); i++)
+	{
+		if (m_rightSortedEnds[i].right < leftEnd + 2.0f)
+			break;
+
+		endpoints& b1 = m_rightSortedEnds[i];
 		const unsigned int& i1 = b1.ind;
 
-		m_balls[i1].position.Add(rightTranslate);
-
-		for (int k = i; k < j; k++)
+		for (std::vector<endpoints>& s : m_sweepStacks)
 		{
-			auto& b2 = m_rightSortedBalls[k];
 
-			const unsigned int& i2 = b2.ind;
-
-			for (vec2<float> translate : verticalTranslates)
+			while (!s.empty() && (b1.right - 2.0f < s.back().left))
 			{
-				m_balls[i1].position.Add(translate);
-				if (overlap(i1, i2))
+				// Return shifted ball to original position
+				int ind = s.back().ind;
+				m_balls[ind].position.Subtract(rightTranslate);
+
+				s.pop_back();
+			}
+
+			for (endpoints& b2 : s)
+			{
+				const unsigned int& i2 = b2.ind;
+
+				for (vec2<float> translate : verticalTranslates)
 				{
-					resolveCollision(i1, i2);
+					m_balls[i1].position.Add(translate);
+					if (overlap(i1, i2))
+					{
+						resolveCollision(i1, i2);
+
+						m_balls[i1].position.Subtract(translate);
+
+						break;
+					}
+					m_balls[i1].position.Subtract(translate);
 				}
-				m_balls[i1].position.Subtract(translate);
 			}
 		}
+	}
 
-		m_balls[i1].position.Subtract(rightTranslate);
+	// Return shifted balls to original position
+	for (std::vector<endpoints>& s : m_sweepStacks)
+	{
+		while (!s.empty())
+		{
+			m_balls[s.back().ind].position.Subtract(rightTranslate);
+			s.pop_back();
+		}
 	}
 }
+
 
 void PruneAndSweep1DSolver::update(float dt)
 {
-	//Update positions
+	// Update positions in m_balls
 
 	Solver::update(dt);
 
-	for (auto& b : m_leftSortedBalls)
+	// Update positions in m_leftSortedEnds and m_rightSortedEnds
+
+	for (endpoints& e : m_leftSortedEnds)
 	{
-		int i = b.ind;
+		ball        & b = m_balls[e.ind];
+		vec2<float> & p = b.position;
 
-		vec2<float>& p = m_balls[i].position;
-
-		b.left = p.x - m_ballTypes[m_balls[i].typeindex].radius;
-		b.right = p.x + m_ballTypes[m_balls[i].typeindex].radius;
-
+		e.left  = p.x - m_ballTypes[b.typeindex].radius;
+		e.right = p.x + m_ballTypes[b.typeindex].radius;
 	}
 
-	for (auto& b : m_rightSortedBalls)
+	for (endpoints& e : m_rightSortedEnds)
 	{
-		int i = b.ind;
+		ball        & b = m_balls[e.ind];
+		vec2<float> & p = b.position;
 
-		vec2<float>& p = m_balls[i].position;
-
-		b.left = p.x - m_ballTypes[m_balls[i].typeindex].radius;
-		b.right = p.x + m_ballTypes[m_balls[i].typeindex].radius;
+		e.left  = p.x - m_ballTypes[b.typeindex].radius;
+		e.right = p.x + m_ballTypes[b.typeindex].radius;
 	}
-
 }
 
-void PruneAndSweep1DSolver::insertionSortLeft()
+void PruneAndSweep1DSolver::insertionSort()
 {
-	for (int i = 1; i < m_leftSortedBalls.size(); i++)
+	// Insertion sort m_leftSortedEnds
+
+	for (int i = 1; i < m_leftSortedEnds.size(); i++)
 	{
 		int j = i - 1;
 
-		while (j >= 0 && m_leftSortedBalls[j].left > m_leftSortedBalls[j + 1].left)
+		while (j >= 0 && m_leftSortedEnds[j].left > m_leftSortedEnds[j + 1].left)
 		{
-			std::swap(m_leftSortedBalls[j], m_leftSortedBalls[j + 1]);
+			std::swap(m_leftSortedEnds[j], m_leftSortedEnds[j + 1]);
+			j--;
+		}
+	}
+
+	// Insertion sort m_rightSortedEnds
+
+	for (int i = 1; i < m_rightSortedEnds.size(); i++)
+	{
+		int j = i - 1;
+
+		while (j >= 0 && m_rightSortedEnds[j].right < m_rightSortedEnds[j + 1].right)
+		{
+			std::swap(m_rightSortedEnds[j], m_rightSortedEnds[j + 1]);
 			j--;
 		}
 	}
 }
 
-void PruneAndSweep1DSolver::insertionSortRight()
+void PruneAndSweep1DSolver::clearQueues()
 {
-	for (int i = 1; i < m_rightSortedBalls.size(); i++)
+	for (queue<endpoints>& q : m_sweepQueues)
 	{
-		int j = i - 1;
-
-		while (j >= 0 && m_rightSortedBalls[j].right < m_rightSortedBalls[j + 1].right)
-		{
-			std::swap(m_rightSortedBalls[j], m_rightSortedBalls[j + 1]);
-			j--;
-		}
+		q.clear();
 	}
 }

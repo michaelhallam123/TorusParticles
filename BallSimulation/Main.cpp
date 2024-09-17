@@ -49,12 +49,12 @@ int main()
     balltype b3;
     b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 5000;
+    b3.count = 11000;
     b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
     b3.totalMomentum = { 0.0f, 0.0f };
 
 	// Initialise simulation and renderer
-    PruneAndSweep1DSolver solver({b1, b3});
+    PruneAndSweep1DSolver solver({b3});
     Renderer renderer(solver);
 
     float lastTime = 0.0f;

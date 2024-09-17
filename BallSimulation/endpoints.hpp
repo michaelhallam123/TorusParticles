@@ -1,7 +1,7 @@
 #pragma once
 
 // Struct containing data required to implement the line sweep algorithm
-struct lineSweepData
+struct endpoints
 {
 	float left;       // Leftmost endpoint of the ball
 	float right;      // Rightmost endpoint of the ball
@@ -11,12 +11,12 @@ struct lineSweepData
 // Custom comparators for lineSweepData
 struct
 {
-	bool operator()(const lineSweepData& a, const lineSweepData& b) const { return a.left < b.left; }
+	bool operator()(const endpoints& a, const endpoints& b) const { return a.left < b.left; }
 }
 leftComparison;
 
 struct
 {
-	bool operator()(const lineSweepData& a, const lineSweepData& b) const { return a.right > b.right; }
+	bool operator()(const endpoints& a, const endpoints& b) const { return a.right > b.right; }
 }
 rightComparison;

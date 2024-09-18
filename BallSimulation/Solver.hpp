@@ -8,7 +8,7 @@
 
 // List of derived classes:
 	// BruteForceSolver
-	// PruneAndSweepSolver
+	// PruneAndSweep1DSolver
 
 class Solver
 {
@@ -28,4 +28,11 @@ protected:
 	virtual bool overlap(unsigned int i, unsigned int j);  // Test whether balls at indices i, j overlap
 	void resolveCollision(unsigned int i, unsigned int j); // Resolve collision between i, j
 	virtual void solve() = 0;                              // Check collisions and update velocities
+
+	float xWorldMin = -1.0f;
+	float xWorldMax =  1.0f;
+	float yWorldMin = -1.0f;
+	float yWorldMax =  1.0f;
+	float xWorldWidth = 2.0f;
+	float yWorldWidth = 2.0f;
 };

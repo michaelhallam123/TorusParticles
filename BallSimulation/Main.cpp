@@ -37,7 +37,8 @@ int main()
     b1.mass = 4.4f;
     b1.count = 1;
     b1.rgba = { 1.0f, 0.5f, 0.2f, 1.0f };
-    b1.totalMomentum = { -100.0f, 0.0f };
+    b1.totalMomentum = { 0.0f, 0.0f };
+    b1.wrapTexture = true;
 
     balltype b2;
     b2.radius = 0.04f;
@@ -45,16 +46,18 @@ int main()
     b2.count = 40;
     b2.rgba = { 0.0f, 0.5f, 0.8f, 1.0f };
     b2.totalMomentum = { 0.0f, 0.0f };
+    b2.wrapTexture = true;
 
     balltype b3;
     b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 11000;
+    b3.count = 7000;
     b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
-    b3.totalMomentum = { 0.0f, 0.0f };
+    b3.totalMomentum = { -200.0f, 0.0f };
+    b3.wrapTexture = false;
 
 	// Initialise simulation and renderer
-    PruneAndSweep1DSolver solver({b3});
+    PruneAndSweep1DSolver solver({b1, b2, b3});
     Renderer renderer(solver);
 
     float lastTime = 0.0f;

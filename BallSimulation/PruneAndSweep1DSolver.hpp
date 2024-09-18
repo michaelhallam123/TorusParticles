@@ -4,8 +4,12 @@
 #include "balltype.hpp"
 #include "endpoints.hpp"
 #include "queue.hpp"
-
 #include <vector>
+
+/*
+ * A subclass of Solver implementing a 1-dimensional prune and sweep algorithm
+ * to detect collisions between balls.
+ */
 
 class PruneAndSweep1DSolver : public Solver
 {
@@ -20,7 +24,9 @@ private:
 	std::vector<endpoints>              m_leftSortedEnds;
 	std::vector<endpoints>              m_rightSortedEnds;
 
-	void insertionSort();
+	void insertionSortEnds();
 
 	void clearQueues();
+
+	void checkCollision(endpoints& e1, endpoints& e2);
 };

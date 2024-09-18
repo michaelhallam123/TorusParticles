@@ -10,9 +10,9 @@ void BruteForceSolver::solve()
  */
 {
 
-	std::vector<vec2<float>> displacements = { { -xWorldWidth, -yWorldWidth }, {  0.0f, -yWorldWidth }, {  xWorldWidth, -yWorldWidth },
-											   { -xWorldWidth,  0.0f        }, {  0.0f,  0.0f        }, {  xWorldWidth,  0.0f        },
-											   { -xWorldWidth,  yWorldWidth }, {  0.0f,  yWorldWidth }, {  xWorldWidth,  yWorldWidth } };
+	std::vector<vec2<float>> displacements = { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
+											   { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
+											   { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
 
 	for (unsigned int i = 0; i < m_balls.size(); i++)
 	{

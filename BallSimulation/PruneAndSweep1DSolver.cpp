@@ -78,10 +78,10 @@ void PruneAndSweep1DSolver::solve()
 
 	// Second sweep: deal with balls crossing right-hand boundary
 
-	const vec2<float> rightTranslate(xWorldWidth, 0.0f);
+	const vec2<float> rightTranslate(m_world.xWidth, 0.0f);
 
-	float leftEnd  = m_leftSortedEnds[0].left   + xWorldWidth; // Left-most overlapping endpoint
-	float rightEnd = m_rightSortedEnds[0].right - xWorldWidth; // Right-most overlapping endpoint
+	float leftEnd  = m_leftSortedEnds[0].left   + m_world.xWidth; // Left-most overlapping endpoint
+	float rightEnd = m_rightSortedEnds[0].right - m_world.xWidth; // Right-most overlapping endpoint
 
 	for (endpoints& e1 : m_leftSortedEnds)
 	{
@@ -92,7 +92,7 @@ void PruneAndSweep1DSolver::solve()
 
 		for (queue<endpoints>& q : m_sweepQueues)
 		{
-			while (!q.empty() && (e1.left + xWorldWidth > q.front().right))
+			while (!q.empty() && (e1.left + m_world.xWidth > q.front().right))
 				q.pop();
 
 			for (endpoints& e2 : q)
@@ -107,7 +107,7 @@ void PruneAndSweep1DSolver::solve()
 
 	for (endpoints& e : m_leftSortedEnds)
 	{
-		if (e.left >= 0)
+		if (e.left >= m_world.xMin)
 			break;
 
 		m_balls[e.ind].position.Add(rightTranslate);
@@ -116,7 +116,7 @@ void PruneAndSweep1DSolver::solve()
 
 	int startind = 0;
 
-	while (startind < m_rightSortedEnds.size() && m_rightSortedEnds[startind].right > xWorldMax)
+	while (startind < m_rightSortedEnds.size() && m_rightSortedEnds[startind].right > m_world.xMax)
 		startind++;
 
 	for (int i = startind; i < m_rightSortedEnds.size(); i++)
@@ -130,7 +130,7 @@ void PruneAndSweep1DSolver::solve()
 		for (std::vector<endpoints>& s : m_sweepStacks)
 		{
 
-			while (!s.empty() && (e1.right - xWorldWidth < s.back().left))
+			while (!s.empty() && (e1.right - m_world.xWidth < s.back().left))
 			{
 				m_balls[s.back().ind].position.Subtract(rightTranslate);
 				s.pop_back();
@@ -161,7 +161,9 @@ void PruneAndSweep1DSolver::checkCollision(endpoints& e1, endpoints& e2)
  * If a collision is detected, update velocities using resolveCollision
  */
 {
-	static const std::vector<vec2<float>> verticalTranslates = { {0.0f, -yWorldWidth}, {0.0f, 0.0f}, {0.0f,yWorldWidth} };
+	static const std::vector<vec2<float>> verticalTranslates = { {0.0f, -m_world.yWidth}, 
+		                                                         {0.0f,  0.0f          }, 
+		                                                         {0.0f,  m_world.yWidth} };
 
 	const unsigned int& i1 = e1.ind;
 	const unsigned int& i2 = e2.ind;

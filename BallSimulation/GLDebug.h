@@ -5,7 +5,8 @@
 #include "GLFW/glfw3.h"
 
 #define ASSERT(x) if (!(x)) __debugbreak();
-#define GLCall(x) GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__));
+//#define GLCall(x) GLClearError(); x; ASSERT(GLLogCall(#x, __FILE__, __LINE__));
+#define GLCall(x) x
 
 void GLClearError()
 {

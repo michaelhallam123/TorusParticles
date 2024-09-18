@@ -3,8 +3,9 @@
 #include <vector>
 #include "ball.hpp"
 #include "balltype.hpp"
+#include "World.hpp"
 
-// Note: solver is a pure virtual class, so must be constructed via a derived class
+// Abstract Solver class
 
 // List of derived classes:
 	// BruteForceSolver
@@ -17,6 +18,7 @@ public:
 
 	const std::vector<balltype>& getBallTypes() const { return m_ballTypes; }
 	const std::vector<ball>&     getBalls()     const { return m_balls; }
+	const World&                 getWorld()     const { return m_world; }
 
 protected:
 
@@ -29,10 +31,5 @@ protected:
 	void resolveCollision(unsigned int i, unsigned int j); // Resolve collision between i, j
 	virtual void solve() = 0;                              // Check collisions and update velocities
 
-	float xWorldMin = -1.0f;
-	float xWorldMax =  1.0f;
-	float yWorldMin = -1.0f;
-	float yWorldMax =  1.0f;
-	float xWorldWidth = 2.0f;
-	float yWorldWidth = 2.0f;
+	World m_world;
 };

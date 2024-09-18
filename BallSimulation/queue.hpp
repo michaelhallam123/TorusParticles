@@ -2,6 +2,7 @@
 
 // Implementation of queue exploiting contiguous memory for speed
 // Assumes the queue will not grow indefinitely, rather will be reset before it gets too big
+// Used in sweep and prune algorithm
 
 template <typename queue>
 class queueIterator
@@ -109,7 +110,7 @@ public:
 		start = 0;
 	}
 
-	// Iterator methods:
+	// Iterator methods
 
 	Iterator begin()
 	{

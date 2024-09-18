@@ -3,7 +3,6 @@
     // Also antialiasing still looks somewhat jagged
     // Allow for screen resizing
     // Separate physics from framerate (!)
-    // Make circles loop smoothly from one side of the screen to the opposite (probably much easier using shader)
     // Add gui for easier control of parameters
     // Speed up simulation using multithreading
     // Add pause and step through simulation functionality
@@ -15,19 +14,12 @@
 #include "vec2.h"
 #include "balltype.hpp"
 #include "Renderer.h"
-#include "Window.h"
 #include "Solver.hpp"
 #include "BruteForceSolver.hpp"
 #include "PruneAndSweep1DSolver.hpp"
-#include "PruneAndSweep2DSolver.hpp"
 
 int main()
 {
-    // Create window
-
-    int resolution = 860;
-    Window window(resolution);
-
 	// Set simulation parameters
 
 	float dt = 0.002f;
@@ -37,7 +29,8 @@ int main()
     b1.mass = 4.4f;
     b1.count = 1;
     b1.rgba = { 1.0f, 0.5f, 0.2f, 1.0f };
-    b1.totalMomentum = { -100.0f, 0.0f };
+    b1.totalMomentum = { 0.0f, 0.0f };
+    b1.wrapTexture = true;
 
     balltype b2;
     b2.radius = 0.04f;
@@ -45,32 +38,34 @@ int main()
     b2.count = 40;
     b2.rgba = { 0.0f, 0.5f, 0.8f, 1.0f };
     b2.totalMomentum = { 0.0f, 0.0f };
+    b2.wrapTexture = true;
 
     balltype b3;
     b3.radius = 0.005f;
     b3.mass = 0.1f;
-    b3.count = 11000;
-    b3.rgba = { 1.0f, 0.5f, 0.8f, 1.0f };
-    b3.totalMomentum = { 0.0f, 0.0f };
+    b3.count = 7000;
+    b3.rgba = { 0.0f, 0.0f, 0.0f, 1.0f };
+    b3.totalMomentum = { -200.0f, 0.0f };
+    b3.wrapTexture = false;
 
-	// Initialise simulation and renderer
-    PruneAndSweep1DSolver solver({b3});
-    Renderer renderer(solver);
+	// Initialise simulation
+    PruneAndSweep1DSolver solver({b1, b2, b3});
+
+    // Initialise renderer
+    unsigned int resolution = 860;
+    Renderer renderer(solver, resolution);
 
     float lastTime = 0.0f;
 
 	// Run simulation
-    while (window.isOpen())
+    while (renderer.windowOpen())
     {
         float time = glfwGetTime();
         float timeStep = time - lastTime;
         lastTime = time;
 
         // Draw simulation to window
-        renderer.Draw(window.getID());
-
-        // Update window events, swap buffers
-        window.update();
+        renderer.Draw();
 
         // Update physics simulation
         solver.update(dt);

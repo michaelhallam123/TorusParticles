@@ -1,6 +1,6 @@
 #pragma once
 
-// Struct containing data required to implement the line sweep algorithm
+// Struct containing data required to implement the sweep and prune algorithm
 struct endpoints
 {
 	float left;       // Leftmost endpoint of the ball
@@ -13,10 +13,10 @@ struct
 {
 	bool operator()(const endpoints& a, const endpoints& b) const { return a.left < b.left; }
 }
-leftComparison;
+leftEndsIncreasing;
 
 struct
 {
 	bool operator()(const endpoints& a, const endpoints& b) const { return a.right > b.right; }
 }
-rightComparison;
+rightEndsDecreasing;

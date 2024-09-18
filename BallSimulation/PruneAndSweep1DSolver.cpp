@@ -1,6 +1,4 @@
 #include "PruneAndSweep1DSolver.hpp"
-#include "ball.hpp"
-
 #include <algorithm>
 
 PruneAndSweep1DSolver::PruneAndSweep1DSolver(std::vector<balltype> ballTypes)
@@ -23,10 +21,10 @@ PruneAndSweep1DSolver::PruneAndSweep1DSolver(std::vector<balltype> ballTypes)
 		m_rightSortedEnds.push_back(e);
 	}
 
-	std::sort(m_leftSortedEnds.begin(),  m_leftSortedEnds.end(),  leftComparison);
-	std::sort(m_rightSortedEnds.begin(), m_rightSortedEnds.end(), rightComparison);
+	std::sort(m_leftSortedEnds.begin(),  m_leftSortedEnds.end(),  leftEndsIncreasing);
+	std::sort(m_rightSortedEnds.begin(), m_rightSortedEnds.end(), rightEndsDecreasing);
 
-	// Initialise empty sweep queues and stacks (one for each balltype)
+	// Initialise and allocate space for sweep queues and stacks
 
 	for (int i = 0; i < m_ballTypes.size(); i++)
 	{
@@ -40,153 +38,113 @@ PruneAndSweep1DSolver::PruneAndSweep1DSolver(std::vector<balltype> ballTypes)
 
 
 void PruneAndSweep1DSolver::solve()
+/*
+ * Check for collisions between balls using a sweep and prune algorithm
+ * along the x-axis, and update velocities accordingly. 
+ *
+ * To deal with balls crossing the left and right hand boundaries of 
+ * world space, three sweeps are performed. The first two sweeps 
+ * (dealing with the bulk of balls, and balls crossing the right-hand 
+ * boundary) are from left to right, using FIFO queues stored in 
+ * m_sweepQueues. The final sweep (dealing with balls crossing the 
+ * left-hand boundary) is from right to left, using stacks stored in 
+ * m_sweepStacks.
+ */
 {
-	// Insertion sort m_leftSortedEnds and m_rightSorted balls
-	// By temporal coherence (i.e. balls moving very little between frames), sorting time is roughly O(n)
-	insertionSort();
+	// Sort m_leftSortedEnds and m_rightSortedEnds
 
-	const vec2<float>  leftTranslate(-2.0f, 0.0f);
-	const vec2<float> rightTranslate( 2.0f, 0.0f);
+	insertionSortEnds();
 
-	const std::vector<vec2<float>> verticalTranslates = { {0.0f, -2.0f}, {0.0f, 0.0f}, {0.0f, 2.0f} };
+	// Prepare queues in m_sweepQueues to be filled
 
 	clearQueues();
 
-	// First sweep (bulk of calculations, excluding left and right overlaps)
+	// First sweep: deal with bulk of calculations, ignoring balls crossing left and right boundaries
 
-	for (endpoints& b1 : m_leftSortedEnds)
+	for (endpoints& e1 : m_leftSortedEnds)
 	{
-		const unsigned int& i1 = b1.ind;
 		for (queue<endpoints>& q : m_sweepQueues)
 		{
-
-			while (!q.empty() && (b1.left > q.front().right))
+			while (!q.empty() && (e1.left > q.front().right))
 				q.pop();
 
-			for (endpoints& b2 : q)
+			for (endpoints& e2 : q)
 			{
-				const unsigned int& i2 = b2.ind;
-
-				for (vec2<float> translate : verticalTranslates)
-				{
-					m_balls[i1].position.Add(translate);
-					if (overlap(i1, i2))
-					{
-						resolveCollision(i1, i2);
-					}
-					m_balls[i1].position.Subtract(translate);
-				}
+				checkCollision(e1, e2);
 			}
 		}
-		m_sweepQueues[m_balls[b1.ind].typeindex].push(b1);
+		m_sweepQueues[m_balls[e1.ind].typeindex].push(e1);
 	}
 
-	// Second sweep (deal with overlaps on right-hand side and all balls on left-hand side)
-	// Note right hand overlaps are already stored in the queues after the first sweep
+	// Second sweep: deal with balls crossing right-hand boundary
 
-	float leftEnd = m_leftSortedEnds[0].left;    // potentially less than -1.0f
-	float rightEnd = m_rightSortedEnds[0].right; // potentially greater than 1.0f
+	const vec2<float> rightTranslate(m_world.xWidth, 0.0f);
 
-	for (endpoints& b1 : m_leftSortedEnds)
+	float leftEnd  = m_leftSortedEnds[0].left   + m_world.xWidth; // Left-most overlapping endpoint
+	float rightEnd = m_rightSortedEnds[0].right - m_world.xWidth; // Right-most overlapping endpoint
+
+	for (endpoints& e1 : m_leftSortedEnds)
 	{
-		if (b1.left >= rightEnd - 2.0f)
+		if (e1.left >= rightEnd)
 			break;
 
-		const unsigned int& i1 = b1.ind;
-
-		m_balls[i1].position.Add(rightTranslate);
+		m_balls[e1.ind].position.Add(rightTranslate);
 
 		for (queue<endpoints>& q : m_sweepQueues)
 		{
-
-			while (!q.empty() && (b1.left + 2.0f > q.front().right))
+			while (!q.empty() && (e1.left + m_world.xWidth > q.front().right))
 				q.pop();
 
-			for (endpoints& b2 : q)
+			for (endpoints& e2 : q)
 			{
-				const unsigned int& i2 = b2.ind;
-				for (vec2<float> translate : verticalTranslates)
-				{
-					m_balls[i1].position.Add(translate);
-					if (overlap(i1, i2))
-					{
-						resolveCollision(i1, i2);
-
-						m_balls[i1].position.Subtract(translate);
-
-						break;
-					}
-					m_balls[i1].position.Subtract(translate);
-				}
+				checkCollision(e1, e2);
 			}
 		}
-		m_balls[i1].position.Subtract(rightTranslate);
+		m_balls[e1.ind].position.Subtract(rightTranslate);
 	}
 
-	// Third and final sweep (deal with overlaps on left-hand side and non-overlaps on right-hand side)
-	// Queues are empty at this point
+	// Third and final sweep: deal with balls crossing left-hand boundary
 
-	// Find balls on right-hand side that do not cross boundary, but may overlap with left overlaps
-
-	for (endpoints& b : m_leftSortedEnds)
+	for (endpoints& e : m_leftSortedEnds)
 	{
-		if (b.left >= 0)
+		if (e.left >= m_world.xMin)
 			break;
 
-		// Shift ball to the right
-		m_balls[b.ind].position.Add(rightTranslate);
-
-		// Add ball to queue
-		m_sweepStacks[m_balls[b.ind].typeindex].push_back(b);
+		m_balls[e.ind].position.Add(rightTranslate);
+		m_sweepStacks[m_balls[e.ind].typeindex].push_back(e);
 	}
 
 	int startind = 0;
 
-	while (startind < m_rightSortedEnds.size() && m_rightSortedEnds[startind].right > 1.0f)
+	while (startind < m_rightSortedEnds.size() && m_rightSortedEnds[startind].right > m_world.xMax)
 		startind++;
 
 	for (int i = startind; i < m_rightSortedEnds.size(); i++)
 	{
-		if (m_rightSortedEnds[i].right < leftEnd + 2.0f)
+		if (m_rightSortedEnds[i].right < leftEnd)
 			break;
 
-		endpoints& b1 = m_rightSortedEnds[i];
-		const unsigned int& i1 = b1.ind;
+		endpoints& e1 = m_rightSortedEnds[i];
+		const unsigned int& i1 = e1.ind;
 
 		for (std::vector<endpoints>& s : m_sweepStacks)
 		{
 
-			while (!s.empty() && (b1.right - 2.0f < s.back().left))
+			while (!s.empty() && (e1.right - m_world.xWidth < s.back().left))
 			{
-				// Return shifted ball to original position
-				int ind = s.back().ind;
-				m_balls[ind].position.Subtract(rightTranslate);
-
+				m_balls[s.back().ind].position.Subtract(rightTranslate);
 				s.pop_back();
 			}
 
-			for (endpoints& b2 : s)
+			for (endpoints& e2 : s)
 			{
-				const unsigned int& i2 = b2.ind;
-
-				for (vec2<float> translate : verticalTranslates)
-				{
-					m_balls[i1].position.Add(translate);
-					if (overlap(i1, i2))
-					{
-						resolveCollision(i1, i2);
-
-						m_balls[i1].position.Subtract(translate);
-
-						break;
-					}
-					m_balls[i1].position.Subtract(translate);
-				}
+				checkCollision(e1, e2);
 			}
 		}
 	}
 
-	// Return shifted balls to original position
+	// Return shifted balls to original position and remove from stacks
+
 	for (std::vector<endpoints>& s : m_sweepStacks)
 	{
 		while (!s.empty())
@@ -197,8 +155,37 @@ void PruneAndSweep1DSolver::solve()
 	}
 }
 
+void PruneAndSweep1DSolver::checkCollision(endpoints& e1, endpoints& e2)
+/*
+ * Check for a collision between balls corresponding to e1, e2
+ * If a collision is detected, update velocities using resolveCollision
+ */
+{
+	static const std::vector<vec2<float>> verticalTranslates = { {0.0f, -m_world.yWidth}, 
+		                                                         {0.0f,  0.0f          }, 
+		                                                         {0.0f,  m_world.yWidth} };
+
+	const unsigned int& i1 = e1.ind;
+	const unsigned int& i2 = e2.ind;
+
+	for (vec2<float> translate : verticalTranslates)
+	{
+		m_balls[i1].position.Add(translate);
+		if (overlap(i1, i2))
+		{
+			resolveCollision(i1, i2);
+		}
+		m_balls[i1].position.Subtract(translate);
+	}
+}
+
 
 void PruneAndSweep1DSolver::update(float dt)
+/*
+ * Having solved all collisions, update positions according to velocities
+ * Updates m_balls, m_leftSortedEnds, m_rightSortedEnds
+ * Overrides the update method of Solver
+ */
 {
 	// Update positions in m_balls
 
@@ -225,9 +212,13 @@ void PruneAndSweep1DSolver::update(float dt)
 	}
 }
 
-void PruneAndSweep1DSolver::insertionSort()
+void PruneAndSweep1DSolver::insertionSortEnds()
+/* 
+ * Sort m_leftSortedEnds and m_rightSortedEnds using insertion sort
+ * Sorting time is roughly O(n), as these vectors remain mostly sorted each frame
+ */
 {
-	// Insertion sort m_leftSortedEnds
+	// Insertion sort m_leftSortedEnds (increasing by left endpoint)
 
 	for (int i = 1; i < m_leftSortedEnds.size(); i++)
 	{
@@ -240,7 +231,7 @@ void PruneAndSweep1DSolver::insertionSort()
 		}
 	}
 
-	// Insertion sort m_rightSortedEnds
+	// Insertion sort m_rightSortedEnds (decreasing by right endpoint)
 
 	for (int i = 1; i < m_rightSortedEnds.size(); i++)
 	{

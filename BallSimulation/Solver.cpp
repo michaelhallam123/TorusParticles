@@ -4,7 +4,8 @@
 #include <iostream>
 
 Solver::Solver(std::vector<balltype> ballTypes)
-	: m_ballTypes(ballTypes)
+	: m_ballTypes(ballTypes), 
+	  m_world(-1.0f, 1.0f, -1.0f, 1.0f) // Takes world boundary values: xMin, xMax, yMin, yMax
 {
 	// TO DO: Error checking (parameters within correct bounds, e.g. mass > 0)
 
@@ -14,7 +15,8 @@ Solver::Solver(std::vector<balltype> ballTypes)
 	// Initialise random number generators
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> posDistribution(-1.0f, 1.0f);
+	std::uniform_real_distribution<float> x_posDistribution(m_world.xMin, m_world.xMax);
+	std::uniform_real_distribution<float> y_posDistribution(m_world.yMin, m_world.yMax);
 
 	// Randomly populate position and velocity data in m_balls
 	for (unsigned int i = 0; i < ballTypes.size(); i++)
@@ -35,8 +37,8 @@ Solver::Solver(std::vector<balltype> ballTypes)
 			float yVel = y_velDistribution(gen);
 			vec2<float> vel = { xVel, yVel };
 
-			float xPos = posDistribution(gen);
-			float yPos = posDistribution(gen);
+			float xPos = x_posDistribution(gen);
+			float yPos = y_posDistribution(gen);
 			vec2<float> pos = { xPos, yPos };
 
 			runningVelocity.x += xVel;
@@ -111,17 +113,17 @@ void Solver::update(float dt)
 	{
 		b.position += b.velocity * dt;
 
-		// Normalise positions to lie in [-1,1]x[-1,1]
+		// Normalise positions to lie within world boundaries
 
 		vec2<float>& p = b.position;
-		if (p.x < -1.0f)
-			p.x += 2.0f;
-		else if (p.x > 1.0f)
-			p.x -= 2.0f;
+		if (p.x  < m_world.xMin)
+			p.x += m_world.xWidth;
+		else if (p.x > m_world.xMax)
+			p.x -= m_world.xWidth;
 
-		if (p.y < -1.0f)
-			p.y += 2.0f;
-		else if (p.y > 1.0f)
-			p.y -= 2.0f;
+		if (p.y  < m_world.yMin)
+			p.y += m_world.yWidth;
+		else if (p.y > m_world.yMax)
+			p.y -= m_world.yWidth;
 	}
 }

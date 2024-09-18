@@ -1,21 +1,22 @@
 #include "BruteForceSolver.hpp"
 
 BruteForceSolver::BruteForceSolver(std::vector<balltype> ballTypes)
-	: Solver(ballTypes)
-{
-
-}
+	: Solver(ballTypes) {}
 
 void BruteForceSolver::solve()
+/*
+ * Check for collisions between every pair of balls
+ * and update velocities when a collision is found
+ */
 {
 
-	std::vector<vec2<float>> displacements = { { -2.0f, -2.0f }, {  0.0f, -2.0f }, {  2.0f, -2.0f },
-											   { -2.0f,  0.0f }, {  0.0f,  0.0f }, {  2.0f,  0.0f },
-											   { -2.0f,  2.0f }, {  0.0f,  2.0f }, {  2.0f,  2.0f } };
+	std::vector<vec2<float>> displacements = { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
+											   { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
+											   { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
 
-	for (int i = 0; i < m_balls.size(); i++)
+	for (unsigned int i = 0; i < m_balls.size(); i++)
 	{
-		for (int j = i+1; j < m_balls.size(); j++)
+		for (unsigned int j = i+1; j < m_balls.size(); j++)
 		{
 			for (vec2<float> displacement : displacements)
 			{

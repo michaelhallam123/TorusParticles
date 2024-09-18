@@ -83,6 +83,9 @@
     <ClInclude Include="queue.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="World.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">

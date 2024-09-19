@@ -13,7 +13,7 @@ Window::Window(int resolution)
         return;
     }
 
-    m_WindowID = glfwCreateWindow(resolution, resolution, "Simulation", NULL, NULL);
+    m_WindowID = glfwCreateWindow(resolution, resolution, "TorusParticles", NULL, NULL);
 
     if (!m_WindowID)
     {

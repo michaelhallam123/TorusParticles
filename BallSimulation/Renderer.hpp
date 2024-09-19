@@ -1,9 +1,14 @@
 #pragma once
 
-#include <vector>
+/*
+ * Renderer class for creating and managing an OpenGL context, and rendering 
+ * the simulation to the screen. 
+ * 
+ * 
+ * 
+ */
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <vector>
 
 #include "Solver.hpp"
 #include "GLVertex.h"
@@ -16,7 +21,7 @@ class Renderer
 public:
 	Renderer(const Solver& solver, unsigned int resolution);
 
-	void Draw();
+	void draw();
 
 	bool windowOpen() { return m_window.isOpen(); }
 

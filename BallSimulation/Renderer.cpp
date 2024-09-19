@@ -6,7 +6,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Renderer.h"
+#include "Renderer.hpp"
 #include "Shader.h"
 #include "GLVertex.h"
 #include "balltype.hpp"
@@ -32,6 +32,16 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
 
     for (int i = 0; i < m_ballTypes.size(); i++)
     {
+        if (m_ballTypes[i].render == false)
+        {
+            // Fill slots in opengl objects with dummy data and move to next balltype
+            m_vertexData.push_back({});
+            m_vao.push_back(0);
+            m_vbo.push_back(0);
+            m_indices.push_back({});
+            m_ebo.push_back(0);
+            continue;
+        }
         unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
         m_vertexData.push_back(std::vector<GLVertex>(m_ballTypes[i].count * 4 * vertexMultiplier));
 
@@ -79,6 +89,9 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
     // Set texture coordinates
     for (int i = 0; i < m_ballTypes.size(); i++)
     {
+        if (m_ballTypes[i].render == false)
+            continue;
+
         unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
 
         for (int j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
@@ -102,74 +115,57 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
     }
 }
 
-void Renderer::Draw()
+void Renderer::draw()
 {
     int k = 0;
 
-    static std::vector<vec2<float>> offsets = { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
-                                                { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
-                                                { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
+    static std::vector<vec2<float>> translates = { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
+                                                   { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
+                                                   { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
+    static std::vector<vec2<float>> noTranslates = { {0.0f, 0.0f} };
 
     // Update vertex data according to particle positions
     for (int i = 0; i < m_ballTypes.size(); i++)
     {
+        if (m_ballTypes[i].render == false)
+        {
+            k += m_ballTypes[i].count;
+            continue;
+        }
         unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
 
         float radius = m_ballTypes[i].radius;
 
+        std::vector<vec2<float>> offsets = m_ballTypes[i].wrapTexture ? translates : noTranslates;
+
         // TO DO: See if this updating can be avoided by passing in positions directly 
         // (long term goal, main performance bottleneck is the solver)
 
-        // TO DO: Fix the terrible code below
         int j = 0;
         while (j < m_ballTypes[i].count * vertexMultiplier)
         {
             const vec2<float>& p = m_balls[k].position;
 
-            if (vertexMultiplier == 1)
+            for (vec2<float> offset : offsets)
             {
                 // Bottom left of quad
-                m_vertexData[i][4 * j + 0].position[0] = p.x - 1.1f * radius;
-                m_vertexData[i][4 * j + 0].position[1] = p.y - 1.1f * radius;
+                m_vertexData[i][4 * j + 0].position[0] = p.x + offset.x - 1.1f * radius;
+                m_vertexData[i][4 * j + 0].position[1] = p.y + offset.y - 1.1f * radius;
 
                 // Top left of quad
-                m_vertexData[i][4 * j + 1].position[0] = p.x - 1.1f * radius;
-                m_vertexData[i][4 * j + 1].position[1] = p.y + 1.1f * radius;
+                m_vertexData[i][4 * j + 1].position[0] = p.x + offset.x - 1.1f * radius;
+                m_vertexData[i][4 * j + 1].position[1] = p.y + offset.y + 1.1f * radius;
 
                 // Bottom right of quad
-                m_vertexData[i][4 * j + 2].position[0] = p.x + 1.1f * radius;
-                m_vertexData[i][4 * j + 2].position[1] = p.y - 1.1f * radius;
+                m_vertexData[i][4 * j + 2].position[0] = p.x + offset.x + 1.1f * radius;
+                m_vertexData[i][4 * j + 2].position[1] = p.y + offset.y - 1.1f * radius;
 
                 // Top right of quad
-                m_vertexData[i][4 * j + 3].position[0] = p.x + 1.1f * radius;
-                m_vertexData[i][4 * j + 3].position[1] = p.y + 1.1f * radius;
+                m_vertexData[i][4 * j + 3].position[0] = p.x + offset.x + 1.1f * radius;
+                m_vertexData[i][4 * j + 3].position[1] = p.y + offset.y + 1.1f * radius;
 
                 j++;
             }
-            else
-            {
-                for (vec2<float> offset : offsets)
-                {
-                    // Bottom left of quad
-                    m_vertexData[i][4 * j + 0].position[0] = p.x + offset.x - 1.1f * radius;
-                    m_vertexData[i][4 * j + 0].position[1] = p.y + offset.y - 1.1f * radius;
-
-                    // Top left of quad
-                    m_vertexData[i][4 * j + 1].position[0] = p.x + offset.x - 1.1f * radius;
-                    m_vertexData[i][4 * j + 1].position[1] = p.y + offset.y + 1.1f * radius;
-
-                    // Bottom right of quad
-                    m_vertexData[i][4 * j + 2].position[0] = p.x + offset.x + 1.1f * radius;
-                    m_vertexData[i][4 * j + 2].position[1] = p.y + offset.y - 1.1f * radius;
-
-                    // Top right of quad
-                    m_vertexData[i][4 * j + 3].position[0] = p.x + offset.x + 1.1f * radius;
-                    m_vertexData[i][4 * j + 3].position[1] = p.y + offset.y + 1.1f * radius;
-
-                    j++;
-                }
-            }
-            
             k++;
         }
     }
@@ -179,6 +175,8 @@ void Renderer::Draw()
     // Draw balls to screen
     for (int i = 0; i < m_ballTypes.size(); i++)
     {
+        if (m_ballTypes[i].render == false)
+            continue;
         unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
 
         m_shader.SetUniform4f("u_ballColor", m_ballTypes[i].rgba);

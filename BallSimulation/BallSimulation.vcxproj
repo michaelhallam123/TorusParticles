@@ -164,10 +164,10 @@
     <ClInclude Include="PruneAndSweep1DSolver.hpp" />
     <ClInclude Include="PruneAndSweep2DSolver.hpp" />
     <ClInclude Include="queue.hpp" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Solver.hpp" />
-    <ClInclude Include="vec2.h" />
+    <ClInclude Include="vec2.hpp" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>

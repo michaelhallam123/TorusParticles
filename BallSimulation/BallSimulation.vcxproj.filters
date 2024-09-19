@@ -41,10 +41,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vec2.h">
+    <ClInclude Include="vec2.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
+    <ClInclude Include="Renderer.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">

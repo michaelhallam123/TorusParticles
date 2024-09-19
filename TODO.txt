@@ -1,0 +1,29 @@
+Fix antialiasing so that balls actually touch on collision - may need to alter texture coordinates for this
+
+Also antialiasing still looks somewhat jagged
+
+Allow for screen resizing
+
+Separate physics from framerate (!)
+
+Add gui for easier control of parameters
+
+Speed up simulation using multithreading
+
+Add pause and step through simulation functionality
+
+Add window icon
+
+Solvers:
+-SpatialHashSolver
+-QuadTreeSolver
+-Deterministic solver
+
+Add fps counter
+
+Add external forces for wave simulations
+
+Add in a way to save and load presets
+
+Cache coefficients in physics computations to try and save time
+

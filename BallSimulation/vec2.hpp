@@ -1,5 +1,7 @@
 #pragma once
-#include <iostream>
+
+// Simple 2-dimensional vector struct
+
 template <typename T>
 struct vec2
 {

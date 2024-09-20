@@ -1,10 +1,14 @@
 #pragma once
 
-#include "vec2.hpp"
+/**
+ * Simple struct for storing ball information
+ */
 
-struct ball
+#include "Vec2.hpp"
+
+struct Ball
 {
-	vec2<float> position;
-	vec2<float> velocity;
-	unsigned int typeindex;
+	Vec2<float> position;
+	Vec2<float> velocity;
+	unsigned int typeindex; // Index of the ball's type in Solver::m_ballTypes
 };

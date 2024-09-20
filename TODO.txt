@@ -23,7 +23,5 @@ Add fps counter
 
 Add external forces for wave simulations
 
-Add in a way to save and load presets
-
 Cache coefficients in physics computations to try and save time
 

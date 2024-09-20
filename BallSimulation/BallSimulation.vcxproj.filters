@@ -30,13 +30,10 @@
     <ClCompile Include="Solver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PruneAndSweep2DSolver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BruteForceSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PruneAndSweep1DSolver.cpp">
+    <ClCompile Include="SweepAndPrune1DSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="loadPreset.cpp">
@@ -44,46 +41,43 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vec2.hpp">
+    <ClInclude Include="Vec2.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="Shader.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Window.h">
+    <ClInclude Include="Window.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLVertex.h">
+    <ClInclude Include="GLVertex.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="balltype.hpp">
+    <ClInclude Include="BallType.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLDebug.h">
+    <ClInclude Include="GLDebug.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="endpoints.hpp">
+    <ClInclude Include="Endpoints.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ball.hpp">
+    <ClInclude Include="Ball.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Solver.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="PruneAndSweep2DSolver.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="BruteForceSolver.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="PruneAndSweep1DSolver.hpp">
+    <ClInclude Include="SweepAndPrune1DSolver.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="queue.hpp">
+    <ClInclude Include="Queue.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="World.hpp">

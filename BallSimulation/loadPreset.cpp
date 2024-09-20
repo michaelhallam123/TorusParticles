@@ -2,23 +2,18 @@
 
 #include "json/value.h"
 #include "json/json.h"
-#include "balltype.hpp"
+
 #include <fstream>
 #include <vector>
 #include <array>
-#include "vec2.hpp"
 
-std::vector<balltype> loadPreset(const std::string& filepath)
-/*
- * Uses jsoncpp (https://github.com/open-source-parsers/jsoncpp) to
- * load preset settings into a vector of balltypes, to be passed
- * into the Solver constructor.
- * 
- * Examples of preset files are located in the project resources
- * folder.
+std::vector<BallType> loadPreset(const std::string& filepath)
+/**
+ * Load BallType data from "filepath" (a .json file) and 
+ * output a vector of the data.
  */
 {
-	std::vector<balltype> res;
+	std::vector<BallType> res;
 
 	std::ifstream file(filepath);
 	Json::Value jsonTotal;
@@ -28,7 +23,7 @@ std::vector<balltype> loadPreset(const std::string& filepath)
 
 	for (auto& json : jsonTotal)
 	{
-		balltype bt;
+		BallType bt;
 
 		bt.mass   = json["mass"].asFloat();
 		bt.radius = json["radius"].asFloat();
@@ -57,7 +52,6 @@ std::vector<balltype> loadPreset(const std::string& filepath)
 
 		res.push_back(bt);
 	}
-
 
 	return res;
 }

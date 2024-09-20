@@ -148,29 +148,27 @@
     <ClCompile Include="BruteForceSolver.cpp" />
     <ClCompile Include="loadPreset.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="PruneAndSweep1DSolver.cpp" />
-    <ClCompile Include="PruneAndSweep2DSolver.cpp" />
+    <ClCompile Include="SweepAndPrune1DSolver.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Solver.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ball.hpp" />
-    <ClInclude Include="balltype.hpp" />
+    <ClInclude Include="Ball.hpp" />
+    <ClInclude Include="BallType.hpp" />
     <ClInclude Include="BruteForceSolver.hpp" />
-    <ClInclude Include="GLVertex.h" />
-    <ClInclude Include="GLDebug.h" />
-    <ClInclude Include="endpoints.hpp" />
+    <ClInclude Include="GLVertex.hpp" />
+    <ClInclude Include="GLDebug.hpp" />
+    <ClInclude Include="Endpoints.hpp" />
     <ClInclude Include="loadPreset.hpp" />
-    <ClInclude Include="PruneAndSweep1DSolver.hpp" />
-    <ClInclude Include="PruneAndSweep2DSolver.hpp" />
-    <ClInclude Include="queue.hpp" />
+    <ClInclude Include="SweepAndPrune1DSolver.hpp" />
+    <ClInclude Include="Queue.hpp" />
     <ClInclude Include="Renderer.hpp" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Solver.hpp" />
-    <ClInclude Include="vec2.hpp" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Vec2.hpp" />
+    <ClInclude Include="Window.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>

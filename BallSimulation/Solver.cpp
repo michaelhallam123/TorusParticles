@@ -3,14 +3,20 @@
 #include <random>
 #include <iostream>
 
-Solver::Solver(std::vector<balltype> ballTypes)
+Solver::Solver(std::vector<BallType> ballTypes)
 	: m_ballTypes(ballTypes), 
 	  m_world(-1.0f, 1.0f, -1.0f, 1.0f) // Takes world boundary values: xMin, xMax, yMin, yMax
 {
-	// TO DO: Error checking (parameters within correct bounds, e.g. mass > 0)
+	// Error checking
 
-	// Sort ball types by decreasing radius
-	std::sort(m_ballTypes.begin(), m_ballTypes.end(), sortByRadiusDecreasing);
+	for (BallType& bt : m_ballTypes)
+	{
+		if (bt.mass <= 0.0f)
+			std::cout << "Warning: ball mass must be positive!" << std::endl;
+		if (bt.radius <= 0.0f)
+			std::cout << "Warning: ball radius must be positive!" << std::endl;
+
+	}
 
 	// Initialise random number generators
 	std::random_device rd;
@@ -21,7 +27,7 @@ Solver::Solver(std::vector<balltype> ballTypes)
 	// Randomly populate position and velocity data in m_balls
 	for (unsigned int i = 0; i < ballTypes.size(); i++)
 	{
-		balltype& bt = ballTypes[i];
+		BallType& bt = ballTypes[i];
 
 		float x_meanVelocity = bt.totalMomentum.x / (bt.mass * (float)bt.count);
 		float y_meanVelocity = bt.totalMomentum.y / (bt.mass * (float)bt.count);
@@ -29,22 +35,22 @@ Solver::Solver(std::vector<balltype> ballTypes)
 		std::normal_distribution<float> x_velDistribution(x_meanVelocity, 1.0f);
 		std::normal_distribution<float> y_velDistribution(y_meanVelocity, 1.0f);
 
-		vec2<float> runningVelocity(0.0f, 0.0f);
+		Vec2<float> runningVelocity(0.0f, 0.0f);
 
 		for (unsigned int j = 0; j < bt.count; j++)
 		{
 			float xVel = x_velDistribution(gen);
 			float yVel = y_velDistribution(gen);
-			vec2<float> vel = { xVel, yVel };
+			Vec2<float> vel = { xVel, yVel };
 
 			float xPos = x_posDistribution(gen);
 			float yPos = y_posDistribution(gen);
-			vec2<float> pos = { xPos, yPos };
+			Vec2<float> pos = { xPos, yPos };
 
 			runningVelocity.x += xVel;
 			runningVelocity.y += yVel;
 
-			ball b;
+			Ball b;
 			b.position = pos;
 			b.velocity = vel;
 			b.typeindex = i;
@@ -60,8 +66,8 @@ Solver::Solver(std::vector<balltype> ballTypes)
 
 bool Solver::overlap(unsigned int i, unsigned int j)
 {
-	const ball b1 = m_balls[i];
-	const ball b2 = m_balls[j];
+	const Ball b1 = m_balls[i];
+	const Ball b2 = m_balls[j];
 
 	float r1 = m_ballTypes[b1.typeindex].radius;
 	float r2 = m_ballTypes[b2.typeindex].radius;
@@ -73,8 +79,8 @@ bool Solver::overlap(unsigned int i, unsigned int j)
 
 void Solver::resolveCollision(unsigned int i, unsigned int j)
 {
-	ball& b1 = m_balls[i];
-	ball& b2 = m_balls[j];
+	Ball& b1 = m_balls[i];
+	Ball& b2 = m_balls[j];
 
 	float m1 = m_ballTypes[b1.typeindex].mass;
 	float m2 = m_ballTypes[b2.typeindex].mass;
@@ -84,8 +90,8 @@ void Solver::resolveCollision(unsigned int i, unsigned int j)
 
 	// Update velocities according to collision physics
 
-	vec2<float> deltaPos = b1.position - b2.position;
-	vec2<float> deltaVel = b1.velocity - b2.velocity;
+	Vec2<float> deltaPos = b1.position - b2.position;
+	Vec2<float> deltaVel = b1.velocity - b2.velocity;
 
 	float a = -((2.0f * m2) / (m1 + m2)) * (deltaVel.dot(deltaPos) / deltaPos.dot(deltaPos));
 	float b = -(m1 / m2) * a;
@@ -104,24 +110,28 @@ void Solver::resolveCollision(unsigned int i, unsigned int j)
 void Solver::update(float dt)
 {
 	// Check for collisions and update velocities
-
 	solve(); 
 
 	// Update positions
+	updatePositions(dt);
+}
 
-	for (ball& b : m_balls)
+void Solver::updatePositions(float dt)
+{
+	for (Ball& b : m_balls)
 	{
 		b.position += b.velocity * dt;
 
 		// Normalise positions to lie within world boundaries
 
-		vec2<float>& p = b.position;
-		if (p.x  < m_world.xMin)
+		Vec2<float>& p = b.position;
+
+		if (p.x < m_world.xMin)
 			p.x += m_world.xWidth;
 		else if (p.x > m_world.xMax)
 			p.x -= m_world.xWidth;
 
-		if (p.y  < m_world.yMin)
+		if (p.y < m_world.yMin)
 			p.y += m_world.yWidth;
 		else if (p.y > m_world.yMax)
 			p.y -= m_world.yWidth;

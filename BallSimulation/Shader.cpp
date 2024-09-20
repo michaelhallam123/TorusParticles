@@ -1,24 +1,26 @@
-#include "Shader.h"
+#include "Shader.hpp"
 #include "GL/glew.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 Shader::Shader(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath)
-    : m_VertexShaderFilePath(vertexShaderFilePath), m_FragmentShaderFilePath(fragmentShaderFilePath), m_ShaderID(0)
+    : m_vertexShaderFilePath(vertexShaderFilePath), 
+      m_fragmentShaderFilePath(fragmentShaderFilePath), 
+      m_shaderID(0)
 {
-    std::string vertexShader = ParseShader(vertexShaderFilePath);
-    std::string fragmentShader = ParseShader(fragmentShaderFilePath);
+    std::string vertexShader = parseShader(vertexShaderFilePath);
+    std::string fragmentShader = parseShader(fragmentShaderFilePath);
 
-    m_ShaderID = CreateShader(vertexShader, fragmentShader);
+    m_shaderID = createShader(vertexShader, fragmentShader);
 }
 
 Shader::~Shader()
 {
-    glDeleteProgram(m_ShaderID);
+    glDeleteProgram(m_shaderID);
 }
 
-std::string Shader::ParseShader(const std::string& path) {
+std::string Shader::parseShader(const std::string& path) {
 
     std::stringstream result;
     std::ifstream file(path);
@@ -41,7 +43,7 @@ std::string Shader::ParseShader(const std::string& path) {
 }
 
 
-unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
+unsigned int Shader::compileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
@@ -66,11 +68,11 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 }
 
 
-unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+unsigned int Shader::createShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
     unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+    unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
+    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
     glAttachShader(program, vs);
     glAttachShader(program, fs);
@@ -83,47 +85,47 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
     return program;
 }
 
-void Shader::Bind() const
+void Shader::bind() const
 {
-    glUseProgram(m_ShaderID);
+    glUseProgram(m_shaderID);
 }
-void Shader::Unbind() const
+void Shader::unbind() const
 {
     glUseProgram(0);
 }
 
 //Set uniforms
-void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
+void Shader::setUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 {
-    glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
+    glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
 }
 
-void Shader::SetUniform4f(const std::string& name, std::array<float, 4> v)
+void Shader::setUniform4f(const std::string& name, std::array<float, 4> v)
 {
-    glUniform4f(GetUniformLocation(name), v[0], v[1], v[2], v[3]);
+    glUniform4f(getUniformLocation(name), v[0], v[1], v[2], v[3]);
 }
 
 
-void Shader::SetUniform1i(const std::string& name, int value)
+void Shader::setUniform1i(const std::string& name, int value)
 {
-    glUniform1i(GetUniformLocation(name), value);
+    glUniform1i(getUniformLocation(name), value);
 }
 
-int Shader::GetUniformLocation(const std::string& name)
+int Shader::getUniformLocation(const std::string& name)
 {
-    if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+    if (m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
     {
-        return m_UniformLocationCache[name];
+        return m_uniformLocationCache[name];
     }
 
-    int location = glGetUniformLocation(m_ShaderID, name.c_str());
+    int location = glGetUniformLocation(m_shaderID, name.c_str());
 
     if (location == -1)
     {
         std::cout << "Warning: Uniform '" << name << "' does not exist!" << std::endl;
     }
 
-    m_UniformLocationCache[name] = location;
+    m_uniformLocationCache[name] = location;
 
     return location;
 }

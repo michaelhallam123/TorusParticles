@@ -1,22 +1,26 @@
 #pragma once
 
-// Struct containing data required to implement the sweep and prune algorithm
-struct endpoints
+/**
+ * A simple struct for storing data used in the 
+ * sweep and prune algorithm
+ */
+
+struct Endpoints
 {
 	float left;       // Leftmost endpoint of the ball
 	float right;      // Rightmost endpoint of the ball
 	unsigned int ind; // Index of the ball in m_balls
 };
 
-// Custom comparators for lineSweepData
+// Custom comparators to sort data
 struct
 {
-	bool operator()(const endpoints& a, const endpoints& b) const { return a.left < b.left; }
+	bool operator()(const Endpoints& a, const Endpoints& b) const { return a.left < b.left; }
 }
 leftEndsIncreasing;
 
 struct
 {
-	bool operator()(const endpoints& a, const endpoints& b) const { return a.right > b.right; }
+	bool operator()(const Endpoints& a, const Endpoints& b) const { return a.right > b.right; }
 }
 rightEndsDecreasing;

@@ -7,14 +7,11 @@
 #include <GLFW/glfw3.h>
 
 #include "Renderer.hpp"
-#include "Shader.h"
-#include "GLVertex.h"
-#include "balltype.hpp"
-#include "GLDebug.h"
+#include "GLDebug.hpp"
 
-// Paths for gl shader programs
-const char* vertexShaderPath = "../BallSimulation/shader.vs";
-const char* fragmentShaderPath = "../BallSimulation/shader.fs";
+// Filepaths for glsl shader programs
+static const char* vertexShaderPath = "../BallSimulation/shader.vs";
+static const char* fragmentShaderPath = "../BallSimulation/shader.fs";
 
 Renderer::Renderer(const Solver& solver, unsigned int resolution)
 	: m_ballTypes(solver.getBallTypes()), 
@@ -82,18 +79,7 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo[i]));
         GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * m_ballTypes[i].count * vertexMultiplier * sizeof(unsigned int), &m_indices.back()[0], GL_DYNAMIC_DRAW));
 
-    }
-
-    m_shader.Bind();
-
-    // Set texture coordinates
-    for (int i = 0; i < m_ballTypes.size(); i++)
-    {
-        if (m_ballTypes[i].render == false)
-            continue;
-
-        unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
-
+        // Set texture coordinates
         for (int j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
         {
             // Bottom left of quad
@@ -113,16 +99,21 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
             m_vertexData[i][4 * j + 3].textureCoords[1] = 1.0f;
         }
     }
+
+    // Bind the shader program
+    m_shader.bind();
 }
 
 void Renderer::draw()
 {
     int k = 0;
 
-    static std::vector<vec2<float>> translates = { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
-                                                   { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
-                                                   { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
-    static std::vector<vec2<float>> noTranslates = { {0.0f, 0.0f} };
+    static const std::vector<Vec2<float>> translates = 
+        { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
+          { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
+          { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
+
+    static const std::vector<Vec2<float>> noTranslates = { {0.0f, 0.0f} };
 
     // Update vertex data according to particle positions
     for (int i = 0; i < m_ballTypes.size(); i++)
@@ -136,7 +127,7 @@ void Renderer::draw()
 
         float radius = m_ballTypes[i].radius;
 
-        std::vector<vec2<float>> offsets = m_ballTypes[i].wrapTexture ? translates : noTranslates;
+        const std::vector<Vec2<float>>& offsets = m_ballTypes[i].wrapTexture ? translates : noTranslates;
 
         // TO DO: See if this updating can be avoided by passing in positions directly 
         // (long term goal, main performance bottleneck is the solver)
@@ -144,9 +135,9 @@ void Renderer::draw()
         int j = 0;
         while (j < m_ballTypes[i].count * vertexMultiplier)
         {
-            const vec2<float>& p = m_balls[k].position;
+            const Vec2<float>& p = m_balls[k].position;
 
-            for (vec2<float> offset : offsets)
+            for (Vec2<float> offset : offsets)
             {
                 // Bottom left of quad
                 m_vertexData[i][4 * j + 0].position[0] = p.x + offset.x - 1.1f * radius;
@@ -179,7 +170,7 @@ void Renderer::draw()
             continue;
         unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
 
-        m_shader.SetUniform4f("u_ballColor", m_ballTypes[i].rgba);
+        m_shader.setUniform4f("u_ballColor", m_ballTypes[i].rgba);
         GLCall(glBindVertexArray(m_vao[i]));
 
         // Draw to screen
@@ -191,6 +182,4 @@ void Renderer::draw()
     glfwSwapBuffers(m_window.getID());
 
     glfwPollEvents();
-
-    m_window.update();
 }

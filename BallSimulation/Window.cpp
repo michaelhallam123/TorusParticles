@@ -1,8 +1,8 @@
-#include "Window.h"
+#include "Window.hpp"
 
 #include <iostream>
 
-Window::Window(int resolution)
+Window::Window(unsigned int resolution)
     : m_WindowID(0)
 {
     // Set up GLFW window context
@@ -50,9 +50,4 @@ Window::~Window()
 bool Window::isOpen()
 {
     return !glfwWindowShouldClose(m_WindowID);
-}
-
-void Window::update()
-{
-    
 }

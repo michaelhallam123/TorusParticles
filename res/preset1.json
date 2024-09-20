@@ -1,18 +1,18 @@
 [
     {
-        "mass": 0.5,
-        "radius": 0.02,
-        "count": 200,
-        "rgba": [1.0, 0.0, 0.0, 1.0],
+        "mass": 6.4,
+        "radius": 0.15,
+        "count": 1,
+        "rgba": [1.0, 0.5, 0.2, 1.0],
         "totalMomentum": [0.0, 0.0],
-        "wrapTexture": false,
+        "wrapTexture": true,
         "render": true
     },
     {
-        "mass": 0.5,
-        "radius": 0.04,
-        "count": 100,
-        "rgba": [0.0, 0.0, 1.0, 1.0],
+        "mass": 0.1,
+        "radius": 0.005,
+        "count": 5000,
+        "rgba": [1.0, 0.5, 0.8, 1.0],
         "totalMomentum": [0.0, 0.0],
         "wrapTexture": false,
         "render": true

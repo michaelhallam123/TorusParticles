@@ -1,40 +1,44 @@
 #pragma once
 
-// Implementation of queue exploiting contiguous memory for speed
-// Assumes the queue will not grow indefinitely, rather will be reset before it gets too big
-// Used in sweep and prune algorithm
+/**
+ * Implementation of a FIFO queue used by SweepAndPrune1DSolver
+ * 
+ * For best usage, reserve the appropriate amount of space
+ * using reserve(...), and reset the queue using clear() once 
+ * the queue is empty
+ */
 
-template <typename queue>
-class queueIterator
+template <typename Queue>
+class QueueIterator
 {
 public:
-	using ValueType = typename queue::ValueType;
+	using ValueType = typename Queue::ValueType;
 public:
-	queueIterator(ValueType* ptr)
+	QueueIterator(ValueType* ptr)
 		: m_ptr(ptr) {}
 
-	queueIterator& operator++()
+	QueueIterator& operator++()
 	{
 		m_ptr++;
 		return *this;
 	}
 
-	queueIterator& operator++(int)
+	QueueIterator& operator++(int)
 	{
-		queueIterator iterator = *this;
+		QueueIterator iterator = *this;
 		++(*this);
 		return iterator;
 	}
 
-	queueIterator& operator--()
+	QueueIterator& operator--()
 	{
 		m_ptr--;
 		return *this;
 	}
 
-	queueIterator& operator--(int)
+	QueueIterator& operator--(int)
 	{
-		queueIterator iterator = *this;
+		QueueIterator iterator = *this;
 		--(*this);
 		return iterator;
 	}
@@ -54,12 +58,12 @@ public:
 		return *m_ptr;
 	}
 
-	bool operator==(const queueIterator& other) const
+	bool operator==(const QueueIterator& other) const
 	{
 		return m_ptr == other.m_ptr;
 	}
 
-	bool operator!=(const queueIterator& other) const
+	bool operator!=(const QueueIterator& other) const
 	{
 		return m_ptr != other.m_ptr;
 	}
@@ -68,11 +72,11 @@ private:
 };
 
 template<typename T>
-struct queue
+struct Queue
 {
 public:
 	using ValueType = T;
-	using Iterator = queueIterator<queue<T>>;
+	using Iterator = QueueIterator<Queue<T>>;
 
 private:
 	std::vector<T> q;
@@ -116,6 +120,7 @@ public:
 	{
 		return Iterator(&q[0] + start);
 	}
+
 	Iterator end()
 	{
 		return Iterator(&q[0] + q.size());

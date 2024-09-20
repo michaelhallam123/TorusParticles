@@ -3,63 +3,63 @@
 // Simple 2-dimensional vector struct
 
 template <typename T>
-struct vec2
+struct Vec2
 {
 	T x;
 	T y;
 
-	vec2(T a, T b)
+	Vec2(T a, T b)
 		: x(a), y(b) {}
 
-	vec2()
+	Vec2()
 		: x(0), y(0) {}
 
-	vec2 operator+(const vec2<T>& v) const
+	Vec2 operator+(const Vec2<T>& v) const
 	{
 		return { this->x + v.x, this->y + v.y };
 	}
 
-	vec2 operator-(const vec2<T>& v) const
+	Vec2 operator-(const Vec2<T>& v) const
 	{
 		return { this->x - v.x, this->y - v.y };
 	}
 
-	vec2 operator*(T a) const
+	Vec2 operator*(T a) const
 	{
 		return { this->x * a, this->y * a };
 	}
 
-	vec2 operator/(T a) const
+	Vec2 operator/(T a) const
 	{
 		return { this->x / a, this->y / a };
 	}
 
-	vec2& operator+=(const vec2<T>& rhs)
+	Vec2& operator+=(const Vec2<T>& rhs)
 	{
 		this->x += rhs.x;
 		this->y += rhs.y;
 		return *this;
 	}
 
-	vec2& operator-=(const vec2<T>& rhs)
+	Vec2& operator-=(const Vec2<T>& rhs)
 	{
 		this->x -= rhs.x;
 		this->y -= rhs.y;
 		return *this;
 	}
 
-	T dot(vec2<T>& v)
+	T dot(Vec2<T>& v)
 	{
 		return this->x * v.x + this->y * v.y;
 	}
 
-	void Add(const vec2<T>& v2)
+	void Add(const Vec2<T>& v2)
 	{
 		this->x += v2.x;
 		this->y += v2.y;
 	}
 
-	void Subtract(const vec2<T>& v2)
+	void Subtract(const Vec2<T>& v2)
 	{
 		this->x -= v2.x;
 		this->y -= v2.y;
@@ -73,8 +73,8 @@ struct vec2
 };
 
 template <typename T>
-T distSquared(vec2<T> v1, vec2<T> v2)
+T distSquared(Vec2<T> v1, Vec2<T> v2)
 {
-	vec2<T> diff = v1 - v2;
+	Vec2<T> diff = v1 - v2;
 	return diff.x * diff.x + diff.y * diff.y;
 }

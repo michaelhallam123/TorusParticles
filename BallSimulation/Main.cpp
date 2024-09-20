@@ -1,30 +1,33 @@
-/*
- ********* TORUS PARTICLE SIMULATOR *********
+/**
+ ****************** TORUS PARTICLE SIMULATOR ******************
  *
- * A simple program to simulate particles colliding on a torus
+ * A simple program to simulate particle collisions on a torus.
  * 
- * Support is available for particles of different masses and radii
+ * The user can create ball types, specifying the number of
+ * balls having a given radius, mass, color, and total momentum,
+ * as well as whether the balls are rendered to the screen, and
+ * if so, whether their textures wrap across the screen 
+ * boundaries (see the preset files in res/ for examples).
  * 
- * 
+ * Support is available for a brute force algorithm and a sweep
+ * and prune algorithm.
  */
 
 #include <iostream>
 
-#include "balltype.hpp"
 #include "Renderer.hpp"
-#include "Solver.hpp"
 #include "BruteForceSolver.hpp"
-#include "PruneAndSweep1DSolver.hpp"
+#include "SweepAndPrune1DSolver.hpp"
 #include "loadPreset.hpp"
 
 int main()
 {
 	// Set simulation parameters
-	float dt = 0.002f;
-    std::vector<balltype> preset = loadPreset("../res/preset1.json");
+    std::vector<BallType> preset = loadPreset("../res/preset3.json");
+    float dt = 0.002f;
 
 	// Initialise simulation
-    PruneAndSweep1DSolver solver(preset);
+    SweepAndPrune1DSolver solver(preset);
 
     // Initialise renderer
     unsigned int resolution = 860;
@@ -32,20 +35,16 @@ int main()
 
     float lastTime = 0.0f;
 
-	// Run simulation
+	// Simulation loop
     while (renderer.windowOpen())
     {
         float time = glfwGetTime();
         float timeStep = time - lastTime;
         lastTime = time;
 
-        // Draw simulation to window
         renderer.draw();
-
-        // Update physics simulation
         solver.update(dt);
     }
 
     return 0;
-
 }

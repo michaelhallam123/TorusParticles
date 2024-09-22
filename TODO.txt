@@ -25,3 +25,4 @@ Add external forces for wave simulations
 
 Cache coefficients in physics computations to try and save time
 
+Add option to specify total kinetic energy plus a direction for total momentum

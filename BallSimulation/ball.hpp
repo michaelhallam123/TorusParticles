@@ -10,5 +10,5 @@ struct Ball
 {
 	Vec2<float> position;
 	Vec2<float> velocity;
-	unsigned int typeindex; // Index of the ball's type in Solver::m_ballTypes
+	std::size_t typeindex; // Index of the ball's type in Solver::m_ballTypes
 };

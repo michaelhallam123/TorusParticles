@@ -27,7 +27,7 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
     m_vertexData.reserve(m_ballTypes.size());
     m_indices.reserve(m_ballTypes.size());
 
-    for (int i = 0; i < m_ballTypes.size(); i++)
+    for (std::size_t i = 0; i < m_ballTypes.size(); i++)
     {
         if (m_ballTypes[i].render == false)
         {
@@ -63,7 +63,7 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
         // Create and set up index data
         m_indices.push_back({});
         m_indices.back().reserve(6 * m_ballTypes[i].count * vertexMultiplier);
-        for (unsigned int j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
+        for (std::size_t j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
         {
             m_indices.back().push_back(4 * j + 0);
             m_indices.back().push_back(4 * j + 1);
@@ -77,10 +77,10 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
         m_ebo.push_back(0);
         GLCall(glGenBuffers(1, &m_ebo[i]));
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo[i]));
-        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * m_ballTypes[i].count * vertexMultiplier * sizeof(unsigned int), &m_indices.back()[0], GL_DYNAMIC_DRAW));
+        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * m_ballTypes[i].count * vertexMultiplier * sizeof(std::size_t), &m_indices.back()[0], GL_DYNAMIC_DRAW));
 
         // Set texture coordinates
-        for (int j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
+        for (std::size_t j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
         {
             // Bottom left of quad
             m_vertexData[i][4 * j + 0].textureCoords[0] = 0.0f;
@@ -116,7 +116,7 @@ void Renderer::draw()
     static const std::vector<Vec2<float>> noTranslates = { {0.0f, 0.0f} };
 
     // Update vertex data according to particle positions
-    for (int i = 0; i < m_ballTypes.size(); i++)
+    for (std::size_t i = 0; i < m_ballTypes.size(); i++)
     {
         if (m_ballTypes[i].render == false)
         {
@@ -132,7 +132,7 @@ void Renderer::draw()
         // TO DO: See if this updating can be avoided by passing in positions directly 
         // (long term goal, main performance bottleneck is the solver)
 
-        int j = 0;
+        std::size_t j = 0;
         while (j < m_ballTypes[i].count * vertexMultiplier)
         {
             const Vec2<float>& p = m_balls[k].position;
@@ -164,7 +164,7 @@ void Renderer::draw()
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw balls to screen
-    for (int i = 0; i < m_ballTypes.size(); i++)
+    for (std::size_t i = 0; i < m_ballTypes.size(); i++)
     {
         if (m_ballTypes[i].render == false)
             continue;

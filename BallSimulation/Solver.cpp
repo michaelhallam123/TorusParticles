@@ -25,7 +25,7 @@ Solver::Solver(std::vector<BallType> ballTypes)
 	std::uniform_real_distribution<float> y_posDistribution(m_world.yMin, m_world.yMax);
 
 	// Randomly populate position and velocity data in m_balls
-	for (unsigned int i = 0; i < ballTypes.size(); i++)
+	for (std::size_t i = 0; i < ballTypes.size(); i++)
 	{
 		BallType& bt = ballTypes[i];
 
@@ -37,7 +37,7 @@ Solver::Solver(std::vector<BallType> ballTypes)
 
 		Vec2<float> runningVelocity(0.0f, 0.0f);
 
-		for (unsigned int j = 0; j < bt.count; j++)
+		for (std::size_t j = 0; j < bt.count; j++)
 		{
 			float xVel = x_velDistribution(gen);
 			float yVel = y_velDistribution(gen);
@@ -64,7 +64,7 @@ Solver::Solver(std::vector<BallType> ballTypes)
 	}
 }
 
-bool Solver::overlap(unsigned int i, unsigned int j)
+bool Solver::overlap(std::size_t i, std::size_t j)
 {
 	const Ball b1 = m_balls[i];
 	const Ball b2 = m_balls[j];
@@ -72,12 +72,11 @@ bool Solver::overlap(unsigned int i, unsigned int j)
 	float r1 = m_ballTypes[b1.typeindex].radius;
 	float r2 = m_ballTypes[b2.typeindex].radius;
 
-
 	return distSquared(b1.position, b2.position) <= (r1 + r2) * (r1 + r2);
 }
 
 
-void Solver::resolveCollision(unsigned int i, unsigned int j)
+void Solver::resolveCollision(std::size_t i, std::size_t j)
 {
 	Ball& b1 = m_balls[i];
 	Ball& b2 = m_balls[j];
@@ -96,15 +95,15 @@ void Solver::resolveCollision(unsigned int i, unsigned int j)
 	float a = -((2.0f * m2) / (m1 + m2)) * (deltaVel.dot(deltaPos) / deltaPos.dot(deltaPos));
 	float b = -(m1 / m2) * a;
 
-	b1.velocity.Add(deltaPos * a);
-	b2.velocity.Add(deltaPos * b);
+	b1.velocity.add(deltaPos * a);
+	b2.velocity.add(deltaPos * b);
 
 	// Dislodge balls to prevent sticking
 
 	float dislodgeFactor1 = r2 / std::sqrt(deltaPos.dot(deltaPos)) - r2/(r1+r2);
 	float dislodgeFactor2 = r1 / std::sqrt(deltaPos.dot(deltaPos)) - r1/(r1+r2);
-	b1.position.Add(deltaPos * dislodgeFactor1);
-	b2.position.Subtract(deltaPos * dislodgeFactor2);
+	b1.position.add(deltaPos * dislodgeFactor1);
+	b2.position.subtract(deltaPos * dislodgeFactor2);
 }
 
 void Solver::update(float dt)

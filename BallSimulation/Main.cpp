@@ -23,7 +23,7 @@
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("../res/preset3.json");
+    std::vector<BallType> preset = loadPreset("../res/preset1.json");
     float dt = 0.002f;
 
 	// Initialise simulation
@@ -33,14 +33,10 @@ int main()
     unsigned int resolution = 860;
     Renderer renderer(solver, resolution);
 
-    float lastTime = 0.0f;
-
 	// Simulation loop
     while (renderer.windowOpen())
     {
-        float time = glfwGetTime();
-        float timeStep = time - lastTime;
-        lastTime = time;
+        //float time = glfwGetTime();
 
         renderer.draw();
         solver.update(dt);

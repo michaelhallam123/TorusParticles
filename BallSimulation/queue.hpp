@@ -43,7 +43,7 @@ public:
 		return iterator;
 	}
 
-	ValueType& operator[](int index)
+	ValueType& operator[](std::size_t index)
 	{
 		return *(m_ptr[index]);
 	}
@@ -80,10 +80,13 @@ public:
 
 private:
 	std::vector<T> q;
-	unsigned int start;
+	std::size_t start;
 
 public:
-	bool reserve(unsigned int N)
+	Queue()
+		: start(0) {}
+
+	void reserve(std::size_t N)
 	{
 		q.reserve(N);
 	}
@@ -118,12 +121,12 @@ public:
 
 	Iterator begin()
 	{
-		return Iterator(&q[0] + start);
+		return Iterator(q.data() + start);
 	}
 
 	Iterator end()
 	{
-		return Iterator(&q[0] + q.size());
+		return Iterator(q.data() + q.size());
 	}
 };
 

@@ -53,19 +53,19 @@ struct Vec2
 		return this->x * v.x + this->y * v.y;
 	}
 
-	void Add(const Vec2<T>& v2)
+	void add(const Vec2<T>& v2)
 	{
 		this->x += v2.x;
 		this->y += v2.y;
 	}
 
-	void Subtract(const Vec2<T>& v2)
+	void subtract(const Vec2<T>& v2)
 	{
 		this->x -= v2.x;
 		this->y -= v2.y;
 	}
 
-	void Multiply(const T a)
+	void multiply(const T a)
 	{
 		this->x *= a;
 		this->y *= a;

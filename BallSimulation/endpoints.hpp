@@ -7,9 +7,9 @@
 
 struct Endpoints
 {
-	float left;       // Leftmost endpoint of the ball
-	float right;      // Rightmost endpoint of the ball
-	unsigned int ind; // Index of the ball in m_balls
+	float       left;  // Leftmost endpoint of the ball
+	float       right; // Rightmost endpoint of the ball
+	std::size_t ind;   // Index of the ball in m_balls
 };
 
 // Custom comparators to sort data

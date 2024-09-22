@@ -23,7 +23,9 @@
 class Solver
 {
 public:
-	virtual void update(float dt);
+	virtual void update(float dt); // Perform a full simulation cycle: check particle collisions, 
+	                               // update velocities of colliding particles, then update
+	                               // positions of each particle.
 
 	const std::vector<BallType>& getBallTypes() const { return m_ballTypes; }
 	const std::vector<Ball>&     getBalls()     const { return m_balls; }
@@ -36,10 +38,11 @@ protected:
 	std::vector<BallType> m_ballTypes;
 	std::vector<Ball> m_balls;
 
-	virtual bool overlap(unsigned int i, unsigned int j);  // Test whether balls at indices i, j overlap
-	void resolveCollision(unsigned int i, unsigned int j); // Resolve collision between i, j
 	virtual void solve() = 0;                              // Check collisions and update velocities
-	void updatePositions(float dt);
+
+	bool overlap(std::size_t i, std::size_t j);            // Test whether balls at indices i, j overlap
+	void resolveCollision(std::size_t i, std::size_t j);   // Resolve collision between i, j
+	void updatePositions(float dt);                        // Update positions of particles
 
 	World m_world;
 };

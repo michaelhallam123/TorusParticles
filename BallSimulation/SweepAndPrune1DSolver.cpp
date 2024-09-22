@@ -6,7 +6,7 @@ SweepAndPrune1DSolver::SweepAndPrune1DSolver(std::vector<BallType> ballTypes)
 {
 	// Initialise and sort m_leftSortedEnds and m_rightSortedEnds
 
-	for (unsigned int i = 0; i < m_balls.size(); i++)
+	for (std::size_t i = 0; i < m_balls.size(); i++)
 	{
 		const Ball& b = m_balls[i];
 		float r = m_ballTypes[b.typeindex].radius;
@@ -26,7 +26,7 @@ SweepAndPrune1DSolver::SweepAndPrune1DSolver(std::vector<BallType> ballTypes)
 
 	// Initialise and allocate space for sweep queues and stacks
 
-	for (int i = 0; i < m_ballTypes.size(); i++)
+	for (std::size_t i = 0; i < m_ballTypes.size(); i++)
 	{
 		m_sweepQueues.push_back({});
 		m_sweepQueues.back().reserve(m_ballTypes[i].count);
@@ -88,7 +88,7 @@ void SweepAndPrune1DSolver::solve()
 		if (e1.left >= rightEnd)
 			break;
 
-		m_balls[e1.ind].position.Add(rightTranslate);
+		m_balls[e1.ind].position.add(rightTranslate);
 
 		for (Queue<Endpoints>& q : m_sweepQueues)
 		{
@@ -100,7 +100,7 @@ void SweepAndPrune1DSolver::solve()
 				checkCollision(e1, e2);
 			}
 		}
-		m_balls[e1.ind].position.Subtract(rightTranslate);
+		m_balls[e1.ind].position.subtract(rightTranslate);
 	}
 
 	// Third and final sweep: deal with balls crossing left-hand boundary
@@ -110,29 +110,28 @@ void SweepAndPrune1DSolver::solve()
 		if (e.left >= m_world.xMin)
 			break;
 
-		m_balls[e.ind].position.Add(rightTranslate);
+		m_balls[e.ind].position.add(rightTranslate);
 		m_sweepStacks[m_balls[e.ind].typeindex].push_back(e);
 	}
 
-	int startind = 0;
+	std::size_t startind = 0;
 
 	while (startind < m_rightSortedEnds.size() && m_rightSortedEnds[startind].right > m_world.xMax)
 		startind++;
 
-	for (int i = startind; i < m_rightSortedEnds.size(); i++)
+	for (std::size_t i = startind; i < m_rightSortedEnds.size(); i++)
 	{
 		if (m_rightSortedEnds[i].right < leftEnd)
 			break;
 
 		Endpoints& e1 = m_rightSortedEnds[i];
-		const unsigned int& i1 = e1.ind;
 
 		for (std::vector<Endpoints>& s : m_sweepStacks)
 		{
 
 			while (!s.empty() && (e1.right - m_world.xWidth < s.back().left))
 			{
-				m_balls[s.back().ind].position.Subtract(rightTranslate);
+				m_balls[s.back().ind].position.subtract(rightTranslate);
 				s.pop_back();
 			}
 
@@ -149,7 +148,7 @@ void SweepAndPrune1DSolver::solve()
 	{
 		while (!s.empty())
 		{
-			m_balls[s.back().ind].position.Subtract(rightTranslate);
+			m_balls[s.back().ind].position.subtract(rightTranslate);
 			s.pop_back();
 		}
 	}
@@ -165,17 +164,17 @@ void SweepAndPrune1DSolver::checkCollision(Endpoints& e1, Endpoints& e2)
 		                                                         {0.0f,  0.0f          }, 
 		                                                         {0.0f,  m_world.yWidth} };
 
-	const unsigned int& i1 = e1.ind;
-	const unsigned int& i2 = e2.ind;
+	std::size_t i1 = e1.ind;
+	std::size_t i2 = e2.ind;
 
 	for (Vec2<float> translate : verticalTranslates)
 	{
-		m_balls[i1].position.Add(translate);
+		m_balls[i1].position.add(translate);
 		if (overlap(i1, i2))
 		{
 			resolveCollision(i1, i2);
 		}
-		m_balls[i1].position.Subtract(translate);
+		m_balls[i1].position.subtract(translate);
 	}
 }
 
@@ -194,8 +193,8 @@ void SweepAndPrune1DSolver::update(float dt)
 
 	for (Endpoints& e : m_leftSortedEnds)
 	{
-		Ball        & b = m_balls[e.ind];
-		Vec2<float> & p = b.position;
+		Ball&        b = m_balls[e.ind];
+		Vec2<float>& p = b.position;
 
 		e.left  = p.x - m_ballTypes[b.typeindex].radius;
 		e.right = p.x + m_ballTypes[b.typeindex].radius;
@@ -203,8 +202,8 @@ void SweepAndPrune1DSolver::update(float dt)
 
 	for (Endpoints& e : m_rightSortedEnds)
 	{
-		Ball        & b = m_balls[e.ind];
-		Vec2<float> & p = b.position;
+		Ball&        b = m_balls[e.ind];
+		Vec2<float>& p = b.position;
 
 		e.left  = p.x - m_ballTypes[b.typeindex].radius;
 		e.right = p.x + m_ballTypes[b.typeindex].radius;
@@ -219,27 +218,27 @@ void SweepAndPrune1DSolver::insertionSortEnds()
 {
 	// Insertion sort m_leftSortedEnds (increasing by left endpoint)
 
-	for (int i = 1; i < m_leftSortedEnds.size(); i++)
+	for (std::size_t i = 1; i < m_leftSortedEnds.size(); i++)
 	{
-		int j = i - 1;
-
-		while (j >= 0 && m_leftSortedEnds[j].left > m_leftSortedEnds[j + 1].left)
+		for (std::size_t j = i; j > 0; j--)
 		{
-			std::swap(m_leftSortedEnds[j], m_leftSortedEnds[j + 1]);
-			j--;
+			if (m_leftSortedEnds[j - 1].left > m_leftSortedEnds[j].left)
+				std::swap(m_leftSortedEnds[j-1], m_leftSortedEnds[j]);
+			else
+				break;
 		}
 	}
 
 	// Insertion sort m_rightSortedEnds (decreasing by right endpoint)
 
-	for (int i = 1; i < m_rightSortedEnds.size(); i++)
+	for (std::size_t i = 1; i < m_rightSortedEnds.size(); i++)
 	{
-		int j = i - 1;
-
-		while (j >= 0 && m_rightSortedEnds[j].right < m_rightSortedEnds[j + 1].right)
+		for (std::size_t j = i; j > 0; j--)
 		{
-			std::swap(m_rightSortedEnds[j], m_rightSortedEnds[j + 1]);
-			j--;
+			if (m_rightSortedEnds[j - 1].right < m_rightSortedEnds[j].right)
+				std::swap(m_rightSortedEnds[j-1], m_rightSortedEnds[j]);
+			else
+				break;
 		}
 	}
 }

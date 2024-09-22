@@ -15,9 +15,9 @@ void BruteForceSolver::solve()
 	  { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
 	  { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
 
-	for (unsigned int i = 0; i < m_balls.size(); i++)
+	for (std::size_t i = 0; i < m_balls.size(); i++)
 	{
-		for (unsigned int j = i+1; j < m_balls.size(); j++)
+		for (std::size_t j = i+1; j < m_balls.size(); j++)
 		{
 			for (Vec2<float> displacement : displacements)
 			{

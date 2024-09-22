@@ -148,6 +148,7 @@
     <ClCompile Include="BruteForceSolver.cpp" />
     <ClCompile Include="loadPreset.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="SpatialHashSolver.cpp" />
     <ClCompile Include="SweepAndPrune1DSolver.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="GLDebug.hpp" />
     <ClInclude Include="Endpoints.hpp" />
     <ClInclude Include="loadPreset.hpp" />
+    <ClInclude Include="SpatialHashSolver.hpp" />
     <ClInclude Include="SweepAndPrune1DSolver.hpp" />
     <ClInclude Include="Queue.hpp" />
     <ClInclude Include="Renderer.hpp" />

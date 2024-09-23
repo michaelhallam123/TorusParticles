@@ -35,12 +35,14 @@ private:
 	const World& m_world;
 
 	// Vectors of IDs for OpenGL objects
-	std::vector<unsigned int> m_vao;
-	std::vector<unsigned int> m_vbo;
-	std::vector<unsigned int> m_ebo;
+	std::vector<unsigned int> m_vaos;
+	std::vector<unsigned int> m_vbos;
+	std::vector<unsigned int> m_ebos;
 	Shader m_shader;
 
 	// Vectors of vertex and index data for OpenGL buffers
 	std::vector<std::vector<GLVertex>> m_vertexData;
 	std::vector<std::vector<std::size_t>> m_indices;
+
+	void updateVertexData();
 };

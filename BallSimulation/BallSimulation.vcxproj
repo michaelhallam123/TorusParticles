@@ -159,6 +159,7 @@
     <ClInclude Include="Ball.hpp" />
     <ClInclude Include="BallType.hpp" />
     <ClInclude Include="BruteForceSolver.hpp" />
+    <ClInclude Include="Cell.hpp" />
     <ClInclude Include="GLVertex.hpp" />
     <ClInclude Include="GLDebug.hpp" />
     <ClInclude Include="Endpoints.hpp" />

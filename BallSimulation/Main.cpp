@@ -18,16 +18,17 @@
 #include "Renderer.hpp"
 #include "BruteForceSolver.hpp"
 #include "SweepAndPrune1DSolver.hpp"
+#include "SpatialHashSolver.hpp"
 #include "loadPreset.hpp"
 
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("../res/preset1.json");
+    std::vector<BallType> preset = loadPreset("../res/preset3.json");
     float dt = 0.002f;
 
 	// Initialise simulation
-    SweepAndPrune1DSolver solver(preset);
+    SpatialHashSolver solver(preset);
 
     // Initialise renderer
     unsigned int resolution = 860;

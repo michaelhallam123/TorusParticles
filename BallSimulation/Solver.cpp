@@ -78,6 +78,9 @@ bool Solver::overlap(std::size_t i, std::size_t j)
 
 void Solver::resolveCollision(std::size_t i, std::size_t j)
 {
+	if (i == j)
+		std::cout << "WARNING: colliding identical balls" << std::endl;
+
 	Ball& b1 = m_balls[i];
 	Ball& b2 = m_balls[j];
 

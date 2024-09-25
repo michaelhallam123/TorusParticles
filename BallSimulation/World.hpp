@@ -10,11 +10,14 @@ struct World
 	float xMin;
 	float xMax;
 	float xWidth;
+	float xMid;
 
 	float yMin;
 	float yMax;
 	float yWidth;
+	float yMid;
 
 	World(float xMin, float xMax, float yMin, float yMax)
-		: xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), xWidth(xMax - xMin), yWidth(yMax - yMin) {}
+		: xMin(xMin), xMax(xMax), xWidth(xMax - xMin), xMid((xMax + xMin)/2.0f),
+		  yMin(yMin), yMax(yMax), yWidth(yMax - yMin), yMid((yMax + yMin)/2.0f) {}
 };

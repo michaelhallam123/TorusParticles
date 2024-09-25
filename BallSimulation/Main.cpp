@@ -24,7 +24,7 @@
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("../res/preset3.json");
+    std::vector<BallType> preset = loadPreset("../res/preset4.json");
     float dt = 0.002f;
 
 	// Initialise simulation

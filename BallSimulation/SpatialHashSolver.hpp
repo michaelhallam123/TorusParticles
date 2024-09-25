@@ -19,11 +19,15 @@ private:
 	void clearCells();
 	void populateCells();
 	void checkCollisions();
-	void compareCells(Cell& c1, Cell& c2);
-	void checkPrimitiveNeighbors(std::size_t r, std::size_t c);
+	void findCollisionsInCell(Cell& c1);
 
 	std::size_t hashCell(std::size_t row, std::size_t col);
 	std::size_t posToCell(float x);
+
+	void shiftUp(std::size_t r, std::size_t c);
+	void shiftDown(std::size_t r, std::size_t c);
+	void shiftLeft(std::size_t r, std::size_t c);
+	void shiftRight(std::size_t r, std::size_t c);
 
 	// Collisions cell
 

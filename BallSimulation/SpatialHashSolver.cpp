@@ -37,9 +37,9 @@ void SpatialHashSolver::populateCells()
 			yHigh += m_world.yWidth;
 		}
 
-		for (std::size_t r = posToCell(xLeft); r <= posToCell(xRight); ++r)
+		for (std::size_t r = posToCell(yLow); r <= posToCell(yHigh); ++r)
 		{
-			for (std::size_t c = posToCell(yLow); c <= posToCell(yHigh); ++c)
+			for (std::size_t c = posToCell(xLeft); c <= posToCell(xRight); ++c)
 			{
 				m_grid[hashCell(r, c)].addBall(i);
 			}
@@ -58,86 +58,36 @@ void SpatialHashSolver::solve()
 
 void SpatialHashSolver::checkCollisions()
 /**
- * Iterate through each cell checking its primitive neighbours
+ * Iterate through each cell checking for collisions
  */
 {
-	static const Vec2<float> upTranslate(0.0f, m_world.yWidth);
-	static const Vec2<float> rightTranslate(m_world.xWidth, 0.0f);
-
-	for (std::size_t r = 1; r < m_numRows - 1; ++r)
+	for (std::size_t r = 0; r < m_numRows; ++r)
 	{
-		for (std::size_t c = 0; c < m_numRows - 1; ++c)
+		for (std::size_t c = 0; c < m_numRows; ++c)
 		{
-			checkPrimitiveNeighbors(r, c);
+			findCollisionsInCell(m_grid[hashCell(r, c)]);
 		}
 	}
-
-	std::size_t r = 0;
-
-	// TODO: Fix this by writing an iterator for Cell object!
-
-	for (std::size_t c = 0; c < m_numRows; ++c)
-	{
-		for (std::size_t id : m_grid[hashCell(m_numRows - 1, c)].m_ballIDs)
-		{
-			m_balls[id].position -= upTranslate;
-		}
-	}
-	for (std::size_t c = 0; c < m_numRows; ++c)
-	{
-		checkPrimitiveNeighbors(r, c);
-	}
-	for (std::size_t c = 0; c < m_numRows; ++c)
-	{
-		for (std::size_t id : m_grid[hashCell(m_numRows - 1, c)].m_ballIDs)
-		{
-			m_balls[id].position += upTranslate;
-		}
-	}
-
-	r = m_numRows - 1;
-
-	for (std::size_t c = 0; c < m_numRows; ++c)
-	{
-		for (std::size_t id : m_grid[hashCell(0, c)].m_ballIDs)
-		{
-			m_balls[id].position += upTranslate;
-		}
-	}
-	for (std::size_t c = 0; c < m_numRows; ++c)
-	{
-		checkPrimitiveNeighbors(r, c);
-	}
-	for (std::size_t c = 0; c < m_numRows; ++c)
-	{
-		for (std::size_t id : m_grid[hashCell(0, c)].m_ballIDs)
-		{
-			m_balls[id].position -= upTranslate;
-		}
-	}
-
 }
 
-void SpatialHashSolver::checkPrimitiveNeighbors(std::size_t r, std::size_t c)
+void SpatialHashSolver::findCollisionsInCell(Cell& c1)
 {
-	compareCells(m_grid[hashCell(r, c)], m_grid[hashCell(r, c)]);
-	compareCells(m_grid[hashCell(r, c)], m_grid[hashCell(r + 1, c)]);
-	compareCells(m_grid[hashCell(r, c)], m_grid[hashCell(r + 1, c + 1)]);
-	compareCells(m_grid[hashCell(r, c)], m_grid[hashCell(r, c + 1)]);
-	compareCells(m_grid[hashCell(r, c)], m_grid[hashCell(r + m_numRows - 1, c + 1)]);
-}
+	static const std::vector<Vec2<float>> translates = 
+	{ { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
+	  { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
+	  { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
 
-void SpatialHashSolver::compareCells(Cell& c1, Cell& c2)
-{
 	for (std::size_t i1 = 0; i1 < c1.numBalls; ++i1)
 	{
-		for (std::size_t i2 = 0; i2 < c2.numBalls; ++i2)
+		for (std::size_t i2 = i1+1; i2 < c1.numBalls; ++i2)
 		{
-			if (c1.m_ballIDs[i1] == c2.m_ballIDs[i2])
-				continue;
-
-			if (overlap(c1.m_ballIDs[i1], c2.m_ballIDs[i2]))
-				resolveCollision(c1.m_ballIDs[i1], c2.m_ballIDs[i2]);
+			for (Vec2<float> translate : translates)
+			{
+				m_balls[c1.ballIDs[i1]].position += translate;
+				if (overlap(c1.ballIDs[i1], c1.ballIDs[i2]))
+					resolveCollision(c1.ballIDs[i1], c1.ballIDs[i2]);
+				m_balls[c1.ballIDs[i1]].position -= translate;
+			}
 		}
 	}
 }
@@ -155,5 +105,7 @@ std::size_t SpatialHashSolver::hashCell(std::size_t row, std::size_t col)
 
 std::size_t SpatialHashSolver::posToCell(float x)
 {
-	return (std::size_t)(((x - m_world.xMin) / m_world.xWidth) * (float)m_numRows);
+	std::size_t i = (std::size_t)(((x - m_world.xMin) / m_world.xWidth) * (float)m_numRows);
+
+	return i;
 }

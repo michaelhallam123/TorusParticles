@@ -42,6 +42,9 @@
     <ClCompile Include="SpatialHashSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BruteForceMultithreadSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vec2.hpp">
@@ -93,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Cell.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BruteForceMultithreadSolver.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

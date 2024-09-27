@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BruteForceMultithreadSolver.cpp" />
     <ClCompile Include="BruteForceSolver.cpp" />
     <ClCompile Include="loadPreset.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Ball.hpp" />
     <ClInclude Include="BallType.hpp" />
+    <ClInclude Include="BruteForceMultithreadSolver.hpp" />
     <ClInclude Include="BruteForceSolver.hpp" />
     <ClInclude Include="Cell.hpp" />
     <ClInclude Include="GLVertex.hpp" />

@@ -1,3 +1,10 @@
+BEFORE RELEASE:
+-Multithreading for larger ball counts
+-Instancing
+-CMake
+
+OPTIONAL:
+
 Fix antialiasing so that balls actually touch on collision - may need to alter texture coordinates for this
 
 Also antialiasing still looks somewhat jagged
@@ -15,13 +22,10 @@ Add pause and step through simulation functionality
 Add window icon
 
 Solvers:
--SpatialHashSolver
 -QuadTreeSolver
 -Deterministic solver
 
 Add fps counter
-
-Add external forces for wave simulations
 
 Cache coefficients in physics computations to try and save time
 

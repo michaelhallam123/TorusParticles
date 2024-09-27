@@ -16,8 +16,8 @@ std::vector<BallType> loadPreset(const std::string& filepath)
 	std::vector<BallType> res;
 
 	std::ifstream file(filepath);
-	Json::Value jsonTotal;
-	Json::Reader reader;
+	Json::Value   jsonTotal;
+	Json::Reader  reader;
 
 	reader.parse(file, jsonTotal);
 

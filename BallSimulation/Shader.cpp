@@ -23,7 +23,7 @@ Shader::~Shader()
 std::string Shader::parseShader(const std::string& path) {
 
     std::stringstream result;
-    std::ifstream file(path);
+    std::ifstream     file(path);
 
     if (file.is_open())
     {
@@ -46,7 +46,8 @@ std::string Shader::parseShader(const std::string& path) {
 unsigned int Shader::compileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
+    const char*  src = source.c_str();
+
     glShaderSource(id, 1, &src, nullptr);
     glCompileShader(id);
 

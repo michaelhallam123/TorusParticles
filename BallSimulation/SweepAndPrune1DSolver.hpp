@@ -15,7 +15,7 @@ class SweepAndPrune1DSolver : public Solver
 {
 public:
 	SweepAndPrune1DSolver(std::vector<BallType> ballTypes);
-	void solve() override;
+	void solve()          override;
 	void update(float dt) override;
 
 private:

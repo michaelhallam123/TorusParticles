@@ -9,7 +9,7 @@ SweepAndPrune1DSolver::SweepAndPrune1DSolver(std::vector<BallType> ballTypes)
 	for (std::size_t i = 0; i < m_balls.size(); i++)
 	{
 		const Ball& b = m_balls[i];
-		float r = m_ballTypes[b.typeindex].radius;
+		float       r = m_ballTypes[b.typeindex].radius;
 
 		Endpoints e;
 

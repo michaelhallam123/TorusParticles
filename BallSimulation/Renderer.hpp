@@ -31,8 +31,8 @@ private:
 
 	// References to ball and world data in Solver object
 	const std::vector<BallType>& m_ballTypes;
-	const std::vector<Ball>& m_balls;
-	const World& m_world;
+	const std::vector<Ball>&     m_balls;
+	const World&                 m_world;
 
 	// Vectors of IDs for OpenGL objects
 	std::vector<unsigned int> m_vaos;
@@ -41,7 +41,7 @@ private:
 	Shader m_shader;
 
 	// Vectors of vertex and index data for OpenGL buffers
-	std::vector<std::vector<GLVertex>> m_vertexData;
+	std::vector<std::vector<GLVertex>>    m_vertexData;
 	std::vector<std::vector<std::size_t>> m_indices;
 
 	void updateVertexData();

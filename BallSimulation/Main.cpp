@@ -18,6 +18,7 @@
 
 #include "Renderer.hpp"
 #include "BruteForceSolver.hpp"
+#include "BruteForceMultithreadSolver.hpp"
 #include "SweepAndPrune1DSolver.hpp"
 #include "SpatialHashSolver.hpp"
 #include "loadPreset.hpp"
@@ -25,8 +26,8 @@
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("../res/preset1.json");
-    float dt = 0.001f;
+    std::vector<BallType> preset = loadPreset("../res/preset4.json");
+    float dt = 0.0056f;
 
 	// Initialise simulation
     SpatialHashSolver solver(preset);
@@ -41,9 +42,15 @@ int main()
 	// Simulation loop
     while (renderer.windowOpen())
     {
-        solver.update(dt);
+        float time = glfwGetTime();
 
+        solver.update(dt);
         renderer.draw();
+
+
+        float newTime = glfwGetTime();
+
+        std::cout << "Frame time: " << newTime - time << std::endl;
     }
 
     return 0;

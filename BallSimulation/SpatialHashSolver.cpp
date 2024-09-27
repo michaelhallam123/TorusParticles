@@ -6,9 +6,10 @@
 SpatialHashSolver::SpatialHashSolver(std::vector<BallType> ballTypes)
 	: Solver(ballTypes) 
 {
-	std::size_t numRows = 1 + (std::size_t)std::sqrt((double)m_balls.size());
-	m_numRows = numRows;
-	m_cellWidth = (m_world.xMax - m_world.xMin) / (float)m_numRows;
+	std::size_t numRows = 1 + static_cast<std::size_t>(std::sqrt(static_cast<double>(m_balls.size())));
+
+	m_numRows   = numRows;
+	m_cellWidth = (m_world.xMax - m_world.xMin) / static_cast<float>(m_numRows);
 
 	m_grid.resize(numRows * numRows); // Number of cells is order m_balls.size()
 }
@@ -105,7 +106,7 @@ std::size_t SpatialHashSolver::hashCell(std::size_t row, std::size_t col)
 
 std::size_t SpatialHashSolver::posToCell(float x)
 {
-	std::size_t i = (std::size_t)(((x - m_world.xMin) / m_world.xWidth) * (float)m_numRows);
+	std::size_t i = static_cast<std::size_t>(((x - m_world.xMin) / m_world.xWidth) * static_cast<float>(m_numRows));
 
 	return i;
 }

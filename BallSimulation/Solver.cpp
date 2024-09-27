@@ -2,6 +2,7 @@
 
 #include <random>
 #include <iostream>
+#include <cmath>
 
 Solver::Solver(std::vector<BallType> ballTypes)
 	: m_ballTypes(ballTypes), 
@@ -78,9 +79,6 @@ bool Solver::overlap(std::size_t i, std::size_t j)
 
 void Solver::resolveCollision(std::size_t i, std::size_t j)
 {
-	if (i == j)
-		std::cout << "WARNING: colliding identical balls" << std::endl;
-
 	Ball& b1 = m_balls[i];
 	Ball& b2 = m_balls[j];
 
@@ -118,11 +116,21 @@ void Solver::update(float dt)
 	updatePositions(dt);
 }
 
+/*
+Vec2<float> acceleration(Vec2<float> position, float time)
+{
+	return { 40.0f*position.x, 0.0f };
+}
+*/
+
 void Solver::updatePositions(float dt)
 {
+	static float time = 0;
+	time += dt;
 	for (Ball& b : m_balls)
 	{
 		b.position += b.velocity * dt;
+		//b.velocity += acceleration(b.position, time) * dt;
 
 		// Normalise positions to lie within world boundaries
 

@@ -36,7 +36,7 @@ protected:
 	Solver(std::vector<BallType> ballTypes);    
 
 	std::vector<BallType> m_ballTypes;
-	std::vector<Ball> m_balls;
+	std::vector<Ball>     m_balls;
 
 	virtual void solve() = 0;                              // Check collisions and update velocities
 

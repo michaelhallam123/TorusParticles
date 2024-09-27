@@ -18,6 +18,6 @@ public:
 	Window(unsigned int resolution);
 	~Window();
 
-	bool isOpen();                             // Check window hasn't been closed
+	bool        isOpen();                      // Check window hasn't been closed
 	GLFWwindow* getID() { return m_WindowID; } // Get GLFW window ID
 };

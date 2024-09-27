@@ -76,11 +76,11 @@ struct Queue
 {
 public:
 	using ValueType = T;
-	using Iterator = QueueIterator<Queue<T>>;
+	using Iterator  = QueueIterator<Queue<T>>;
 
 private:
 	std::vector<T> q;
-	std::size_t start;
+	std::size_t    start;
 
 public:
 	Queue()

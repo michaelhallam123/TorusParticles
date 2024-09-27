@@ -9,8 +9,9 @@
  * if so, whether their textures wrap across the screen 
  * boundaries (see the preset files in res/ for examples).
  * 
- * Support is available for a brute force algorithm and a sweep
- * and prune algorithm.
+ * Support is available for a brute force algorithm, a sweep
+ * and prune algorithm, and a spatial hashing algorithm. The
+ * best and recommended algorithm is the spatial hasher.
  */
 
 #include <iostream>
@@ -24,8 +25,8 @@
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("../res/preset4.json");
-    float dt = 0.002f;
+    std::vector<BallType> preset = loadPreset("../res/preset1.json");
+    float dt = 0.001f;
 
 	// Initialise simulation
     SpatialHashSolver solver(preset);
@@ -34,13 +35,15 @@ int main()
     unsigned int resolution = 860;
     Renderer renderer(solver, resolution);
 
+    float accumulatedTime = 0.0f;
+    float lastTime = glfwGetTime();
+
 	// Simulation loop
     while (renderer.windowOpen())
     {
-        //float time = glfwGetTime();
+        solver.update(dt);
 
         renderer.draw();
-        solver.update(dt);
     }
 
     return 0;

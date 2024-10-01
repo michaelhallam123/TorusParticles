@@ -3,6 +3,9 @@
 Dependencies/
 BallSimulation/Debug
 BallSimulation/Release
+*.sln
+*.vcxproj*
+TODO.txt
 
 # Ignore C++ intermediate files, etc.
 

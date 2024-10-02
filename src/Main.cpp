@@ -29,8 +29,6 @@ int main()
     std::vector<BallType> preset = loadPreset("presets/preset4.json");
     float dt = 0.0056f;
 
-    std::cout << "Loaded preset\n";
-
 	// Initialise simulation
     SpatialHashSolver solver(preset);
 
@@ -52,7 +50,7 @@ int main()
 
         float newTime = glfwGetTime();
 
-        std::cout << "Frame time: " << newTime - time << std::endl;
+        //std::cout << "Frame time: " << newTime - time << std::endl;
     }
 
     return 0;

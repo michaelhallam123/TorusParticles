@@ -19,7 +19,7 @@ FetchContent_Declare(
 set(GLAD_PROFILE "core"	CACHE STRING "OpenGL profile")
 set(GLAD_GENERATOR "c"	CACHE STRING "Language to generate the binding for")
 
-# Download jsoncpp
+# Find jsoncpp
 FetchContent_Declare(
     jsoncpp
     GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
@@ -27,6 +27,8 @@ FetchContent_Declare(
 
 set(JSONCPP_WITH_TESTS OFF CACHE INTERNAL "Compile and (for jsoncpp_check) run JsonCpp test executables")
 set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE INTERNAL "Automatically run unit-tests as a post build step")
+set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build jsoncpp_lib as a shared library.")
+set(BUILD_OBJECT_LIBS OFF CACHE INTERNAL "Build jsoncpp_lib as a object library.")
 
 FetchContent_MakeAvailable(glfw glad jsoncpp)
 

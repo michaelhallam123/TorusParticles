@@ -42,7 +42,7 @@ private:
 
 	// Vectors of vertex and index data for OpenGL buffers
 	std::vector<std::vector<GLVertex>>    m_vertexData;
-	std::vector<std::vector<std::size_t>> m_indices;
+	std::vector<std::vector<unsigned int>> m_indices;
 
 	void updateVertexData();
 };

@@ -29,12 +29,12 @@ Window::Window(unsigned int resolution)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // Initialise GLEW
-    if (glewInit() != GLEW_OK)
+    // Initialise GLAD
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Error: GLEW initialisation failed!" << std::endl;
+        std::cout << "Failed to initialize GLAD" << std::endl;
         return;
-    }
+    }   
 
     // Enable blending
     glEnable(GL_BLEND);

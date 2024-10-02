@@ -21,6 +21,19 @@ SweepAndPrune1DSolver::SweepAndPrune1DSolver(std::vector<BallType> ballTypes)
 		m_rightSortedEnds.push_back(e);
 	}
 
+	// Custom comparators to sort data
+	struct
+	{
+		bool operator()(const Endpoints& a, const Endpoints& b) const { return a.left < b.left; }
+	}
+	leftEndsIncreasing;
+
+	struct
+	{
+		bool operator()(const Endpoints& a, const Endpoints& b) const { return a.right > b.right; }
+	}
+	rightEndsDecreasing;
+
 	std::sort(m_leftSortedEnds.begin(),  m_leftSortedEnds.end(),  leftEndsIncreasing);
 	std::sort(m_rightSortedEnds.begin(), m_rightSortedEnds.end(), rightEndsDecreasing);
 

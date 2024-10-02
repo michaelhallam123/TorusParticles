@@ -12,15 +12,3 @@ struct Endpoints
 	std::size_t ind;   // Index of the ball in m_balls
 };
 
-// Custom comparators to sort data
-struct
-{
-	bool operator()(const Endpoints& a, const Endpoints& b) const { return a.left < b.left; }
-}
-leftEndsIncreasing;
-
-struct
-{
-	bool operator()(const Endpoints& a, const Endpoints& b) const { return a.right > b.right; }
-}
-rightEndsDecreasing;

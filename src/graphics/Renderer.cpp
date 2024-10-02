@@ -3,15 +3,15 @@
 #include <iostream>
 #include <vector>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "Renderer.hpp"
 #include "GLDebug.hpp"
 
 // Filepaths for glsl shader programs
-static const char* vertexShaderPath = "../BallSimulation/shader.vs";
-static const char* fragmentShaderPath = "../BallSimulation/shader.fs";
+static const char* vertexShaderPath = "shaders/shader.vs";
+static const char* fragmentShaderPath = "shaders/shader.fs";
 
 Renderer::Renderer(const Solver& solver, unsigned int resolution)
 	: m_ballTypes(solver.getBallTypes()), 
@@ -85,7 +85,7 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
         // Create and set up element buffer object
         glGenBuffers(1, &m_ebos[i]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebos[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_ballTypes[i].count * indicesPerQuad * vertexMultiplier * sizeof(std::size_t), m_indices[i].data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_ballTypes[i].count * indicesPerQuad * vertexMultiplier * sizeof(unsigned int), m_indices[i].data(), GL_DYNAMIC_DRAW);
 
         // Set texture coordinates
         for (std::size_t j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)

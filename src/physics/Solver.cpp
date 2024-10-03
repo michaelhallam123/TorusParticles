@@ -33,8 +33,8 @@ Solver::Solver(std::vector<BallType> ballTypes)
 		float x_meanVelocity = bt.totalMomentum.x / (bt.mass * (float)bt.count);
 		float y_meanVelocity = bt.totalMomentum.y / (bt.mass * (float)bt.count);
 
-		std::normal_distribution<float> x_velDistribution(x_meanVelocity, 0.1f);
-		std::normal_distribution<float> y_velDistribution(y_meanVelocity, 0.1f);
+		std::normal_distribution<float> x_velDistribution(x_meanVelocity, 0.12f);
+		std::normal_distribution<float> y_velDistribution(y_meanVelocity, 0.12f);
 
 		Vec2<float> runningVelocity(0.0f, 0.0f);
 

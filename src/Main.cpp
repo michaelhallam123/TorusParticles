@@ -26,8 +26,8 @@
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("presets/preset4.json");
-    float dt = 0.0056f;
+    std::vector<BallType> preset = loadPreset("presets/preset1.json");
+    float dt = 0.01f;
 
 	// Initialise simulation
     SpatialHashSolver solver(preset);
@@ -36,21 +36,12 @@ int main()
     unsigned int resolution = 860;
     Renderer renderer(solver, resolution);
 
-    float accumulatedTime = 0.0f;
-    float lastTime = glfwGetTime();
-
 	// Simulation loop
     while (renderer.windowOpen())
     {
-        float time = glfwGetTime();
-
         solver.update(dt);
+
         renderer.draw();
-
-
-        float newTime = glfwGetTime();
-
-        //std::cout << "Frame time: " << newTime - time << std::endl;
     }
 
     return 0;

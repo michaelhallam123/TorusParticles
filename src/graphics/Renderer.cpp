@@ -56,10 +56,10 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
     // Setup vertex buffer object for texture coordinates
     glGenBuffers(1, &m_texCoordsVBO);
     glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
-    glBufferData(GL_ARRAY_BUFFER,                  // Target
+    glBufferData(GL_ARRAY_BUFFER,                        // Target
                  m_texCoords.size()*sizeof(Vec2<float>), // Size (in bytes)
-                 (void*)m_texCoords.data(),        // Data
-                 GL_STATIC_DRAW                    // Usage
+                 (void*)m_texCoords.data(),              // Data
+                 GL_STATIC_DRAW                          // Usage
                 );
 
     std::array<Vec2<float>, 9> baseOffsets = 
@@ -84,10 +84,10 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
     // Setup vertex buffer object for offsets
     glGenBuffers(1, &m_offsetsVBO);
     glBindBuffer(GL_ARRAY_BUFFER, m_offsetsVBO);
-    glBufferData(GL_ARRAY_BUFFER,                // Target
+    glBufferData(GL_ARRAY_BUFFER,                      // Target
                  m_offsets.size()*sizeof(Vec2<float>), // Size (in bytes)
-                 (void*)m_offsets.data(),        // Data
-                 GL_STATIC_DRAW                  // Usage
+                 (void*)m_offsets.data(),              // Data
+                 GL_STATIC_DRAW                        // Usage
                 );
 
     for (std::size_t i = 0; i < m_ballTypes.size(); i++)
@@ -105,21 +105,21 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
         // Create vertex buffer object for ball positions
         glGenBuffers(1, &m_positionVBOs[i]);
         glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
-        glBufferData(GL_ARRAY_BUFFER,                          // Target
-                     m_ballTypes[i].count * sizeof(Ball),      // Size (in bytes)
-                     nullptr,                                  // Data
-                     GL_DYNAMIC_DRAW                           // 
+        glBufferData(GL_ARRAY_BUFFER,                     // Target
+                     m_ballTypes[i].count * sizeof(Ball), // Size (in bytes)
+                     nullptr,                             // Data
+                     GL_DYNAMIC_DRAW                      // Usage
                     );
         
         // Texture coordinates attribute (maps to a_texCoord in shader.vs)
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
-        glVertexAttribPointer(0,                 // Index
-                              2,                 // Size
-                              GL_FLOAT,          // Type
-                              GL_FALSE,          // Normalized
+        glVertexAttribPointer(0,                   // Index
+                              2,                   // Size
+                              GL_FLOAT,            // Type
+                              GL_FALSE,            // Normalized
                               sizeof(Vec2<float>), // Stride
-                              0                  // Offset
+                              0                    // Offset
                              );
         glVertexAttribDivisor(0, 0);
         
@@ -127,12 +127,12 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
         // Offset attribute (maps to a_offset in shader.vs)
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, m_offsetsVBO);
-        glVertexAttribPointer(1,                 // Index
-                              2,                 // Size
-                              GL_FLOAT,          // Type
-                              GL_FALSE,          // Normalized
-                              sizeof(Vec2<float>),   // Stride
-                              0                  // Offset
+        glVertexAttribPointer(1,                   // Index
+                              2,                   // Size
+                              GL_FLOAT,            // Type
+                              GL_FALSE,            // Normalized
+                              sizeof(Vec2<float>), // Stride
+                              0                    // Offset
                              );
         glVertexAttribDivisor(1, 0); 
         

@@ -27,7 +27,7 @@ int main()
 {
 	// Set simulation parameters
     std::vector<BallType> preset = loadPreset("presets/preset4.json");
-    float dt = 0.01f;
+    float dt = 0.0005f;
 
 	// Initialise simulation
     SpatialHashSolver solver(preset);

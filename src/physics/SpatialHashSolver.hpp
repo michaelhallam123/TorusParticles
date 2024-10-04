@@ -22,11 +22,12 @@ private:
 	void findCollisionsInCell(Cell& c1);
 
 	std::size_t hashCell(std::size_t row, std::size_t col);
-	std::size_t posToCell(float x);
+	int posToCell(float x);
 
-	void shiftUp(std::size_t r, std::size_t c);
-	void shiftDown(std::size_t r, std::size_t c);
-	void shiftLeft(std::size_t r, std::size_t c);
-	void shiftRight(std::size_t r, std::size_t c);
+	bool overlap(BallInfo& info1, BallInfo& info2);
+
+	Vec2<float> offsetToTranslate(Offset& offset);
+
+	void resolveCollision(BallInfo& info1, BallInfo& info2);
 
 };

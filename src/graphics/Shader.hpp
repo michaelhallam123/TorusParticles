@@ -25,6 +25,7 @@ public:
 
 	//Set uniforms
 	void setUniform1i(const std::string& name, int value);
+	void setUniform1f(const std::string& name, float value);
 	void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 	void setUniform4f(const std::string& name, std::array<float, 4> v);
 

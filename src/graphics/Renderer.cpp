@@ -16,7 +16,9 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
       m_balls(solver.getBalls()), 
       m_world(solver.getWorld()),
       m_window(resolution),
-      m_shader(vertexShaderPath, fragmentShaderPath)
+      m_shader(vertexShaderPath, fragmentShaderPath),
+      m_texCoordsVBO(0),
+      m_offsetsVBO(0)
 /**
  * Each balltype has its own OpenGL vao, vbo, and ebo,
  * stored in the class members m_vaos, m_vbos, and
@@ -25,85 +27,127 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
  * data for the i-th balltype in m_indices[i].
  * 
  * A common shader is shared by all balltypes - colors
- * are changed by varying a uniform.
+ * are changed by iterating over balltypes and varying
+ * the uniform u_color.
  */
 {
     // Reserve space for vertex data
-    m_vertexData.resize(m_ballTypes.size());
-    m_indices.resize(m_ballTypes.size());
-    m_vaos.resize(m_ballTypes.size());
-    m_vbos.resize(m_ballTypes.size());
-    m_ebos.resize(m_ballTypes.size());
+    m_VAOs.resize(m_ballTypes.size());
+    m_positionVBOs.resize(m_ballTypes.size());
+
+    std::array<Vec2<float>, 6> baseQuad = 
+    {
+        // First triangle
+        Vec2<float>{-1.0f, -1.0f},
+        Vec2<float>{-1.0f,  1.0f},
+        Vec2<float>{ 1.0f, -1.0f},
+        // Second triangle
+        Vec2<float>{ 1.0f, -1.0f},
+        Vec2<float>{-1.0f,  1.0f},
+        Vec2<float>{ 1.0f,  1.0f}
+    };
+
+    // Set texture coordinates (nine copies of baseQuad)
+    for (std::size_t i = 0; i < m_texCoords.size(); i++)
+    {
+        m_texCoords[i] = baseQuad[i % 6];
+    }
+
+    // Setup vertex buffer object for texture coordinates
+    glGenBuffers(1, &m_texCoordsVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
+    glBufferData(GL_ARRAY_BUFFER,                  // Target
+                 m_texCoords.size()*sizeof(Vec2<float>), // Size (in bytes)
+                 (void*)m_texCoords.data(),        // Data
+                 GL_STATIC_DRAW                    // Usage
+                );
+
+    std::array<Vec2<float>, 9> baseOffsets = 
+    {
+        Vec2<float>{ 0.0f,  0.0f}, // Use only this offset when BallType has wrapTexture == false
+        Vec2<float>{-2.0f, -2.0f},
+        Vec2<float>{-2.0f,  0.0f},
+        Vec2<float>{-2.0f,  2.0f},
+        Vec2<float>{ 0.0f, -2.0f},
+        Vec2<float>{ 0.0f,  2.0f},
+        Vec2<float>{ 2.0f, -2.0f},
+        Vec2<float>{ 2.0f,  0.0f},
+        Vec2<float>{ 2.0f,  2.0f}
+    };
+
+    // Set offsets (in normalized device coordinates)
+    for (std::size_t i = 0; i < m_offsets.size(); i++)
+    {
+        m_offsets[i] = baseOffsets[i/6];
+    }
+
+    // Setup vertex buffer object for offsets
+    glGenBuffers(1, &m_offsetsVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_offsetsVBO);
+    glBufferData(GL_ARRAY_BUFFER,                // Target
+                 m_offsets.size()*sizeof(Vec2<float>), // Size (in bytes)
+                 (void*)m_offsets.data(),        // Data
+                 GL_STATIC_DRAW                  // Usage
+                );
 
     for (std::size_t i = 0; i < m_ballTypes.size(); i++)
     {
         if (m_ballTypes[i].render == false)
             continue;
 
-        const unsigned int verticesPerQuad = 4;
-
-        unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
-        // If a balltype has wrapTexture set to true we draw nine copies,
-        // otherwise we draw one
-
-        // Create space for vertex data
-        m_vertexData[i].resize(m_ballTypes[i].count * verticesPerQuad * vertexMultiplier);
-        // m_vertexData will later be filled in draw() via updateVertexData()
+        unsigned int numCopies = m_ballTypes[i].wrapTexture ? 9 : 1;
+        // Draw 9 copies when wrapTexture==true, 1 copy when wrapTexture==false
 
         // Create vertex array object
-        glGenVertexArrays(1, &m_vaos[i]);
-        glBindVertexArray(m_vaos[i]);
+        glGenVertexArrays(1, &m_VAOs[i]);
+        glBindVertexArray(m_VAOs[i]);
 
-        // Create vertex buffer object
-        glGenBuffers(1, &m_vbos[i]);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbos[i]);
-        glBufferData(GL_ARRAY_BUFFER, m_ballTypes[i].count * verticesPerQuad * vertexMultiplier * sizeof(GLVertex), nullptr, GL_DYNAMIC_DRAW);
+        // Create vertex buffer object for ball positions
+        glGenBuffers(1, &m_positionVBOs[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
+        glBufferData(GL_ARRAY_BUFFER,                          // Target
+                     m_ballTypes[i].count * sizeof(Ball),      // Size (in bytes)
+                     nullptr,                                  // Data
+                     GL_DYNAMIC_DRAW                           // 
+                    );
         
-        // Quad coordinates attribute
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void*)offsetof(GLVertex, position));
+        // Texture coordinates attribute (maps to a_texCoord in shader.vs)
         glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
+        glVertexAttribPointer(0,                 // Index
+                              2,                 // Size
+                              GL_FLOAT,          // Type
+                              GL_FALSE,          // Normalized
+                              sizeof(Vec2<float>), // Stride
+                              0                  // Offset
+                             );
+        glVertexAttribDivisor(0, 0);
         
-        // Texture coordinates attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (void*)offsetof(GLVertex, textureCoords));
+        
+        // Offset attribute (maps to a_offset in shader.vs)
         glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, m_offsetsVBO);
+        glVertexAttribPointer(1,                 // Index
+                              2,                 // Size
+                              GL_FLOAT,          // Type
+                              GL_FALSE,          // Normalized
+                              sizeof(Vec2<float>),   // Stride
+                              0                  // Offset
+                             );
+        glVertexAttribDivisor(1, 0); 
         
-        // Create and populate index data
-        const unsigned int indicesPerQuad = 6;
-        m_indices[i].reserve(m_ballTypes[i].count * indicesPerQuad * vertexMultiplier);
-        for (std::size_t j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
-        {
-            m_indices[i].push_back(4 * j + 0);
-            m_indices[i].push_back(4 * j + 1);
-            m_indices[i].push_back(4 * j + 2);
-            m_indices[i].push_back(4 * j + 1);
-            m_indices[i].push_back(4 * j + 2);
-            m_indices[i].push_back(4 * j + 3);
-        }
-       
-        // Create and set up element buffer object
-        glGenBuffers(1, &m_ebos[i]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebos[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_ballTypes[i].count * indicesPerQuad * vertexMultiplier * sizeof(unsigned int), m_indices[i].data(), GL_DYNAMIC_DRAW);
 
-        // Set texture coordinates
-        for (std::size_t j = 0; j < m_ballTypes[i].count * vertexMultiplier; j++)
-        {
-            // Bottom left of quad
-            m_vertexData[i][4 * j + 0].textureCoords[0] = 0.0f;
-            m_vertexData[i][4 * j + 0].textureCoords[1] = 0.0f;
-
-            // Top left of quad
-            m_vertexData[i][4 * j + 1].textureCoords[0] = 0.0f;
-            m_vertexData[i][4 * j + 1].textureCoords[1] = 1.0f;
-
-            // Bottom right of quad
-            m_vertexData[i][4 * j + 2].textureCoords[0] = 1.0f;
-            m_vertexData[i][4 * j + 2].textureCoords[1] = 0.0f;
-
-            // Top right of quad
-            m_vertexData[i][4 * j + 3].textureCoords[0] = 1.0f;
-            m_vertexData[i][4 * j + 3].textureCoords[1] = 1.0f;
-        }
+        // Center attribute (maps to a_center in shader.vs)
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
+        glVertexAttribPointer(2,                              // Index
+                              2,                              // Size
+                              GL_FLOAT,                       // Type
+                              GL_FALSE,                       // Normalized
+                              sizeof(Ball),                   // Stride
+                              (void*)offsetof(Ball, position) // Offset
+                             );
+        glVertexAttribDivisor(2, 1);
     }
 
     // Bind the shader program
@@ -118,9 +162,9 @@ void Renderer::draw()
  * skipping over balltypes with render set to false.
  */
 {
-    updateVertexData();
-
     glClear(GL_COLOR_BUFFER_BIT);
+
+    std::size_t startIndex = 0;
 
     // Draw balls to screen
     for (std::size_t i = 0; i < m_ballTypes.size(); i++)
@@ -128,79 +172,25 @@ void Renderer::draw()
         if (m_ballTypes[i].render == false)
             continue;
 
-        unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
+        unsigned int numCopies = m_ballTypes[i].wrapTexture ? 9 : 1;
 
         m_shader.setUniform4f("u_ballColor", m_ballTypes[i].rgba);
-        glBindVertexArray(m_vaos[i]);
+        m_shader.setUniform1f("u_radius", m_ballTypes[i].radius);
+        glBindVertexArray(m_VAOs[i]);
 
         // Draw to screen
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbos[i]);
-        glBufferSubData(GL_ARRAY_BUFFER, 0,  m_ballTypes[i].count * vertexMultiplier * sizeof(GLVertex) * 4, m_vertexData[i].data());
-        glDrawElements(GL_TRIANGLES, 6 * m_ballTypes[i].count * vertexMultiplier, GL_UNSIGNED_INT, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
+        glBufferSubData(GL_ARRAY_BUFFER,                          // Target
+                        0,                                        // Offset
+                        m_ballTypes[i].count * sizeof(Ball),      // Size (in bytes)
+                        m_balls.data() + startIndex               // Data
+                       );
+        //glDrawElements(GL_TRIANGLES, 6 * m_ballTypes[i].count * numCopies, GL_UNSIGNED_INT, 0);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6 * numCopies,  m_ballTypes[i].count);
+        startIndex += m_ballTypes[i].count;
     }
 
     glfwSwapBuffers(m_window.getID());
 
     glfwPollEvents();
-}
-
-void Renderer::updateVertexData()
-/**
- * Updates GLVertex positions in m_vertexData based on ball locations
- */
-{
-    int k = 0;
-
-    static const std::vector<Vec2<float>> allTranslates =
-    { { -m_world.xWidth, -m_world.yWidth }, {  0.0f, -m_world.yWidth }, {  m_world.xWidth, -m_world.yWidth },
-      { -m_world.xWidth,  0.0f           }, {  0.0f,  0.0f           }, {  m_world.xWidth,  0.0f           },
-      { -m_world.xWidth,  m_world.yWidth }, {  0.0f,  m_world.yWidth }, {  m_world.xWidth,  m_world.yWidth } };
-
-    static const std::vector<Vec2<float>> noTranslates = { {0.0f, 0.0f} };
-
-    // Update vertex data according to particle positions
-    for (std::size_t i = 0; i < m_ballTypes.size(); i++)
-    {
-        if (m_ballTypes[i].render == false)
-        {
-            k += m_ballTypes[i].count;
-            continue;
-        }
-        unsigned int vertexMultiplier = m_ballTypes[i].wrapTexture ? 9 : 1;
-
-        float radius = m_ballTypes[i].radius;
-
-        const std::vector<Vec2<float>>& translates = m_ballTypes[i].wrapTexture ? allTranslates : noTranslates;
-
-        // TO DO: See if this updating can be avoided by passing in positions directly 
-        // (long term goal, main performance bottleneck is the solver)
-
-        std::size_t j = 0;
-        while (j < m_ballTypes[i].count * vertexMultiplier)
-        {
-            const Vec2<float>& pos = m_balls[k].position;
-
-            for (Vec2<float> translate : translates)
-            {
-                // Bottom left of quad
-                m_vertexData[i][4 * j + 0].position[0] = pos.x + translate.x - 1.1f * radius;
-                m_vertexData[i][4 * j + 0].position[1] = pos.y + translate.y - 1.1f * radius;
-                                                               
-                // Top left of quad                            
-                m_vertexData[i][4 * j + 1].position[0] = pos.x + translate.x - 1.1f * radius;
-                m_vertexData[i][4 * j + 1].position[1] = pos.y + translate.y + 1.1f * radius;
-                                                               
-                // Bottom right of quad                        
-                m_vertexData[i][4 * j + 2].position[1] = pos.y + translate.y - 1.1f * radius;
-                m_vertexData[i][4 * j + 2].position[0] = pos.x + translate.x + 1.1f * radius;
-
-                // Top right of quad
-                m_vertexData[i][4 * j + 3].position[0] = pos.x + translate.x + 1.1f * radius;
-                m_vertexData[i][4 * j + 3].position[1] = pos.y + translate.y + 1.1f * radius;
-
-                j++;
-            }
-            k++;
-        }
-    }
 }

@@ -10,6 +10,7 @@
  */
 
 #include <vector>
+#include <array>
 
 #include "Solver.hpp"
 #include "GLVertex.hpp"
@@ -35,14 +36,15 @@ private:
 	const World&                 m_world;
 
 	// Vectors of IDs for OpenGL objects
-	std::vector<unsigned int> m_vaos;
-	std::vector<unsigned int> m_vbos;
-	std::vector<unsigned int> m_ebos;
+	std::vector<unsigned int> m_VAOs;
+	std::vector<unsigned int> m_positionVBOs;
 	Shader m_shader;
 
-	// Vectors of vertex and index data for OpenGL buffers
-	std::vector<std::vector<GLVertex>>    m_vertexData;
-	std::vector<std::vector<unsigned int>> m_indices;
+	// Texture coordinate data (common to all BallTypes)
+	std::array<Vec2<float>, 9*6> m_texCoords;
+	unsigned int m_texCoordsVBO;
 
-	void updateVertexData();
+	// Offset data (for rendering 9 copies of each Ball whose BallType has wrapTexture==true)
+	std::array<Vec2<float>, 9*6> m_offsets;
+	unsigned int m_offsetsVBO;
 };

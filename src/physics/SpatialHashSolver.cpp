@@ -16,7 +16,7 @@ SpatialHashSolver::SpatialHashSolver(std::vector<BallType> ballTypes)
 
 void SpatialHashSolver::populateCells()
 {
-	for (std::size_t i = 0; i < m_balls.size(); ++i)
+	for (std::size_t i = 0; i < m_balls.size(); i++)
 	{
 		const Ball& b = m_balls[i];
 
@@ -28,9 +28,9 @@ void SpatialHashSolver::populateCells()
 		float yHigh  = b.position.y + r;
 
 
-		for (int r = posToCell(yLow); r <= posToCell(yHigh); ++r)
+		for (int r = posToCell(yLow); r <= posToCell(yHigh); r++)
 		{
-			for (int c = posToCell(xLeft); c <= posToCell(xRight); ++c)
+			for (int c = posToCell(xLeft); c <= posToCell(xRight); c++)
 			{
 				Offset offset = NONE;
 				int row = r;
@@ -78,9 +78,30 @@ void SpatialHashSolver::checkCollisions()
  * Iterate through each cell checking for collisions
  */
 {
-	for (std::size_t r = 0; r < m_numRows; ++r)
+	m_futures.clear();
+
+	for (unsigned int i = 0; i < 10; i++)
 	{
-		for (std::size_t c = 0; c < m_numRows; ++c)
+		std::size_t rowLower = i * (m_numRows / 10 + 1);
+		std::size_t rowUpper = (i + 1) * (m_numRows / 10 + 1);
+
+		m_futures.push_back(
+			std::async(
+				std::launch::async, 
+				[this, rowLower, rowUpper](){return checkCollisionsInRange(rowLower, rowUpper);} 
+			)
+		);
+	}
+
+	for (std::future<void>& future : m_futures)
+		future.wait();
+}
+
+void SpatialHashSolver::checkCollisionsInRange(std::size_t rowLower, std::size_t rowUpper)
+{
+	for (std::size_t r = rowLower; r < std::min(rowUpper, m_numRows); r++)
+	{
+		for (std::size_t c = 0; c < m_numRows; c++)
 		{
 			findCollisionsInCell(m_grid[hashCell(r, c)]);
 		}
@@ -89,9 +110,9 @@ void SpatialHashSolver::checkCollisions()
 
 void SpatialHashSolver::findCollisionsInCell(Cell& cell)
 {
-	for (std::size_t i1 = 0; i1 < cell.numBalls; ++i1)
+	for (std::size_t i1 = 0; i1 < cell.numBalls; i1++)
 	{
-		for (std::size_t i2 = i1 + 1; i2 < cell.numBalls; ++i2)
+		for (std::size_t i2 = i1 + 1; i2 < cell.numBalls; i2++)
 		{
 			if (overlap(cell.ballList[i1], cell.ballList[i2]))
 				resolveCollision(cell.ballList[i1], cell.ballList[i2]);
@@ -133,6 +154,8 @@ Vec2<float> SpatialHashSolver::offsetToTranslate(Offset& offset)
 
 void SpatialHashSolver::resolveCollision(BallInfo& info1, BallInfo& info2)
 {
+	std::lock_guard<std::mutex> lock(m_mutex); // Prevent simultaneously editing balls in different threads
+
 	Ball& b1 = m_balls[info1.ballID];
 	Ball& b2 = m_balls[info2.ballID];
 

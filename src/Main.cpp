@@ -33,15 +33,18 @@ int main()
     SpatialHashSolver solver(preset);
 
     // Initialise renderer
-    unsigned int resolution = 860;
+    unsigned int resolution = 1080;
     Renderer renderer(solver, resolution);
 
 	// Simulation loop
     while (renderer.windowOpen())
     {
+        float start = glfwGetTime();
         solver.update(dt);
 
         renderer.draw();
+
+        std::cout << glfwGetTime() - start << std::endl;
     }
 
     return 0;

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <future>
+#include <mutex>
+
 #include "Solver.hpp"
 
 #include "Cell.hpp"
@@ -19,6 +22,7 @@ private:
 	void clearCells();
 	void populateCells();
 	void checkCollisions();
+	void checkCollisionsInRange(std::size_t rowLower, std::size_t rowUpper);
 	void findCollisionsInCell(Cell& c1);
 
 	std::size_t hashCell(std::size_t row, std::size_t col);
@@ -29,5 +33,8 @@ private:
 	Vec2<float> offsetToTranslate(Offset& offset);
 
 	void resolveCollision(BallInfo& info1, BallInfo& info2);
+
+	std::mutex m_mutex;
+	std::vector<std::future<void>> m_futures;
 
 };

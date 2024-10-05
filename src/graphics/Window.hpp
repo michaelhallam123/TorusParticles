@@ -15,9 +15,10 @@ class Window
 private:
 	GLFWwindow* m_WindowID;
 public:
-	Window(unsigned int resolution);
+	Window(unsigned int xResolution, unsigned int yResolution);
 	~Window();
 
 	bool        isOpen();                      // Check window hasn't been closed
 	GLFWwindow* getID() { return m_WindowID; } // Get GLFW window ID
+	void update();
 };

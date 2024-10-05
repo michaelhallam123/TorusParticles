@@ -11,11 +11,11 @@
 static const char* vertexShaderPath = "shaders/shader.vs";
 static const char* fragmentShaderPath = "shaders/shader.fs";
 
-Renderer::Renderer(const Solver& solver, unsigned int resolution)
+Renderer::Renderer(const Solver& solver, unsigned int xResolution, unsigned int yResolution)
 	: m_ballTypes(solver.getBallTypes()), 
       m_balls(solver.getBalls()), 
       m_world(solver.getWorld()),
-      m_window(resolution),
+      m_window(xResolution, yResolution),
       m_shader(vertexShaderPath, fragmentShaderPath),
       m_texCoordsVBO(0),
       m_offsetsVBO(0)
@@ -152,6 +152,10 @@ Renderer::Renderer(const Solver& solver, unsigned int resolution)
 
     // Bind the shader program
     m_shader.bind();
+
+    // Enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer::draw()

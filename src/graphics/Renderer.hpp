@@ -21,7 +21,7 @@
 class Renderer
 {
 public:
-	Renderer(const Solver& solver, unsigned int resolution);
+	Renderer(const Solver& solver, unsigned int xResolution, unsigned int yResolution);
 
 	void draw();                                    // Draw simulation to window
 	bool windowOpen() { return m_window.isOpen(); } // Check window is still open

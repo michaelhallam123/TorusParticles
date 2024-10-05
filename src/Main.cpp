@@ -7,7 +7,7 @@
  * balls having a given radius, mass, color, and total momentum,
  * as well as whether the balls are rendered to the screen, and
  * if so, whether their textures wrap across the screen 
- * boundaries (see the preset files in res/ for examples).
+ * boundaries (see the preset files in presets/ for examples).
  * 
  * Support is available for a brute force algorithm, a sweep
  * and prune algorithm, and a spatial hashing algorithm. The
@@ -33,8 +33,9 @@ int main()
     SpatialHashSolver solver(preset);
 
     // Initialise renderer
-    unsigned int resolution = 1080;
-    Renderer renderer(solver, resolution);
+    unsigned int xResolution = 1920;
+    unsigned int yResolution = 1080;
+    Renderer renderer(solver, xResolution, yResolution);
 
 	// Simulation loop
     while (renderer.windowOpen())

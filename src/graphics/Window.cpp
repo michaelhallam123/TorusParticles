@@ -2,18 +2,20 @@
 
 #include <iostream>
 
-Window::Window(unsigned int resolution)
-    : m_WindowID(0)
+
+static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+
+Window::Window(unsigned int xResolution, unsigned int yResolution)
+    : m_WindowID(nullptr)
 {
     // Set up GLFW window context
-
     if (!glfwInit())
     {
         std::cout << "Error: failed to initialise GLFW!" << std::endl;
         return;
     }
 
-    m_WindowID = glfwCreateWindow(resolution, resolution, "TorusParticles", NULL, NULL);
+    m_WindowID = glfwCreateWindow(xResolution, yResolution, "TorusParticles", NULL, NULL);
 
     if (!m_WindowID)
     {
@@ -36,9 +38,9 @@ Window::Window(unsigned int resolution)
         return;
     }   
 
-    // Enable blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glViewport(0, 0, std::min(xResolution, yResolution), std::min(xResolution, yResolution));
+
+    glfwSetFramebufferSizeCallback(m_WindowID, framebufferSizeCallback);  
 
 }
 
@@ -51,3 +53,14 @@ bool Window::isOpen()
 {
     return !glfwWindowShouldClose(m_WindowID);
 }
+
+void Window::update()
+{
+
+}
+
+
+static void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, std::min(width, height), std::min(width, height));
+}  

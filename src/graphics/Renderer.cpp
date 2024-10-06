@@ -194,7 +194,7 @@ void Renderer::draw()
         startIndex += m_ballTypes[i].count;
     }
 
-    glfwSwapBuffers(m_window.getID());
+    m_window.update();
 
-    glfwPollEvents();
+    
 }

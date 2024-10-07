@@ -3,10 +3,6 @@
 /**
  * Renderer class for creating and managing an OpenGL context, 
  * and drawing the simulation to the screen. 
- * 
- * Stores const references to the simulation data at
- * instantiation, so must be constructed after the Solver 
- * object.
  */
 
 #include <vector>
@@ -40,11 +36,15 @@ private:
 	std::vector<unsigned int> m_positionVBOs;
 	Shader m_shader;
 
+	// Vertex data
+	static const unsigned int MAX_QUADS = 9;
+	static const unsigned int VERTICES_PER_QUAD = 6;
+
 	// Texture coordinate data (common to all BallTypes)
-	std::array<Vec2<float>, 9*6> m_texCoords;
+	std::array<Vec2<float>, MAX_QUADS * VERTICES_PER_QUAD> m_texCoords;
 	unsigned int m_texCoordsVBO;
 
 	// Offset data (for rendering 9 copies of each Ball whose BallType has wrapTexture==true)
-	std::array<Vec2<float>, 9*6> m_offsets;
+	std::array<Vec2<float>, MAX_QUADS * VERTICES_PER_QUAD> m_offsets;
 	unsigned int m_offsetsVBO;
 };

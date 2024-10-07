@@ -10,8 +10,7 @@
 
 Preset loadPreset(const std::string& filepath)
 /**
- * Load BallType data from "filepath" (a .json file) and 
- * output a vector of the data.
+ * Load Preset data from "filepath" (a .json file).
  */
 {
 	Preset preset;

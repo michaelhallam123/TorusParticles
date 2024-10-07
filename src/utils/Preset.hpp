@@ -4,6 +4,11 @@
 
 #include "BallType.hpp"
 
+/*
+ * Simple struct for configuring settings for the 
+ * solver and renderer.
+ */
+
 struct Preset
 {
     float dt;

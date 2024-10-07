@@ -5,39 +5,28 @@
 #include <GLFW/glfw3.h>
 
 #include "Renderer.hpp"
-#include "GLDebug.hpp"
 
 Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution, unsigned int yResolution)
 	: m_ballTypes(solver.getBallTypes()), 
       m_balls(solver.getBalls()), 
       m_world(solver.getWorld()),
       m_window(solver, xResolution, yResolution),
-      m_shader("shaders/shader.vs", preset.antialiasing ? "shaders/shader.fs" : "shaders/shaderNoAA.fs"),
+      m_shader("shaders/shader.vs", preset.antialiasing ? "shaders/shaderAA.fs" : "shaders/shaderNoAA.fs"),
       m_texCoordsVBO(0),
       m_offsetsVBO(0)
-/**
- * Each balltype has its own OpenGL vao, vbo, and ebo,
- * stored in the class members m_vaos, m_vbos, and
- * m_ebos. The vertex buffer data for the i-th balltype
- * is stored in m_vertexData[i], and the index buffer
- * data for the i-th balltype in m_indices[i].
- * 
- * A common shader is shared by all balltypes - colors
- * are changed by iterating over balltypes and varying
- * the uniform u_color.
- */
 {
     // Reserve space for vertex data
     m_VAOs.resize(m_ballTypes.size());
     m_positionVBOs.resize(m_ballTypes.size());
 
-    std::array<Vec2<float>, 6> baseQuad = 
+    std::array<Vec2<float>, VERTICES_PER_QUAD> baseQuad = 
     {
-        // First triangle
+        // Lower left triangle
         Vec2<float>{-1.0f, -1.0f},
         Vec2<float>{-1.0f,  1.0f},
         Vec2<float>{ 1.0f, -1.0f},
-        // Second triangle
+
+        // Upper right triangle
         Vec2<float>{ 1.0f, -1.0f},
         Vec2<float>{-1.0f,  1.0f},
         Vec2<float>{ 1.0f,  1.0f}
@@ -46,7 +35,7 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
     // Set texture coordinates (nine copies of baseQuad)
     for (std::size_t i = 0; i < m_texCoords.size(); i++)
     {
-        m_texCoords[i] = baseQuad[i % 6];
+        m_texCoords[i] = baseQuad[i % baseQuad.size()];
     }
 
     // Setup vertex buffer object for texture coordinates
@@ -58,9 +47,9 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
                  GL_STATIC_DRAW                          // Usage
                 );
 
-    std::array<Vec2<float>, 9> baseOffsets = 
+    std::array<Vec2<float>, MAX_QUADS> baseOffsets = 
     {
-        Vec2<float>{           0.0f,            0.0f}, // Use only this offset when BallType has wrapTexture == false
+        Vec2<float>{           0.0f,            0.0f}, // Use only this offset when wrapTexture==false
         Vec2<float>{-m_world.xWidth, -m_world.yWidth},
         Vec2<float>{-m_world.xWidth,            0.0f},
         Vec2<float>{-m_world.xWidth,  m_world.yWidth},
@@ -72,9 +61,10 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
     };
 
     // Set offsets (in normalized device coordinates)
+    // First quad has offset baseOffsets[0], second quad has baseOffsets[1], etc.
     for (std::size_t i = 0; i < m_offsets.size(); i++)
     {
-        m_offsets[i] = baseOffsets[i/6];
+        m_offsets[i] = baseOffsets[i / VERTICES_PER_QUAD];
     }
 
     // Setup vertex buffer object for offsets
@@ -90,9 +80,6 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
     {
         if (m_ballTypes[i].render == false)
             continue;
-
-        unsigned int numCopies = m_ballTypes[i].wrapTexture ? 9 : 1;
-        // Draw 9 copies when wrapTexture==true, 1 copy when wrapTexture==false
 
         // Create vertex array object
         glGenVertexArrays(1, &m_VAOs[i]);
@@ -149,7 +136,7 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
     // Bind the shader program
     m_shader.bind();
 
-    // Set uniform
+    // Set uniform to transform world coords to screen coords in "shaders/shader.vs"
     m_shader.setUniform4f("u_worldToScreenTransform", 1/m_world.xMax, 1/m_world.yMax, 1.0f, 1.0f);
 
     // Enable blending
@@ -159,15 +146,13 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
 
 void Renderer::draw()
 /**
- * Draws balls to screen. First, vertex data are
- * updated according to m_balls. Each balltype has
- * its own draw call, so we loop through m_ballTypes,
- * skipping over balltypes with render set to false.
+ * Loop through m_ballTypes and draw all balls of a given
+ * BallType to the screen in a single instanced draw call.
  */
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    std::size_t startIndex = 0;
+    std::size_t startIndex = 0; // Keep track of the starting index of the i-th BallType in m_balls
 
     // Draw balls to screen
     for (std::size_t i = 0; i < m_ballTypes.size(); i++)
@@ -175,25 +160,25 @@ void Renderer::draw()
         if (m_ballTypes[i].render == false)
             continue;
 
+        // Draw 9 translated copies when wrapTexture==true, 1 copy when wrapTexture==false
         unsigned int numCopies = m_ballTypes[i].wrapTexture ? 9 : 1;
 
         m_shader.setUniform4f("u_ballColor", m_ballTypes[i].rgba);
         m_shader.setUniform1f("u_radius", m_ballTypes[i].radius);
-        glBindVertexArray(m_VAOs[i]);
-
+        
         // Draw to screen
+        glBindVertexArray(m_VAOs[i]);
         glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
         glBufferSubData(GL_ARRAY_BUFFER,                          // Target
                         0,                                        // Offset
                         m_ballTypes[i].count * sizeof(Ball),      // Size (in bytes)
                         m_balls.data() + startIndex               // Data
                        );
+        glDrawArraysInstanced(GL_TRIANGLES, 0, VERTICES_PER_QUAD * numCopies,  m_ballTypes[i].count);
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6 * numCopies,  m_ballTypes[i].count);
+        // Update start index in m_balls
         startIndex += m_ballTypes[i].count;
     }
 
     m_window.update();
-
-    
 }

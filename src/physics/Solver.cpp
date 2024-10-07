@@ -9,17 +9,15 @@ Solver::Solver(Preset preset)
 	  m_world(preset.worldAspectRatio)
 {
 	// Error checking
-
 	for (BallType& bt : m_ballTypes)
 	{
 		if (bt.mass <= 0.0f)
 			std::cout << "Warning: ball mass must be positive!" << std::endl;
 		if (bt.radius <= 0.0f)
 			std::cout << "Warning: ball radius must be positive!" << std::endl;
-
 	}
 
-	// Initialise random number generators
+	// Initialise random number generators for ball positions
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> x_posDistribution(m_world.xMin, m_world.xMax);

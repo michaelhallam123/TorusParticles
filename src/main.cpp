@@ -11,7 +11,7 @@
  * 
  * Support is available for a brute force algorithm, a sweep
  * and prune algorithm, and a spatial hashing algorithm. The
- * best and recommended algorithm is the spatial hasher.
+ * best and recommended algorithm is the spatial hash.
  */
 
 #include <iostream>
@@ -27,7 +27,7 @@
 int main()
 {
 	// Set simulation parameters
-    Preset preset = loadPreset("presets/preset4.json");
+    Preset preset = loadPreset("presets/preset3.json");
     float dt = preset.dt;
 
 	// Initialise simulation

@@ -48,30 +48,8 @@ void BruteForceMultithreadSolver::resolveCollisionWithTranslate(const Vec2<float
 	Ball& b2 = m_balls[j];
 
 	b1.position += translate;
-
-	float m1 = m_ballTypes[b1.typeindex].mass;
-	float m2 = m_ballTypes[b2.typeindex].mass;
-
-	float r1 = m_ballTypes[b1.typeindex].radius;
-	float r2 = m_ballTypes[b2.typeindex].radius;
-
-	// Update velocities according to collision physics
-
-	Vec2<float> deltaPos = b1.position - b2.position;
-	Vec2<float> deltaVel = b1.velocity - b2.velocity;
-
-	float a = -((2.0f * m2) / (m1 + m2)) * (deltaVel.dot(deltaPos) / deltaPos.dot(deltaPos));
-	float b = -(m1 / m2) * a;
-
-	b1.velocity.add(deltaPos * a);
-	b2.velocity.add(deltaPos * b);
-
-	// Dislodge balls to prevent sticking
-
-	float dislodgeFactor1 = r2 / std::sqrt(deltaPos.dot(deltaPos)) - r2 / (r1 + r2);
-	float dislodgeFactor2 = r1 / std::sqrt(deltaPos.dot(deltaPos)) - r1 / (r1 + r2);
-	b1.position.add(deltaPos * dislodgeFactor1);
-	b2.position.subtract(deltaPos * dislodgeFactor2);
+	
+	Solver::resolveCollision(i, j);
 
 	b1.position -= translate;
 }

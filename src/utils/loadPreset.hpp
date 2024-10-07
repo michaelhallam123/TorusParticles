@@ -1,15 +1,14 @@
 #pragma once
 
 /**
- * A function to read in BallType information from a .json file and
- * return it as a std::vector<BallType>. This vector can then be
- * passed to the constructor of a Solver object to specify ball types.
+ * A function to read in information from a .json file and
+ * return it as a "Preset". The loaded preset is then passed
+ * to the solver and renderer upon construction.
  * 
- * Uses jsoncpp (https://github.com/open-source-parsers/jsoncpp) to
- * parse the .json file.
+ * Uses jsoncpp (https://github.com/open-source-parsers/jsoncpp) 
+ * to parse the .json file.
  *
- * Example preset files are located in the project resources
- * folder.
+ * Example preset files are located in the project presets folder
  */
 
 #include "Preset.hpp"

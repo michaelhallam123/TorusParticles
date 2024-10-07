@@ -7,16 +7,12 @@
 #include "Renderer.hpp"
 #include "GLDebug.hpp"
 
-// Filepaths for glsl shader programs
-static const char* vertexShaderPath = "shaders/shader.vs";
-static const char* fragmentShaderPath = "shaders/shader.fs";
-
-Renderer::Renderer(const Solver& solver, unsigned int xResolution, unsigned int yResolution)
+Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution, unsigned int yResolution)
 	: m_ballTypes(solver.getBallTypes()), 
       m_balls(solver.getBalls()), 
       m_world(solver.getWorld()),
       m_window(solver, xResolution, yResolution),
-      m_shader(vertexShaderPath, fragmentShaderPath),
+      m_shader("shaders/shader.vs", preset.antialiasing ? "shaders/shader.fs" : "shaders/shaderNoAA.fs"),
       m_texCoordsVBO(0),
       m_offsetsVBO(0)
 /**

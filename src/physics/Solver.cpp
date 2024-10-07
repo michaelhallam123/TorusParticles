@@ -4,9 +4,9 @@
 #include <iostream>
 #include <cmath>
 
-Solver::Solver(std::vector<BallType> ballTypes, float worldAspectRatio)
-	: m_ballTypes(ballTypes), 
-	  m_world(worldAspectRatio)
+Solver::Solver(Preset preset)
+	: m_ballTypes(preset.ballTypes), 
+	  m_world(preset.worldAspectRatio)
 {
 	// Error checking
 
@@ -26,9 +26,9 @@ Solver::Solver(std::vector<BallType> ballTypes, float worldAspectRatio)
 	std::uniform_real_distribution<float> y_posDistribution(m_world.yMin, m_world.yMax);
 
 	// Randomly populate position and velocity data in m_balls
-	for (std::size_t i = 0; i < ballTypes.size(); i++)
+	for (std::size_t i = 0; i < m_ballTypes.size(); i++)
 	{
-		BallType& bt = ballTypes[i];
+		BallType& bt = m_ballTypes[i];
 
 		float x_meanVelocity = bt.totalMomentum.x / (bt.mass * (float)bt.count);
 		float y_meanVelocity = bt.totalMomentum.y / (bt.mass * (float)bt.count);

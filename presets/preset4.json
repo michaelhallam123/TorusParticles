@@ -1,7 +1,7 @@
 {
-    "dt": 0.01,
+    "dt": 0.001,
     "worldAspectRatio": 1.0,
-    "antialiasing": true,
+    "antialiasing": false,
     "ballTypes": 
     [
         {

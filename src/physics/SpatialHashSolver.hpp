@@ -11,7 +11,7 @@
 class SpatialHashSolver : public Solver
 {
 public:
-	SpatialHashSolver(std::vector<BallType> ballTypes, float WorldAspectRatio);
+	SpatialHashSolver(Preset preset);
 
 private:
 	std::vector<Cell> m_grid;

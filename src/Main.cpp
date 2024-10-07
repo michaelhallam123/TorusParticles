@@ -27,17 +27,16 @@
 int main()
 {
 	// Set simulation parameters
-    Preset preset = loadPreset("presets/preset3.json");
+    Preset preset = loadPreset("presets/preset4.json");
     float dt = preset.dt;
-    float worldAspectRatio = preset.worldAspectRatio;
 
 	// Initialise simulation
-    SpatialHashSolver solver(preset.ballTypes, worldAspectRatio);
+    SpatialHashSolver solver(preset);
 
     // Initialise renderer
     unsigned int xResolution = 1280;
     unsigned int yResolution = 720;
-    Renderer renderer(solver, xResolution, yResolution);
+    Renderer renderer(solver, preset, xResolution, yResolution);
 
 	// Simulation loop
     while (renderer.windowOpen())

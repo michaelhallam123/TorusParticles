@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Preset.hpp"
 #include "Ball.hpp"
 #include "BallType.hpp"
 #include "World.hpp"
@@ -33,7 +34,7 @@ public:
 
 protected:
 
-	Solver(std::vector<BallType> ballTypes, float worldAspectRatio);    
+	Solver(Preset preset);    
 
 	std::vector<BallType> m_ballTypes;
 	std::vector<Ball>     m_balls;

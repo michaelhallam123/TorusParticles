@@ -3,8 +3,8 @@
 #include <cmath>
 #include <iostream>
 
-SpatialHashSolver::SpatialHashSolver(std::vector<BallType> ballTypes, float worldAspectRatio)
-	: Solver(ballTypes, worldAspectRatio) 
+SpatialHashSolver::SpatialHashSolver(Preset preset)
+	: Solver(preset) 
 {
 	std::size_t numRows = 1 + static_cast<std::size_t>(std::sqrt(static_cast<double>(m_balls.size())));
 

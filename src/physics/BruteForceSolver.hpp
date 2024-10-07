@@ -18,6 +18,6 @@
 class BruteForceSolver : public Solver
 {
 public:
-	BruteForceSolver(std::vector<BallType> ballTypes, float worldAspectRatio);
+	BruteForceSolver(Preset preset);
 	void solve() override;
 };

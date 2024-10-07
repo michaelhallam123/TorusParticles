@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-BruteForceMultithreadSolver::BruteForceMultithreadSolver(std::vector<BallType> ballTypes, float worldAspectRatio)
-	: Solver(ballTypes, worldAspectRatio) {}
+BruteForceMultithreadSolver::BruteForceMultithreadSolver(Preset preset)
+	: Solver(preset) {}
 
 void BruteForceMultithreadSolver::solve()
 /*

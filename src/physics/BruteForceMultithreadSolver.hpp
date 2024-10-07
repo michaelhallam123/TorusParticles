@@ -21,7 +21,7 @@
 class BruteForceMultithreadSolver : public Solver
 {
 public:
-	BruteForceMultithreadSolver(std::vector<BallType> ballTypes);
+	BruteForceMultithreadSolver(std::vector<BallType> ballTypes, float worldAspectRatio);
 	void solve() override;
 	void solveWithTranslate(const Vec2<float>& translate);
 	bool overlapWithTranslate(const Vec2<float>& translate, std::size_t i, std::size_t j);

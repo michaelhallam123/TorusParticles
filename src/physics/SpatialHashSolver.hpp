@@ -11,12 +11,14 @@
 class SpatialHashSolver : public Solver
 {
 public:
-	SpatialHashSolver(std::vector<BallType> ballTypes);
+	SpatialHashSolver(std::vector<BallType> ballTypes, float WorldAspectRatio);
 
 private:
 	std::vector<Cell> m_grid;
-	std::size_t       m_numRows;   // Number of rows in grid, equals number of columns
+	std::size_t       m_numRows;
+	std::size_t       m_numCols;
 	float             m_cellWidth;
+	float             m_cellHeight;
 
 	void solve() override;
 	void clearCells();
@@ -26,7 +28,8 @@ private:
 	void findCollisionsInCell(Cell& c1);
 
 	std::size_t hashCell(std::size_t row, std::size_t col);
-	int posToCell(float x);
+	int xPosToCol(float x);
+	int yPosToRow(float y);
 
 	bool overlap(BallInfo& info1, BallInfo& info2);
 

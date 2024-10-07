@@ -1,7 +1,7 @@
 #include "BruteForceSolver.hpp"
 
-BruteForceSolver::BruteForceSolver(std::vector<BallType> ballTypes)
-	: Solver(ballTypes) {}
+BruteForceSolver::BruteForceSolver(std::vector<BallType> ballTypes, float worldAspectRatio)
+	: Solver(ballTypes, worldAspectRatio) {}
 
 void BruteForceSolver::solve()
 /*

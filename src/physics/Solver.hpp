@@ -33,7 +33,7 @@ public:
 
 protected:
 
-	Solver(std::vector<BallType> ballTypes);    
+	Solver(std::vector<BallType> ballTypes, float worldAspectRatio);    
 
 	std::vector<BallType> m_ballTypes;
 	std::vector<Ball>     m_balls;

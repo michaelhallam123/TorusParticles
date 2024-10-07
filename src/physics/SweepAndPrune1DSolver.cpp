@@ -1,8 +1,8 @@
 #include "SweepAndPrune1DSolver.hpp"
 #include <algorithm>
 
-SweepAndPrune1DSolver::SweepAndPrune1DSolver(std::vector<BallType> ballTypes)
-	: Solver(ballTypes)
+SweepAndPrune1DSolver::SweepAndPrune1DSolver(std::vector<BallType> ballTypes, float worldAspectRatio)
+	: Solver(ballTypes, worldAspectRatio)
 {
 	// Initialise and sort m_leftSortedEnds and m_rightSortedEnds
 

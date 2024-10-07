@@ -28,9 +28,10 @@ int main()
 	// Set simulation parameters
     std::vector<BallType> preset = loadPreset("presets/preset3.json");
     float dt = 0.01f;
+    float worldAspectRatio = 1.0f;
 
 	// Initialise simulation
-    SpatialHashSolver solver(preset);
+    SpatialHashSolver solver(preset, worldAspectRatio);
 
     // Initialise renderer
     unsigned int xResolution = 1280;
@@ -43,7 +44,6 @@ int main()
         solver.update(dt);
 
         renderer.draw();
-
     }
 
     return 0;

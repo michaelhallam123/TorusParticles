@@ -4,9 +4,9 @@
 #include <iostream>
 #include <cmath>
 
-Solver::Solver(std::vector<BallType> ballTypes)
+Solver::Solver(std::vector<BallType> ballTypes, float worldAspectRatio)
 	: m_ballTypes(ballTypes), 
-	  m_world(-1.0f, 1.0f, -1.0f, 1.0f) // Takes world boundary values: xMin, xMax, yMin, yMax
+	  m_world(worldAspectRatio)
 {
 	// Error checking
 
@@ -109,10 +109,9 @@ void Solver::resolveCollision(std::size_t i, std::size_t j)
 
 void Solver::update(float dt)
 {
-	// Check for collisions and update velocities
+	// Check for collisions and update velocities if a collision occurs
 	solve(); 
 
-	// Update positions
 	updatePositions(dt);
 }
 

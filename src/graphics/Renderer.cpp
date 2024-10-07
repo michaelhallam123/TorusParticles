@@ -64,15 +64,15 @@ Renderer::Renderer(const Solver& solver, unsigned int xResolution, unsigned int 
 
     std::array<Vec2<float>, 9> baseOffsets = 
     {
-        Vec2<float>{ 0.0f,  0.0f}, // Use only this offset when BallType has wrapTexture == false
-        Vec2<float>{-2.0f, -2.0f},
-        Vec2<float>{-2.0f,  0.0f},
-        Vec2<float>{-2.0f,  2.0f},
-        Vec2<float>{ 0.0f, -2.0f},
-        Vec2<float>{ 0.0f,  2.0f},
-        Vec2<float>{ 2.0f, -2.0f},
-        Vec2<float>{ 2.0f,  0.0f},
-        Vec2<float>{ 2.0f,  2.0f}
+        Vec2<float>{           0.0f,            0.0f}, // Use only this offset when BallType has wrapTexture == false
+        Vec2<float>{-m_world.xWidth, -m_world.yWidth},
+        Vec2<float>{-m_world.xWidth,            0.0f},
+        Vec2<float>{-m_world.xWidth,  m_world.yWidth},
+        Vec2<float>{           0.0f, -m_world.yWidth},
+        Vec2<float>{           0.0f,  m_world.yWidth},
+        Vec2<float>{ m_world.xWidth, -m_world.yWidth},
+        Vec2<float>{ m_world.xWidth,            0.0f},
+        Vec2<float>{ m_world.xWidth,  m_world.yWidth}
     };
 
     // Set offsets (in normalized device coordinates)
@@ -152,6 +152,9 @@ Renderer::Renderer(const Solver& solver, unsigned int xResolution, unsigned int 
 
     // Bind the shader program
     m_shader.bind();
+
+    // Set uniform
+    m_shader.setUniform4f("u_worldToScreenTransform", 1/m_world.xMax, 1/m_world.yMax, 1.0f, 1.0f);
 
     // Enable blending
     glEnable(GL_BLEND);

@@ -10,13 +10,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Solver.hpp"
+
 class Window
 {
 private:
 	GLFWwindow* m_windowID;
 	void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+	const World& m_world;
 public:
-	Window(unsigned int xResolution, unsigned int yResolution);
+	Window(const Solver& solver, unsigned int xResolution, unsigned int yResolution);
 	~Window();
 
 	bool        isOpen();                      // Check window hasn't been closed

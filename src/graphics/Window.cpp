@@ -2,8 +2,9 @@
 
 #include <iostream>
 
-Window::Window(unsigned int xResolution, unsigned int yResolution)
-    : m_windowID(nullptr)
+Window::Window(const Solver& solver, unsigned int xResolution, unsigned int yResolution)
+    : m_windowID(nullptr),
+      m_world(solver.getWorld())
 {
     // Set up GLFW window context
     if (!glfwInit())
@@ -38,7 +39,8 @@ Window::Window(unsigned int xResolution, unsigned int yResolution)
         return;
     }   
 
-    glViewport(0, 0, std::min(xResolution, yResolution), std::min(xResolution, yResolution));
+    // Configure screen resizing
+    framebufferSizeCallback(m_windowID, xResolution, yResolution);
 
     glfwSetFramebufferSizeCallback(
         m_windowID, 
@@ -69,5 +71,20 @@ void Window::update()
 
 void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, std::min(width, height), std::min(width, height));
+    float worldAspectRatio = m_world.xWidth / m_world.yWidth;
+
+    if ((float)width/(float(height)) <= worldAspectRatio)
+    {
+        int yLower = static_cast<int>((float)height / 2.0f - (float)width / (2.0f*worldAspectRatio));
+        int adjustedHeight = static_cast<int>((float)width / worldAspectRatio);
+
+        glViewport(0, yLower, width, adjustedHeight);
+    }
+    else
+    {
+        int xLower  = static_cast<int>((float)width / 2.0f - ((float)height*worldAspectRatio) / 2.0f);
+        int adjustedWidth = static_cast<int>((float)height*worldAspectRatio);
+
+        glViewport(xLower, 0, adjustedWidth, height);
+    }
 }  

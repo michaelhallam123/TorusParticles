@@ -15,7 +15,7 @@ Renderer::Renderer(const Solver& solver, unsigned int xResolution, unsigned int 
 	: m_ballTypes(solver.getBallTypes()), 
       m_balls(solver.getBalls()), 
       m_world(solver.getWorld()),
-      m_window(xResolution, yResolution),
+      m_window(solver, xResolution, yResolution),
       m_shader(vertexShaderPath, fragmentShaderPath),
       m_texCoordsVBO(0),
       m_offsetsVBO(0)
@@ -189,7 +189,7 @@ void Renderer::draw()
                         m_ballTypes[i].count * sizeof(Ball),      // Size (in bytes)
                         m_balls.data() + startIndex               // Data
                        );
-        //glDrawElements(GL_TRIANGLES, 6 * m_ballTypes[i].count * numCopies, GL_UNSIGNED_INT, 0);
+
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6 * numCopies,  m_ballTypes[i].count);
         startIndex += m_ballTypes[i].count;
     }

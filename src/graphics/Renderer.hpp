@@ -13,7 +13,6 @@
 #include <array>
 
 #include "Solver.hpp"
-#include "GLVertex.hpp"
 #include "Shader.hpp"
 #include "Window.hpp"
 #include "World.hpp"

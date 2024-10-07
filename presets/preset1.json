@@ -1,20 +1,26 @@
-[
-    {
-        "mass": 6.4,
-        "radius": 0.15,
-        "count": 1,
-        "rgba": [1.0, 0.5, 0.2, 1.0],
-        "totalMomentum": [0.0, 0.0],
-        "wrapTexture": true,
-        "render": true
-    },
-    {
-        "mass": 0.1,
-        "radius": 0.005,
-        "count": 5000,
-        "rgba": [1.0, 0.5, 0.8, 1.0],
-        "totalMomentum": [0.0, 0.0],
-        "wrapTexture": false,
-        "render": true
-    }
-]
+{
+    "dt": 0.01,
+    "worldAspectRatio": 1.0,
+    "antialiasing": true,
+    "ballTypes": 
+    [
+        {
+            "mass": 6.4,
+            "radius": 0.15,
+            "count": 1,
+            "rgba": [1.0, 0.5, 0.2, 1.0],
+            "totalMomentum": [0.0, 0.0],
+            "wrapTexture": true,
+            "render": true
+        },
+        {
+            "mass": 0.1,
+            "radius": 0.005,
+            "count": 5000,
+            "rgba": [1.0, 0.5, 0.8, 1.0],
+            "totalMomentum": [0.0, 0.0],
+            "wrapTexture": false,
+            "render": true
+        }
+    ]
+}

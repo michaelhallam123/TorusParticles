@@ -8,13 +8,14 @@
 #include <array>
 #include <iostream>
 
-std::vector<BallType> loadPreset(const std::string& filepath)
+Preset loadPreset(const std::string& filepath)
 /**
  * Load BallType data from "filepath" (a .json file) and 
  * output a vector of the data.
  */
 {
-	std::vector<BallType> res;
+	Preset preset;
+	std::vector<BallType>& ballTypes = preset.ballTypes;
 
 	std::ifstream file(filepath);
 	Json::Value   jsonTotal;
@@ -22,7 +23,13 @@ std::vector<BallType> loadPreset(const std::string& filepath)
 
 	reader.parse(file, jsonTotal);
 
-	for (auto& json : jsonTotal)
+	preset.dt = jsonTotal["dt"].asFloat();
+	preset.worldAspectRatio = jsonTotal["worldAspectRatio"].asFloat();
+	preset.antialiasing = jsonTotal["antialiasing"].asBool();
+
+	Json::Value ballTypesJson = jsonTotal["ballTypes"];
+
+	for (auto& json : ballTypesJson)
 	{
 		BallType bt;
 
@@ -40,7 +47,6 @@ std::vector<BallType> loadPreset(const std::string& filepath)
 			bt.rgba[i] = rgba[i];
 		}
 
-
 		std::vector<float> totalMomentum;
 		for (auto& val : json["totalMomentum"])
 		{
@@ -52,10 +58,8 @@ std::vector<BallType> loadPreset(const std::string& filepath)
 		bt.wrapTexture = json["wrapTexture"].asBool();
 		bt.render      = json["render"].asBool();
 
-		res.push_back(bt);
-
+		ballTypes.push_back(bt);
 	}
 
-
-	return res;
+	return preset;
 }

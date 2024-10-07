@@ -22,16 +22,17 @@
 #include "SweepAndPrune1DSolver.hpp"
 #include "SpatialHashSolver.hpp"
 #include "loadPreset.hpp"
+#include "Preset.hpp"
 
 int main()
 {
 	// Set simulation parameters
-    std::vector<BallType> preset = loadPreset("presets/preset3.json");
-    float dt = 0.01f;
-    float worldAspectRatio = 1.0f;
+    Preset preset = loadPreset("presets/preset3.json");
+    float dt = preset.dt;
+    float worldAspectRatio = preset.worldAspectRatio;
 
 	// Initialise simulation
-    SpatialHashSolver solver(preset, worldAspectRatio);
+    SpatialHashSolver solver(preset.ballTypes, worldAspectRatio);
 
     // Initialise renderer
     unsigned int xResolution = 1280;

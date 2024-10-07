@@ -1,11 +1,17 @@
-[
-    {
-        "mass": 0.1,
-        "radius": 0.0025,
-        "count": 100000,
-        "rgba": [1.0, 0.5, 0.8, 1.0],
-        "totalMomentum": [0.0, 0.0],
-        "wrapTexture": false,
-        "render": true
-    }
-]
+{
+    "dt": 0.01,
+    "worldAspectRatio": 1.0,
+    "antialiasing": true,
+    "ballTypes": 
+    [
+        {
+            "mass": 0.1,
+            "radius": 0.0025,
+            "count": 100000,
+            "rgba": [1.0, 0.5, 0.8, 1.0],
+            "totalMomentum": [0.0, 0.0],
+            "wrapTexture": false,
+            "render": true
+        }
+    ]
+}

@@ -12,8 +12,8 @@
  * folder.
  */
 
-#include "BallType.hpp"
+#include "Preset.hpp"
 #include <vector>
 #include <string>
 
-std::vector<BallType> loadPreset(const std::string& filepath);
+Preset loadPreset(const std::string& filepath);

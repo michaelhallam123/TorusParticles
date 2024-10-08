@@ -9,15 +9,14 @@
  * if so, whether their textures wrap across the screen 
  * boundaries (see the preset files in presets/ for examples).
  * 
- * Support is available for a brute force algorithm, a sweep
- * and prune algorithm, and a spatial hashing algorithm. The
- * best and recommended algorithm is the spatial hash.
+ * To load a preset file, simply drag and drop it onto the
+ * executable.
  */
 
 #include <iostream>
 
 #include "Renderer.hpp"
-#include "SpatialHashSolver/SpatialHashSolver.hpp"
+#include "SpatialHashSolver.hpp"
 #include "loadPreset.hpp"
 
 int main(int argc, char* argv[])

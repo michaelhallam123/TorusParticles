@@ -47,4 +47,7 @@ private:
 	// Offset data (for rendering 9 copies of each Ball whose BallType has wrapTexture==true)
 	std::array<Vec2<float>, MAX_QUADS * VERTICES_PER_QUAD> m_offsets;
 	unsigned int m_offsetsVBO;
+
+	// Helper function
+	void setVertexAttributes (std::size_t ballTypeIndex);
 };

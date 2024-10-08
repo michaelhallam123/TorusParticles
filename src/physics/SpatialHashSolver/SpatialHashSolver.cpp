@@ -1,4 +1,4 @@
-#include "SpatialHashSolver/SpatialHashSolver.hpp"
+#include "SpatialHashSolver.hpp"
 
 #include <cmath>
 #include <iostream>

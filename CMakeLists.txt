@@ -39,19 +39,32 @@ FetchContent_MakeAvailable(glfw glad jsoncpp)
 # Find OpenGL
 find_package(OpenGL REQUIRED)
 
-# Add source files
-file(GLOB_RECURSE source_files
-    "src/*.cpp"
-    )
+add_executable(TorusParticles
+    "src/main.cpp" 
+    "src/graphics/Renderer.cpp" "src/graphics/Renderer.hpp"
+    "src/graphics/Shader.cpp" "src/graphics/Shader.hpp"
+    "src/graphics/Window.cpp" "src/graphics/Window.hpp"
+    "src/physics/SpatialHashSolver/Cell.hpp"
+    "src/physics/SpatialHashSolver/SpatialHashSolver.cpp" "src/physics/SpatialHashSolver/SpatialHashSolver.hpp"
+    "src/physics/Ball.hpp"
+    "src/physics/BallType.hpp"
+    "src/physics/Solver.cpp" "src/physics/Solver.hpp"
+    "src/physics/Vec2.hpp"
+    "src/physics/World.hpp" 
+    "src/utils/loadPreset.cpp" "src/utils/loadPreset.hpp"
+    "src/utils/Preset.hpp"
+)
 
-add_executable(TorusParticles ${source_files})
-target_include_directories(TorusParticles PRIVATE "src/graphics" "src/physics" "src/utils")
+target_include_directories(TorusParticles PRIVATE 
+    "src/graphics" 
+    "src/physics" "src/physics/SpatialHashSolver"
+    "src/utils")
 target_link_libraries(TorusParticles
     OpenGL::GL 
     glfw 
     glad
     jsoncpp_static
-    )
+)
  
 # Move shaders and presets to binary location
 add_custom_command(

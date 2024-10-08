@@ -5,7 +5,7 @@
 
 #include "Solver.hpp"
 
-#include "SpatialHashSolver/Cell.hpp"
+#include "Cell.hpp"
 
 
 /**
@@ -21,11 +21,7 @@
  * 
  * Multithreading is used to split populating and collision
  * checking across threads.
- * 
- * This is the fastest and recommended solver.
  */
-
-
 
 class SpatialHashSolver : public Solver
 {

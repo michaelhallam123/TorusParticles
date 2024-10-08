@@ -4,7 +4,7 @@
  * Simple wrapper for creating and maintaining GLFW window 
  * object.
  * 
- * Also initialises GLEW on construction.
+ * Also initialises GLFW and GLAD on construction.
  */
 
 #include <glad/glad.h>
@@ -18,12 +18,13 @@ private:
 	GLFWwindow* m_window;
 	const World& m_world;
 
-	// Screen resizing
+	// Screen resizing callback
 	void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+
 public:
 	Window(const Solver& solver, unsigned int xResolution, unsigned int yResolution);
 	~Window();
 
-	bool        isOpen();                      // Check window hasn't been closed
+	bool isOpen();
 	void update();
 };

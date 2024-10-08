@@ -14,9 +14,9 @@
  * unique algorithmic implementation of this method.
  * 
  * List of derived classes:
- *     BruteForceSolver
- *     BruteForceMultithreadSolver
- *     SweepAndPrune1DSolver
+ *     BruteForceSolver (REMOVED)
+ *     BruteForceMultithreadSolver (REMOVED)
+ *     SweepAndPrune1DSolver (REMOVED)
  *     SpatialHashSolver
  */
 

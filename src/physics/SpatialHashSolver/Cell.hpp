@@ -14,8 +14,8 @@ struct BallInfo
 
 struct Cell
 {
-	std::array<BallInfo, 20> ballList;  // Assume no more than ten balls per cell
-	std::size_t              numBalls; // Number of balls contained in the cell
+	std::array<BallInfo, 20> ballList; // Assume no more than twenty balls per cell
+	std::size_t numBalls;              // Number of balls contained in the cell
 
 	void addBall(BallInfo info)
 	{

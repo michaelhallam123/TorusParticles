@@ -17,7 +17,7 @@ Any of the latter three dependencies not found by CMake will be cloned and built
 Steps:
 1. Clone the git repository
 ```bash
-git clone <github_link_here>
+git clone https://github.com/michaelhallam123/TorusParticles.git
 cd TorusParticles
 ```
 2. Make a build directory
@@ -32,15 +32,19 @@ On Windows:
 cmake ..
 cmake --build . --config Release
 ```
-On other operating systems:
+On Linux:
 ```bash
 cmake ..
 cmake --build .
 ```
 
+The executable is located in `build/bin`. 
+
+When building the code with Visual Studio instead, the shaders folder and preset files must be moved to the same directory as the solution file, and TorusParticles must be set as the startup project.
+
 ## Usage
 
-Numbers, sizes, colors, masses and radii of particles are specified in `.json` preset files. See the files in the `presets` folder for examples.
-
 To load a preset, drag and drop it into the executable file. When run without a preset, the executable will load `preset1.json` by default.
+
+Numbers, sizes, colors, masses and radii of particles are specified in `.json` preset files. See the files in the `presets` folder for examples.
 

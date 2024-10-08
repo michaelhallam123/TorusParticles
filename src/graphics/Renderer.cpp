@@ -81,56 +81,7 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
         if (m_ballTypes[i].render == false)
             continue;
 
-        // Create vertex array object
-        glGenVertexArrays(1, &m_VAOs[i]);
-        glBindVertexArray(m_VAOs[i]);
-
-        // Create vertex buffer object for ball positions
-        glGenBuffers(1, &m_positionVBOs[i]);
-        glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
-        glBufferData(GL_ARRAY_BUFFER,                     // Target
-                     m_ballTypes[i].count * sizeof(Ball), // Size (in bytes)
-                     nullptr,                             // Data
-                     GL_DYNAMIC_DRAW                      // Usage
-                    );
-        
-        // Texture coordinates attribute (maps to a_texCoord in shader.vs)
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
-        glVertexAttribPointer(0,                   // Index
-                              2,                   // Size
-                              GL_FLOAT,            // Type
-                              GL_FALSE,            // Normalized
-                              sizeof(Vec2<float>), // Stride
-                              0                    // Offset
-                             );
-        glVertexAttribDivisor(0, 0);
-        
-        
-        // Offset attribute (maps to a_offset in shader.vs)
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, m_offsetsVBO);
-        glVertexAttribPointer(1,                   // Index
-                              2,                   // Size
-                              GL_FLOAT,            // Type
-                              GL_FALSE,            // Normalized
-                              sizeof(Vec2<float>), // Stride
-                              0                    // Offset
-                             );
-        glVertexAttribDivisor(1, 0); 
-        
-
-        // Center attribute (maps to a_center in shader.vs)
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
-        glVertexAttribPointer(2,                              // Index
-                              2,                              // Size
-                              GL_FLOAT,                       // Type
-                              GL_FALSE,                       // Normalized
-                              sizeof(Ball),                   // Stride
-                              (void*)offsetof(Ball, position) // Offset
-                             );
-        glVertexAttribDivisor(2, 1);
+        setVertexAttributes(i);
     }
 
     // Bind the shader program
@@ -142,6 +93,62 @@ Renderer::Renderer(const Solver& solver, Preset preset, unsigned int xResolution
     // Enable blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Renderer::setVertexAttributes(std::size_t ballTypeIndex)
+{
+    std::size_t i = ballTypeIndex;
+
+    // Create vertex array object
+    glGenVertexArrays(1, &m_VAOs[i]);
+    glBindVertexArray(m_VAOs[i]);
+
+    // Create vertex buffer object for ball positions
+    glGenBuffers(1, &m_positionVBOs[i]);
+    glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
+    glBufferData(GL_ARRAY_BUFFER,                     // Target
+                    m_ballTypes[i].count * sizeof(Ball), // Size (in bytes)
+                    nullptr,                             // Data
+                    GL_DYNAMIC_DRAW                      // Usage
+                );
+    
+    // Texture coordinates attribute (maps to a_texCoord in shader.vs)
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
+    glVertexAttribPointer(0,                   // Index
+                            2,                   // Size
+                            GL_FLOAT,            // Type
+                            GL_FALSE,            // Normalized
+                            sizeof(Vec2<float>), // Stride
+                            0                    // Offset
+                            );
+    glVertexAttribDivisor(0, 0);
+    
+    
+    // Offset attribute (maps to a_offset in shader.vs)
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, m_offsetsVBO);
+    glVertexAttribPointer(1,                   // Index
+                            2,                   // Size
+                            GL_FLOAT,            // Type
+                            GL_FALSE,            // Normalized
+                            sizeof(Vec2<float>), // Stride
+                            0                    // Offset
+                            );
+    glVertexAttribDivisor(1, 0); 
+    
+
+    // Center attribute (maps to a_center in shader.vs)
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, m_positionVBOs[i]);
+    glVertexAttribPointer(2,                              // Index
+                            2,                              // Size
+                            GL_FLOAT,                       // Type
+                            GL_FALSE,                       // Normalized
+                            sizeof(Ball),                   // Stride
+                            (void*)offsetof(Ball, position) // Offset
+                            );
+    glVertexAttribDivisor(2, 1);
 }
 
 void Renderer::draw()

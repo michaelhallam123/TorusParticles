@@ -24,10 +24,31 @@
 #include "loadPreset.hpp"
 #include "Preset.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
 	// Set simulation parameters
-    Preset preset = loadPreset("presets/preset3.json");
+    Preset preset;
+
+    if (argc == 1)
+        preset = loadPreset("preset1.json");
+    else if (argc == 2)
+        preset = loadPreset(argv[1]);
+    else
+    {
+        std::cout << "Error: program accepts at most one argument" << std::endl;
+        std::cout << "Terminating program..." << std::endl;
+        std::cin.get();
+        return -1;
+    }
+
+    if (!preset.loadSuccessful)
+    {
+        std::cout << "Error: failed to load preset" << std::endl;
+        std::cout << "Terminating program..." << std::endl;
+        std::cin.get();
+        return -2;
+    }
+
     float dt = preset.dt;
 
 	// Initialise simulation

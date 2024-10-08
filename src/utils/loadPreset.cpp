@@ -14,17 +14,32 @@ Preset loadPreset(const std::string& filepath)
  */
 {
 	Preset preset;
-	std::vector<BallType>& ballTypes = preset.ballTypes;
 
 	std::ifstream file(filepath);
+
+	if (!file.is_open())
+	{
+		std::cout << "Error: could not open file at location \"" << filepath << "\"" << std::endl;
+		return preset;
+	}
+
 	Json::Value   jsonTotal;
 	Json::Reader  reader;
 
-	reader.parse(file, jsonTotal);
+	bool readSuccessful = reader.parse(file, jsonTotal);
+
+	if (!readSuccessful)
+	{
+		std::cout << "Error: failed to parse file \"" << filepath << "\"" << std::endl;
+		std::cout << "Please ensure file is a valid .json file" << std::endl;
+		return preset;
+	}
 
 	preset.dt = jsonTotal["dt"].asFloat();
 	preset.worldAspectRatio = jsonTotal["worldAspectRatio"].asFloat();
 	preset.antialiasing = jsonTotal["antialiasing"].asBool();
+	
+	std::vector<BallType>& ballTypes = preset.ballTypes;
 
 	Json::Value ballTypesJson = jsonTotal["ballTypes"];
 
@@ -59,6 +74,8 @@ Preset loadPreset(const std::string& filepath)
 
 		ballTypes.push_back(bt);
 	}
+
+	preset.loadSuccessful = true;
 
 	return preset;
 }

@@ -15,4 +15,6 @@ struct Preset
     float worldAspectRatio;
     bool antialiasing;
     std::vector<BallType> ballTypes;
+
+    bool loadSuccessful = false;
 };

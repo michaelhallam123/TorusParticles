@@ -38,13 +38,13 @@ cmake ..
 cmake --build .
 ```
 
-The executable is located in `build/bin`. 
+The executable is located in `build/bin` (`build/bin/Release` on Windows), along with several example preset files. 
 
 When building the code with Visual Studio instead, the shaders folder and preset files must be moved to the same directory as the solution file, and TorusParticles must be set as the startup project.
 
 ## Usage
 
-To load a preset, drag and drop it into the executable file. When run without a preset, the executable will load `preset1.json` by default.
+To load a preset, drag and drop it onto the executable file. When run without a preset, the executable will load `preset1.json` by default.
 
-Numbers, sizes, colors, masses and radii of particles are specified in `.json` preset files. See the files in the `presets` folder for examples.
+Numbers, sizes, colors, masses and radii of particles, as well as simulation parameters such as the timestep, can be specified in `.json` preset files. See the files in the `presets` folder for examples.
 

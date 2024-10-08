@@ -1,7 +1,12 @@
 #pragma once
 
 /**
- * Simple struct for storing ball information
+ * Simple struct for storing ball information.
+ * 
+ * Intrinsic ball information such as mass, 
+ * radius, color, etc., are stored in the ball's
+ * BallType data in m_ballTypes. The corresponding
+ * index for this data is stored in Ball::typeindex.
  */
 
 #include "Vec2.hpp"

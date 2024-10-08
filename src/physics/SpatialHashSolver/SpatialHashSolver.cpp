@@ -1,7 +1,8 @@
-#include "SpatialHashSolver.hpp"
+#include "SpatialHashSolver/SpatialHashSolver.hpp"
 
 #include <cmath>
 #include <iostream>
+#include <chrono>
 
 SpatialHashSolver::SpatialHashSolver(Preset preset)
 	: Solver(preset) 
@@ -34,7 +35,33 @@ void SpatialHashSolver::clearCells()
 
 void SpatialHashSolver::populateCells()
 {
-	for (std::size_t i = 0; i < m_balls.size(); i++)
+	m_futures.clear();
+
+	for (unsigned int i = 0; i < NUM_THREADS; i++)
+	{
+		std::size_t indLower = std::min(m_balls.size(), i * (m_balls.size() / NUM_THREADS + 1));
+		std::size_t indUpper = std::min(m_balls.size(), (i + 1) * (m_balls.size() / NUM_THREADS + 1));
+
+		m_futures.push_back(
+			std::async(
+				std::launch::async, 
+				[this, indLower, indUpper](){return populateCellsInRange(indLower, indUpper);} 
+			)
+		);
+	}
+
+	for (std::future<void>& future : m_futures)
+		future.wait();
+}
+
+void SpatialHashSolver::populateCellsInRange(std::size_t indLower, std::size_t indUpper)
+/*
+ * Iterate through entries of m_balls with indices
+ * in the specified range [indLower, indUpper), storing
+ * their info in m_grid.
+ */
+{
+	for (std::size_t i = indLower; i < indUpper; i++)
 	{
 		const Ball& b = m_balls[i];
 
@@ -44,7 +71,6 @@ void SpatialHashSolver::populateCells()
 		float xRight = b.position.x + r;
 		float yLow   = b.position.y - r;
 		float yHigh  = b.position.y + r;
-
 
 		for (int r = yPosToRow(yLow); r <= yPosToRow(yHigh); r++)
 		{
@@ -89,10 +115,10 @@ void SpatialHashSolver::checkCollisions()
 {
 	m_futures.clear();
 
-	for (unsigned int i = 0; i < 10; i++)
+	for (unsigned int i = 0; i < NUM_THREADS; i++)
 	{
-		std::size_t rowLower = i * (m_numRows / 10 + 1);
-		std::size_t rowUpper = (i + 1) * (m_numRows / 10 + 1);
+		std::size_t rowLower = std::min(m_numRows, i * (m_numRows / NUM_THREADS + 1));
+		std::size_t rowUpper = std::min(m_numRows, (i + 1) * (m_numRows / NUM_THREADS + 1));
 
 		m_futures.push_back(
 			std::async(
@@ -142,7 +168,7 @@ bool SpatialHashSolver::overlap(BallInfo& info1, BallInfo& info2)
 	float& r1 = m_ballTypes[b1.typeindex].radius;
 	float& r2 = m_ballTypes[b2.typeindex].radius;
 
-	return distSquared(b1.position+translate1, b2.position+translate2) <= (r1+r2)*(r1+r2);
+	return distSquared(b1.position + translate1, b2.position + translate2) <= (r1 + r2) * (r1 + r2);
 }
 
 Vec2<float> SpatialHashSolver::offsetToTranslate(Offset& offset)
@@ -169,39 +195,17 @@ void SpatialHashSolver::resolveCollision(BallInfo& info1, BallInfo& info2)
 
 	Ball& b1 = m_balls[info1.ballID];
 	Ball& b2 = m_balls[info2.ballID];
-
-	float m1 = m_ballTypes[b1.typeindex].mass;
-	float m2 = m_ballTypes[b2.typeindex].mass;
-
-	float r1 = m_ballTypes[b1.typeindex].radius;
-	float r2 = m_ballTypes[b2.typeindex].radius;
-
+	
 	Vec2<float> translate1 = offsetToTranslate(info1.offset);
 	Vec2<float> translate2 = offsetToTranslate(info2.offset);
+	
+	b1.position += translate1;
+	b2.position += translate2;
 
-	b1.position.add(translate1);
-	b2.position.add(translate2);
+	Solver::resolveCollision(b1, b2);
 
-	// Update velocities according to collision physics
-
-	Vec2<float> deltaPos = b1.position - b2.position;
-	Vec2<float> deltaVel = b1.velocity - b2.velocity;
-
-	float a = -((2.0f * m2) / (m1 + m2)) * (deltaVel.dot(deltaPos) / deltaPos.dot(deltaPos));
-	float b = -(m1 / m2) * a;
-
-	b1.velocity.add(deltaPos * a);
-	b2.velocity.add(deltaPos * b);
-
-	// Dislodge balls to prevent sticking
-
-	float dislodgeFactor1 = r2 / std::sqrt(deltaPos.dot(deltaPos)) - r2/(r1+r2);
-	float dislodgeFactor2 = r1 / std::sqrt(deltaPos.dot(deltaPos)) - r1/(r1+r2);
-	b1.position.add(deltaPos * dislodgeFactor1);
-	b2.position.subtract(deltaPos * dislodgeFactor2);
-
-	b1.position.subtract(translate1);
-	b2.position.subtract(translate2);
+	b1.position -= translate1;
+	b2.position -= translate2;
 }
 
 

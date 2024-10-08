@@ -8,6 +8,7 @@
  * the queue is empty
  */
 
+// Iterator for Queue
 template <typename Queue>
 class QueueIterator
 {
@@ -71,6 +72,7 @@ private:
 	ValueType* m_ptr;
 };
 
+// Queue template
 template<typename T>
 struct Queue
 {
@@ -118,7 +120,6 @@ public:
 	}
 
 	// Iterator methods
-
 	Iterator begin()
 	{
 		return Iterator(q.data() + start);

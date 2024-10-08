@@ -17,16 +17,12 @@
 #include <iostream>
 
 #include "Renderer.hpp"
-#include "BruteForceSolver.hpp"
-#include "BruteForceMultithreadSolver.hpp"
-#include "SweepAndPrune1DSolver.hpp"
-#include "SpatialHashSolver.hpp"
+#include "SpatialHashSolver/SpatialHashSolver.hpp"
 #include "loadPreset.hpp"
-#include "Preset.hpp"
 
 int main(int argc, char* argv[])
 {
-	// Set simulation parameters
+	// Load preset
     Preset preset;
 
     if (argc == 1)

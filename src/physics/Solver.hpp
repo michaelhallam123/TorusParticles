@@ -15,10 +15,9 @@
  * 
  * List of derived classes:
  *     BruteForceSolver
+ *     BruteForceMultithreadSolver
  *     SweepAndPrune1DSolver
- * 
- * The getter methods return const references to data
- * required by the renderer to draw the simulation.
+ *     SpatialHashSolver
  */
 
 class Solver
@@ -39,11 +38,11 @@ protected:
 	std::vector<BallType> m_ballTypes;
 	std::vector<Ball>     m_balls;
 
-	virtual void solve() = 0;                              // Check collisions and update velocities
+	virtual void solve() = 0;                     // Check collisions and update velocities
 
-	bool overlap(std::size_t i, std::size_t j);            // Test whether balls at indices i, j overlap
-	void resolveCollision(std::size_t i, std::size_t j);   // Resolve collision between i, j
-	void updatePositions(float dt);                        // Update positions of particles
+	bool overlap(const Ball& b1, const Ball& b2); // Test whether balls b1 and b2 overlap
+	void resolveCollision(Ball& b1, Ball& b2);    // Resolve collision between b1 and b2
+	void updatePositions(float dt);               // Update positions of particles
 
 	World m_world;
 };

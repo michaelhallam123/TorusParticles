@@ -12,6 +12,15 @@
             "totalMomentum": [0.0, 0.0],
             "wrapTexture": true,
             "render": true
+        },
+        {
+            "mass": 3.0,
+            "radius": 0.08,
+            "count": 10,
+            "rgba": [1.0, 0.5, 0.2, 1.0],
+            "totalMomentum": [0.0, 0.0],
+            "wrapTexture": true,
+            "render": true
         }
     ]
 }

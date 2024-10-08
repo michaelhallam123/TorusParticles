@@ -2,7 +2,7 @@
 
 /**
  * A simple struct for storing data used in the 
- * sweep and prune algorithm
+ * sweep and prune algorithm. 
  */
 
 struct Endpoints

@@ -17,6 +17,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     glad
     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+    FIND_PACKAGE_ARGS NAMES glad
     )
 set(GLAD_PROFILE "core"	CACHE STRING "OpenGL profile")
 set(GLAD_GENERATOR "c"	CACHE STRING "Language to generate the binding for")
@@ -25,6 +26,7 @@ set(GLAD_GENERATOR "c"	CACHE STRING "Language to generate the binding for")
 FetchContent_Declare(
     jsoncpp
     GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
+    FIND_PACKAGE_ARGS NAMES jsoncpp
     )
 
 set(JSONCPP_WITH_TESTS OFF CACHE INTERNAL "Compile and (for jsoncpp_check) run JsonCpp test executables")
@@ -50,7 +52,7 @@ target_link_libraries(TorusParticles
     glad
     jsoncpp_static
     )
-
+ 
 # Move shaders and presets to binary location
 add_custom_command(
     TARGET TorusParticles

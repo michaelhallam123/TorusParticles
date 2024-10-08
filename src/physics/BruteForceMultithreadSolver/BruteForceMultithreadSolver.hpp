@@ -24,9 +24,10 @@ public:
 	BruteForceMultithreadSolver(Preset preset);
 	void solve() override;
 	void solveWithTranslate(const Vec2<float>& translate);
-	bool overlapWithTranslate(const Vec2<float>& translate, std::size_t i, std::size_t j);
-	void resolveCollisionWithTranslate(const Vec2<float>& translate, std::size_t i, std::size_t j);
+	bool overlapWithTranslate(const Vec2<float>& translate, const Ball& b1, const Ball& b2);
+	void resolveCollisionWithTranslate(const Vec2<float>& translate, Ball& b1, Ball& b2);
 
+	// Multithreading data
 	std::mutex m_mutex;
 	std::vector<std::future<void>> m_futures;
 };

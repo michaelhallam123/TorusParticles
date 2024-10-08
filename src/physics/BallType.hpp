@@ -10,8 +10,8 @@
 
 struct BallType
 {
-	float                 radius;        // Radius of each ball of this balltype
-	float                 mass;          // Mass of each ball of this balltype
+	float                 radius; 
+	float                 mass;
 	std::size_t           count;         // Number of balls of this balltype
 	std::array<float, 4>  rgba;          // RGBA color values for the balltype
 	Vec2<float>           totalMomentum; // Total initial momentum of balls with this balltype

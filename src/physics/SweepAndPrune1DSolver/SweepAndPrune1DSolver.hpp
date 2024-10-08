@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Solver.hpp"
-#include "BallType.hpp"
-#include "Endpoints.hpp"
-#include "Queue.hpp"
-#include <vector>
+#include "SweepAndPrune1DSolver/Endpoints.hpp"
+#include "SweepAndPrune1DSolver/Queue.hpp"
 
 /*
  * A subclass of Solver implementing a 1-dimensional sweep

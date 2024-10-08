@@ -72,9 +72,35 @@ Preset loadPreset(const std::string& filepath)
 		bt.wrapTexture = json["wrapTexture"].asBool();
 		bt.render      = json["render"].asBool();
 
+		// Error checking
+		if (bt.mass <= 0.0f)
+		{
+			std::cout << "Error: mass must be positive" << std::endl;
+			return preset;
+		}
+		if (bt.radius <= 0.0f)
+		{
+			std::cout << "Error: radius must be positive" << std::endl;
+			return preset;
+		}
+
+		// Done
 		ballTypes.push_back(bt);
 	}
 
+	// Error checking
+	if (preset.dt <= 0.0f)
+	{
+		std::cout << "Error: dt must be positive" << std::endl;
+		return preset;
+	}
+	if (preset.worldAspectRatio <= 0.0f)
+	{
+		std::cout << "Error: worldAspectRatio must be positive" << std::endl;
+		return preset;
+	}
+
+	// Successful load
 	preset.loadSuccessful = true;
 
 	return preset;

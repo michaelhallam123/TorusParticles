@@ -1,11 +1,10 @@
-#include "SweepAndPrune1DSolver.hpp"
+#include "SweepAndPrune1DSolver/SweepAndPrune1DSolver.hpp"
 #include <algorithm>
 
 SweepAndPrune1DSolver::SweepAndPrune1DSolver(Preset preset)
 	: Solver(preset)
 {
 	// Initialise and sort m_leftSortedEnds and m_rightSortedEnds
-
 	for (std::size_t i = 0; i < m_balls.size(); i++)
 	{
 		const Ball& b = m_balls[i];
@@ -38,7 +37,6 @@ SweepAndPrune1DSolver::SweepAndPrune1DSolver(Preset preset)
 	std::sort(m_rightSortedEnds.begin(), m_rightSortedEnds.end(), rightEndsDecreasing);
 
 	// Initialise and allocate space for sweep queues and stacks
-
 	for (std::size_t i = 0; i < m_ballTypes.size(); i++)
 	{
 		m_sweepQueues.push_back({});
@@ -65,15 +63,12 @@ void SweepAndPrune1DSolver::solve()
  */
 {
 	// Sort m_leftSortedEnds and m_rightSortedEnds
-
 	insertionSortEnds();
 
 	// Prepare queues in m_sweepQueues to be filled
-
 	clearQueues();
 
 	// First sweep: deal with bulk of calculations, ignoring balls crossing left and right boundaries
-
 	for (Endpoints& e1 : m_leftSortedEnds)
 	{
 		for (Queue<Endpoints>& q : m_sweepQueues)
@@ -90,7 +85,6 @@ void SweepAndPrune1DSolver::solve()
 	}
 
 	// Second sweep: deal with balls crossing right-hand boundary
-
 	const Vec2<float> rightTranslate(m_world.xWidth, 0.0f);
 
 	float leftEnd  = m_leftSortedEnds[0].left   + m_world.xWidth; // Left-most overlapping endpoint
@@ -117,7 +111,6 @@ void SweepAndPrune1DSolver::solve()
 	}
 
 	// Third and final sweep: deal with balls crossing left-hand boundary
-
 	for (Endpoints& e : m_leftSortedEnds)
 	{
 		if (e.left >= m_world.xMin)
@@ -156,7 +149,6 @@ void SweepAndPrune1DSolver::solve()
 	}
 
 	// Return shifted balls to original position and remove from stacks
-
 	for (std::vector<Endpoints>& s : m_sweepStacks)
 	{
 		while (!s.empty())
@@ -173,21 +165,24 @@ void SweepAndPrune1DSolver::checkCollision(Endpoints& e1, Endpoints& e2)
  * If a collision is detected, update velocities using resolveCollision
  */
 {
-	static const std::vector<Vec2<float>> verticalTranslates = { {0.0f, -m_world.yWidth}, 
-		                                                         {0.0f,  0.0f          }, 
-		                                                         {0.0f,  m_world.yWidth} };
+	static const std::vector<Vec2<float>> verticalTranslates = 
+	{ 
+		{ 0.0f, -m_world.yWidth }, 
+		{ 0.0f,            0.0f }, 
+		{ 0.0f,  m_world.yWidth } 
+	};
 
-	std::size_t i1 = e1.ind;
-	std::size_t i2 = e2.ind;
+	Ball& b1 = m_balls[e1.ind];
+	Ball& b2 = m_balls[e2.ind];
 
 	for (Vec2<float> translate : verticalTranslates)
 	{
-		m_balls[i1].position.add(translate);
-		if (overlap(i1, i2))
+		b1.position += translate;
+		if (overlap(b1, b2))
 		{
-			resolveCollision(i1, i2);
+			resolveCollision(b1, b2);
 		}
-		m_balls[i1].position.subtract(translate);
+		b1.position -= translate;
 	}
 }
 
@@ -203,10 +198,9 @@ void SweepAndPrune1DSolver::update(float dt)
 	Solver::update(dt);
 
 	// Update positions in m_leftSortedEnds and m_rightSortedEnds
-
 	for (Endpoints& e : m_leftSortedEnds)
 	{
-		Ball&        b = m_balls[e.ind];
+		Ball& b = m_balls[e.ind];
 		Vec2<float>& p = b.position;
 
 		e.left  = p.x - m_ballTypes[b.typeindex].radius;
@@ -215,7 +209,7 @@ void SweepAndPrune1DSolver::update(float dt)
 
 	for (Endpoints& e : m_rightSortedEnds)
 	{
-		Ball&        b = m_balls[e.ind];
+		Ball& b = m_balls[e.ind];
 		Vec2<float>& p = b.position;
 
 		e.left  = p.x - m_ballTypes[b.typeindex].radius;
@@ -230,26 +224,24 @@ void SweepAndPrune1DSolver::insertionSortEnds()
  */
 {
 	// Insertion sort m_leftSortedEnds (increasing by left endpoint)
-
 	for (std::size_t i = 1; i < m_leftSortedEnds.size(); i++)
 	{
 		for (std::size_t j = i; j > 0; j--)
 		{
 			if (m_leftSortedEnds[j - 1].left > m_leftSortedEnds[j].left)
-				std::swap(m_leftSortedEnds[j-1], m_leftSortedEnds[j]);
+				std::swap(m_leftSortedEnds[j - 1], m_leftSortedEnds[j]);
 			else
 				break;
 		}
 	}
 
 	// Insertion sort m_rightSortedEnds (decreasing by right endpoint)
-
 	for (std::size_t i = 1; i < m_rightSortedEnds.size(); i++)
 	{
 		for (std::size_t j = i; j > 0; j--)
 		{
 			if (m_rightSortedEnds[j - 1].right < m_rightSortedEnds[j].right)
-				std::swap(m_rightSortedEnds[j-1], m_rightSortedEnds[j]);
+				std::swap(m_rightSortedEnds[j - 1], m_rightSortedEnds[j]);
 			else
 				break;
 		}

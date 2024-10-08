@@ -6,7 +6,7 @@ A simple C++ program for simulating particle collisions on a torus.
 
 ## Build instructions
 
-Requirements:
+### Requirements
 - [CMake](https://cmake.org/)
 - [GLFW](https://www.glfw.org/)
 - [Glad](https://github.com/Dav1dde/glad)
@@ -14,7 +14,7 @@ Requirements:
 
 Any of the latter three dependencies not found by CMake will be cloned and built automatically when CMake is run. Note they may require extra dependencies in order to build correctly, see e.g. [GLFW Dependencies](https://www.glfw.org/docs/3.3/compile.html#compile_deps).
 
-Steps:
+### Steps
 1. Clone the git repository
 ```bash
 git clone https://github.com/michaelhallam123/TorusParticles.git
@@ -44,7 +44,13 @@ When building the code with Visual Studio instead, the shaders folder and preset
 
 ## Usage
 
+### Loading presets
+
 To load a preset, drag and drop it onto the executable file. When run without a preset, the executable will load `preset1.json` by default.
 
+### Editing presets
+
 Numbers, sizes, colors, masses and radii of particles, as well as simulation parameters such as the timestep, can be specified in `.json` preset files. See the files in the `presets` folder for examples.
+
+When there is a large number of small particles on the screen, recommend setting the timestep `dt` to a sufficiently small number, and `antialiasing` to `false`.
 

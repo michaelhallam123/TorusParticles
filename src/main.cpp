@@ -10,7 +10,8 @@
  * boundaries (see the preset files in presets/ for examples).
  * 
  * To load a preset file, simply drag and drop it onto the
- * executable.
+ * executable (Windows) or add the filename as an argument to
+ * the program (Linux).
  */
 
 #include <iostream>

@@ -32,8 +32,6 @@ private:
 	std::vector<Cell> m_grid;
 	std::size_t       m_numRows;
 	std::size_t       m_numCols;
-	float             m_cellWidth;
-	float             m_cellHeight;
 
 	void solve() override;
 

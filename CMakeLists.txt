@@ -1,34 +1,30 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(TorusParticles)
+project(TorusParticles VERSION 1.0.0)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
- 
+
 include(FetchContent)
 
-# Find GLFW
+# Fetch GLFW
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw
-    FIND_PACKAGE_ARGS NAMES glfw3
-    )
+)
 
-# Find GLAD
+# Fetch GLAD
 FetchContent_Declare(
     glad
     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-    FIND_PACKAGE_ARGS NAMES glad
-    )
+)
 set(GLAD_PROFILE "core"	CACHE STRING "OpenGL profile")
-set(GLAD_GENERATOR "c"	CACHE STRING "Language to generate the binding for")
+set(GLAD_API "gl=3.3" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
 
-# Find jsoncpp
+# Fetch jsoncpp
 FetchContent_Declare(
     jsoncpp
     GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
-    FIND_PACKAGE_ARGS NAMES jsoncpp
-    )
-
+)
 set(JSONCPP_WITH_TESTS OFF CACHE INTERNAL "Compile and (for jsoncpp_check) run JsonCpp test executables")
 set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE INTERNAL "Automatically run unit-tests as a post build step")
 set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build jsoncpp_lib as a shared library.")
@@ -39,32 +35,42 @@ FetchContent_MakeAvailable(glfw glad jsoncpp)
 # Find OpenGL
 find_package(OpenGL REQUIRED)
 
-add_executable(TorusParticles
+add_executable(
+    TorusParticles
+    
     "src/main.cpp" 
+
     "src/graphics/Renderer.cpp" "src/graphics/Renderer.hpp"
     "src/graphics/Shader.cpp" "src/graphics/Shader.hpp"
     "src/graphics/Window.cpp" "src/graphics/Window.hpp"
+
     "src/physics/SpatialHashSolver/Cell.hpp"
-    "src/physics/SpatialHashSolver/SpatialHashSolver.cpp" "src/physics/SpatialHashSolver/SpatialHashSolver.hpp"
+    "src/physics/SpatialHashSolver/SpatialHashSolver.cpp" 
+    "src/physics/SpatialHashSolver/SpatialHashSolver.hpp"
+
     "src/physics/Ball.hpp"
     "src/physics/BallType.hpp"
     "src/physics/Solver.cpp" "src/physics/Solver.hpp"
     "src/physics/Vec2.hpp"
     "src/physics/World.hpp" 
+
     "src/utils/loadPreset.cpp" "src/utils/loadPreset.hpp"
     "src/utils/Preset.hpp"
 )
 
-target_include_directories(TorusParticles PRIVATE 
+target_include_directories(
+    TorusParticles PRIVATE 
     "src/graphics" 
     "src/physics" "src/physics/SpatialHashSolver"
-    "src/utils")
-target_link_libraries(TorusParticles
-    OpenGL::GL 
-    glfw 
-    glad
-    jsoncpp_static
+    "src/utils"
 )
+
+target_link_libraries(TorusParticles
+    PRIVATE OpenGL::GL 
+    PRIVATE glfw 
+    PRIVATE glad
+    PRIVATE jsoncpp_static
+    )
  
 # Move shaders and presets to binary location
 add_custom_command(

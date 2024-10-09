@@ -1,6 +1,6 @@
 # TorusParticles
 
-A simple C++ program for simulating particle collisions on a torus.
+A simple C++ and OpenGL program for simulating particle collisions on a torus.
 
 ![image](images/image1.png)
 
@@ -12,7 +12,7 @@ A simple C++ program for simulating particle collisions on a torus.
 - [Glad](https://github.com/Dav1dde/glad)
 - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
 
-Any of the latter three dependencies not found by CMake will be cloned and built automatically when CMake is run. Note they may require extra dependencies in order to build correctly, see e.g. [GLFW Dependencies](https://www.glfw.org/docs/3.3/compile.html#compile_deps).
+The latter three dependencies will be cloned and built automatically when CMake is run. Note they may require extra dependencies in order to build correctly, see e.g. [GLFW Dependencies](https://www.glfw.org/docs/3.3/compile.html#compile_deps).
 
 ### Steps
 1. Clone the git repository
@@ -40,13 +40,17 @@ cmake --build .
 
 The executable is located in `build/bin` (`build/bin/Release` on Windows), along with several example preset files. 
 
-When building the code with Visual Studio instead, the shaders folder and preset files must be moved to the same directory as the solution file, and TorusParticles must be set as the startup project.
+If building with Visual Studio instead, the shaders folder and preset files must be moved to the same directory as the solution file, and TorusParticles must be set as the startup project.
 
 ## Usage
 
 ### Loading presets
 
-To load a preset, drag and drop it onto the executable file. When run without a preset, the executable will load `preset1.json` by default.
+To load a preset on Windows, drag and drop it onto the executable file. On linux, from the directory `build/bin`, run 
+```bash
+./TorusParticles <name_of_preset>.json
+``` 
+When run without a preset, the executable will load `preset1.json` by default.
 
 ### Editing presets
 

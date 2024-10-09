@@ -30,6 +30,9 @@ Window::Window(const Solver& solver, unsigned int xResolution, unsigned int yRes
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    #ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
 
     // Set glfw window user pointer for callbacks
     glfwSetWindowUserPointer(m_window, this);

@@ -7,12 +7,17 @@
 SpatialHashSolver::SpatialHashSolver(Preset preset)
 	: Solver(preset) 
 {
-	std::size_t numRows = 1 + static_cast<std::size_t>(std::sqrt(static_cast<double>(m_balls.size())));
+	m_numRows = 1 + static_cast<std::size_t>(
+		m_world.yMax * std::sqrt(
+			static_cast<double>(m_balls.size())
+		)
+	);
 
-	m_numRows    = numRows;
-	m_numCols    = numRows;
-	m_cellWidth  = m_world.xWidth / static_cast<float>(m_numCols);
-	m_cellHeight = m_world.yWidth / static_cast<float>(m_numRows);
+	m_numCols = 1 + static_cast<std::size_t>(
+		m_world.xMax * std::sqrt(
+			static_cast<double>(m_balls.size())
+		)
+	);
 
 	m_grid.resize(m_numRows * m_numCols); // Number of cells is order m_balls.size()
 }
@@ -34,6 +39,12 @@ void SpatialHashSolver::clearCells()
 
 
 void SpatialHashSolver::populateCells()
+/**
+ * Split task of populating cells across multiple
+ * threads. Each thread then places balls in m_balls
+ * with indices in the range [indLower, indUpper) into
+ * cells
+ */
 {
 	m_futures.clear();
 
@@ -110,7 +121,9 @@ void SpatialHashSolver::populateCellsInRange(std::size_t indLower, std::size_t i
 
 void SpatialHashSolver::checkCollisions()
 /**
- * Iterate through each cell checking for collisions
+ * Split task of checking collisions across multiple
+ * threads. Each thread checks cells with row index
+ * in the range [rowLower, rowUpper).
  */
 {
 	m_futures.clear();
@@ -133,6 +146,10 @@ void SpatialHashSolver::checkCollisions()
 }
 
 void SpatialHashSolver::checkCollisionsInRange(std::size_t rowLower, std::size_t rowUpper)
+/**
+ * Check collisions between pairs of balls within cells
+ * having row number in the range [rowLower, rowUpper).
+ */
 {
 	for (std::size_t r = rowLower; r < std::min(rowUpper, m_numRows); r++)
 	{

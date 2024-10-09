@@ -1,6 +1,6 @@
 #pragma once
 
-// Simple 2-dimensional vector struct
+// Simple 2-dimensional vector struct.
 
 template <typename T>
 struct Vec2

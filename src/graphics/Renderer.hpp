@@ -50,4 +50,6 @@ private:
 
 	// Helper function
 	void setVertexAttributes (std::size_t ballTypeIndex);
+	void setTexCoordsVertices();
+	void setOffsetsVertices();
 };

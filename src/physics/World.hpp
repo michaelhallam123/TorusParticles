@@ -5,6 +5,8 @@
  * namely boundaries and width.
  */
 
+#include <cmath>
+
 struct World
 {
 	float xMin;
@@ -18,6 +20,6 @@ struct World
 	float yMid;
 
 	World(float aspectRatio)
-		: xMin(-aspectRatio), xMax(aspectRatio), xWidth(2.0f*aspectRatio), xMid(0.0f),
-		  yMin(       -1.0f), yMax(       1.0f), yWidth(            2.0f), yMid(0.0f) {}
+		: xMin(     -std::sqrt(aspectRatio)), xMax(     std::sqrt(aspectRatio)), xWidth(2.0f*std::sqrt(aspectRatio)), xMid(0.0f),
+		  yMin(-1.0f/std::sqrt(aspectRatio)), yMax(1.0f/std::sqrt(aspectRatio)), yWidth(2.0f/std::sqrt(aspectRatio)), yMid(0.0f) {}
 };

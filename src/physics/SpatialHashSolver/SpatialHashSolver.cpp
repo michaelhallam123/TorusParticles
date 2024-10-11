@@ -19,7 +19,7 @@ SpatialHashSolver::SpatialHashSolver(Preset preset)
 		)
 	);
 
-	m_grid.resize(m_numRows * m_numCols); // Number of cells is order m_balls.size()
+	m_grid.resize(m_numRows * m_numCols); // Number of cells is of order m_balls.size()
 }
 
 void SpatialHashSolver::solve()
@@ -33,8 +33,8 @@ void SpatialHashSolver::solve()
 
 void SpatialHashSolver::clearCells()
 {
-	for (Cell& c : m_grid)
-		c.clear();
+	for (Cell& cell : m_grid)
+		cell.clear();
 }
 
 
@@ -74,40 +74,40 @@ void SpatialHashSolver::populateCellsInRange(std::size_t indLower, std::size_t i
 {
 	for (std::size_t i = indLower; i < indUpper; i++)
 	{
-		const Ball& b = m_balls[i];
+		const Ball& ball = m_balls[i];
 
-		const float& r = m_ballTypes[b.typeindex].radius;
+		const float& radius = m_ballTypes[ball.typeindex].radius;
 
-		float xLeft  = b.position.x - r;
-		float xRight = b.position.x + r;
-		float yLow   = b.position.y - r;
-		float yHigh  = b.position.y + r;
+		float xLeft  = ball.position.x - radius;
+		float xRight = ball.position.x + radius;
+		float yLow   = ball.position.y - radius;
+		float yHigh  = ball.position.y + radius;
 
-		for (int r = yPosToRow(yLow); r <= yPosToRow(yHigh); r++)
+		for (int rowRaw = yPosToRow(yLow); rowRaw <= yPosToRow(yHigh); rowRaw++)
 		{
-			for (int c = xPosToCol(xLeft); c <= xPosToCol(xRight); c++)
+			for (int colRaw = xPosToCol(xLeft); colRaw <= xPosToCol(xRight); colRaw++)
 			{
 				Offset offset = NONE;
-				int row = r;
-				int col = c;
+				int row = rowRaw;
+				int col = colRaw;
 
-				if (r < 0)
+				if (row < 0)
 				{
 					row += m_numRows;
 					offset = UP;
 				}
-				else if (r >= m_numRows)
+				else if (row >= m_numRows)
 				{
 					row -= m_numRows;
 					offset = DOWN;
 				}
 
-				if (c < 0)
+				if (col < 0)
 				{
 					col += m_numCols;
 					offset = (Offset)(offset + RIGHT);
 				}
-				else if (c >= m_numCols)
+				else if (col >= m_numCols)
 				{
 					col -= m_numCols;
 					offset = (Offset)(offset + LEFT);
@@ -151,11 +151,11 @@ void SpatialHashSolver::checkCollisionsInRange(std::size_t rowLower, std::size_t
  * having row number in the range [rowLower, rowUpper).
  */
 {
-	for (std::size_t r = rowLower; r < std::min(rowUpper, m_numRows); r++)
+	for (std::size_t row = rowLower; row < std::min(rowUpper, m_numRows); row++)
 	{
-		for (std::size_t c = 0; c < m_numCols; c++)
+		for (std::size_t col = 0; col < m_numCols; col++)
 		{
-			findCollisionsInCell(m_grid[hashCell(r, c)]);
+			findCollisionsInCell(m_grid[hashCell(row, col)]);
 		}
 	}
 }
@@ -176,25 +176,25 @@ void SpatialHashSolver::findCollisionsInCell(Cell& cell)
 
 bool SpatialHashSolver::overlap(BallInfo& info1, BallInfo& info2)
 {
-	Ball& b1 = m_balls[info1.ballID];
-	Ball& b2 = m_balls[info2.ballID];
+	Ball& ball1 = m_balls[info1.ballID];
+	Ball& ball2 = m_balls[info2.ballID];
 
 	Vec2<float> translate1 = offsetToTranslate(info1.offset);
 	Vec2<float> translate2 = offsetToTranslate(info2.offset);
 
-	float& r1 = m_ballTypes[b1.typeindex].radius;
-	float& r2 = m_ballTypes[b2.typeindex].radius;
+	float& radius1 = m_ballTypes[ball1.typeindex].radius;
+	float& radius2 = m_ballTypes[ball2.typeindex].radius;
 
-	return distSquared(b1.position + translate1, b2.position + translate2) <= (r1 + r2) * (r1 + r2);
+	return distSquared(ball1.position + translate1, ball2.position + translate2) <= (radius1 + radius2) * (radius1 + radius2);
 }
 
 Vec2<float> SpatialHashSolver::offsetToTranslate(Offset& offset)
 {
 	switch (offset)
 	{
-		case NONE:       return Vec2<float>{           0.0f,  0.0f          }; break;
-		case LEFT:       return Vec2<float>{-m_world.xWidth,  0.0f          }; break;
-		case RIGHT:      return Vec2<float>{ m_world.xWidth,  0.0f          }; break;
+		case NONE:       return Vec2<float>{           0.0f,            0.0f}; break;
+		case LEFT:       return Vec2<float>{-m_world.xWidth,            0.0f}; break;
+		case RIGHT:      return Vec2<float>{ m_world.xWidth,            0.0f}; break;
 		case DOWN:       return Vec2<float>{           0.0f, -m_world.yWidth}; break;
 		case DOWN_LEFT:  return Vec2<float>{-m_world.xWidth, -m_world.yWidth}; break;
 		case DOWN_RIGHT: return Vec2<float>{ m_world.xWidth, -m_world.yWidth}; break;
@@ -210,25 +210,25 @@ void SpatialHashSolver::resolveCollision(BallInfo& info1, BallInfo& info2)
 {
 	std::lock_guard<std::mutex> lock(m_mutex); // Prevent simultaneously editing balls in different threads
 
-	Ball& b1 = m_balls[info1.ballID];
-	Ball& b2 = m_balls[info2.ballID];
+	Ball& ball1 = m_balls[info1.ballID];
+	Ball& ball2 = m_balls[info2.ballID];
 	
 	Vec2<float> translate1 = offsetToTranslate(info1.offset);
 	Vec2<float> translate2 = offsetToTranslate(info2.offset);
 	
-	b1.position += translate1;
-	b2.position += translate2;
+	ball1.position += translate1;
+	ball2.position += translate2;
 
-	Solver::resolveCollision(b1, b2);
+	Solver::resolveCollision(ball1, ball2);
 
-	b1.position -= translate1;
-	b2.position -= translate2;
+	ball1.position -= translate1;
+	ball2.position -= translate2;
 }
 
 
 std::size_t SpatialHashSolver::hashCell(std::size_t row, std::size_t col)
 {
-	return (row % m_numRows) * m_numCols + (col % m_numCols);
+	return row * m_numCols + col;
 }
 
 int SpatialHashSolver::yPosToRow(float y)

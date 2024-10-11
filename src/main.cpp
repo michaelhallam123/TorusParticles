@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 
     float dt = preset.dt;
 
-	// Initialise simulation
+    // Initialise simulation
     SpatialHashSolver solver(preset);
 
     // Initialise renderer

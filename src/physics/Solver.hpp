@@ -40,8 +40,8 @@ protected:
 
 	virtual void solve() = 0;                     // Check collisions and update velocities
 
-	bool overlap(const Ball& b1, const Ball& b2); // Test whether balls b1 and b2 overlap
-	void resolveCollision(Ball& b1, Ball& b2);    // Resolve collision between b1 and b2
+	bool overlap(const Ball& ball1, const Ball& ball2); // Test whether balls b1 and b2 overlap
+	void resolveCollision(Ball& ball1, Ball& ball2);    // Resolve collision between b1 and b2
 	void updatePositions(float dt);               // Update positions of particles
 
 	World m_world;

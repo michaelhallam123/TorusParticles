@@ -23,19 +23,7 @@
 int main(int argc, char* argv[])
 {
 	// Load preset
-    Preset preset;
-
-    if (argc == 1)
-        preset = loadPreset("preset1.json");
-    else if (argc == 2)
-        preset = loadPreset(argv[1]);
-    else
-    {
-        std::cout << "Error: program accepts at most one argument" << std::endl;
-        std::cout << "Terminating program..." << std::endl;
-        std::cin.get();
-        return -1;
-    }
+    Preset preset = loadPreset("preset1.json");
 
     if (!preset.loadSuccessful)
     {
@@ -50,18 +38,33 @@ int main(int argc, char* argv[])
     // Initialise simulation
     SpatialHashSolver solver(preset);
 
-    // Initialise renderer
-    unsigned int xResolution = 1280;
-    unsigned int yResolution = 720;
-    Renderer renderer(solver, preset, xResolution, yResolution);
+    std::cout << "Starting simulation..." << std::endl;
+
+    const unsigned int ITERATIONS = 1'000'000;
+
+    std::vector<float> percentages(22);
+
+    for (int i = 0; i < percentages.size(); i++)
+    {
+        percentages[i] = 0.05f*i;
+    }
+
+    int percentageInd = 0;
 
 	// Simulation loop
-    while (renderer.windowOpen())
+    for (int i = 0; i < ITERATIONS; i++)
     {
+        if ((float)i / (float)ITERATIONS > percentages[percentageInd])
+        {
+            std::cout << (int)(100.0f*percentages[percentageInd]) << "% complete" << std::endl;
+            percentageInd++;
+        }
         solver.update(dt);
-
-        renderer.draw();
     }
+
+    std::cout << "Simulation complete!" << std::endl;
+    std::cout << "Press enter to close...";
+    std::cin.get();
 
     return 0;
 }

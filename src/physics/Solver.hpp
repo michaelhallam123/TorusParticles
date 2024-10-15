@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <fstream>
 
 #include "Preset.hpp"
 #include "Ball.hpp"
@@ -45,4 +46,11 @@ protected:
 	void updatePositions(float dt);               // Update positions of particles
 
 	World m_world;
+
+	// For recording experiment data
+	std::ofstream m_file;
+	float m_xPos = 0.0f;
+	float m_yPos = 0.0f;
+	int m_stepCounter = 0;  // Count how many steps the simulation has done
+	int m_recordSteps = 100; // Every m_recordSteps, write m_xPos and m_yPos to m_file
 };

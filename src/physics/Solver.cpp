@@ -3,13 +3,17 @@
 #include <random>
 #include <cmath>
 
+#include <iostream>
+#include <string>
+
+
 Solver::Solver(Preset preset)
 	: m_ballTypes(preset.ballTypes), 
 	  m_world(preset.worldAspectRatio)
 {
 	// Initialise random number generators for ball positions
-	std::random_device rd;
-	std::mt19937 gen(rd());
+	std::mt19937 gen;
+	gen.seed(1963);
 	std::uniform_real_distribution<float> x_posDistribution(m_world.xMin, m_world.xMax);
 	std::uniform_real_distribution<float> y_posDistribution(m_world.yMin, m_world.yMax);
 
@@ -49,8 +53,14 @@ Solver::Solver(Preset preset)
 
 		// Adjust final velocity so that sum of velocities of balls of type bt is totalVelocity
 		m_balls.back().velocity += balltype.totalMomentum / balltype.mass - runningVelocity;
-
 	}
+
+	m_file.open("output.csv");
+
+	if (!m_file.is_open())
+		std::cout << "Error: could not open output.csv" << std::endl;
+
+	m_file << "x,y\n"; // Headers of data
 }
 
 bool Solver::overlap(const Ball& ball1, const Ball& ball2)
@@ -94,6 +104,15 @@ void Solver::update(float dt)
 	solve(); 
 
 	updatePositions(dt);
+
+	m_xPos += m_balls[0].velocity.x * dt;
+	m_yPos += m_balls[0].velocity.y * dt;
+
+	if (++m_stepCounter == m_recordSteps)
+	{
+		m_stepCounter = 0;
+		m_file << std::to_string(m_xPos) << "," << std::to_string(m_yPos) << "\n";
+	}
 }
 
 void Solver::updatePositions(float dt)

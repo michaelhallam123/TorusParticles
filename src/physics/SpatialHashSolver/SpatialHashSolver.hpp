@@ -56,7 +56,7 @@ private:
 	void resolveCollision(BallInfo& info1, BallInfo& info2);
 
 	// Multithreading data
-	static const unsigned int NUM_THREADS = 10;
+	static const unsigned int NUM_THREADS = 1; // No multithreading for deterministic simulation
 	std::mutex m_mutex;
 	std::vector<std::future<void>> m_futures;
 };

@@ -20,6 +20,8 @@ SpatialHashSolver::SpatialHashSolver(Preset preset)
 	);
 
 	m_grid.resize(m_numRows * m_numCols); // Number of cells is of order m_balls.size()
+
+	std::cout << m_balls[0].position.x << " " << m_balls[0].position.y << std::endl;
 }
 
 void SpatialHashSolver::solve()

@@ -55,6 +55,15 @@ Solver::Solver(Preset preset)
 		m_balls.back().velocity += balltype.totalMomentum / balltype.mass - runningVelocity;
 	}
 
+	float kineticEnergy = 0.0f;
+
+	for (std::size_t i = 1; i < m_balls.size(); i++)
+	{
+		kineticEnergy += 0.5f * m_ballTypes[1].mass * m_balls[i].velocity.dot(m_balls[i].velocity);
+	}
+
+	std::cout << "Total kinetic energy: " << kineticEnergy << std::endl;
+
 	m_file.open("output.csv");
 
 	if (!m_file.is_open())

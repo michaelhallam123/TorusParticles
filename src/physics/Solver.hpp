@@ -52,5 +52,5 @@ protected:
 	float m_xPos = 0.0f;
 	float m_yPos = 0.0f;
 	int m_stepCounter = 0;  // Count how many steps the simulation has done
-	int m_recordSteps = 100; // Every m_recordSteps, write m_xPos and m_yPos to m_file
+	int m_recordSteps = 10; // Every m_recordSteps, write m_xPos and m_yPos to m_file
 };

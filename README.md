@@ -1,6 +1,6 @@
 # TorusParticles
 
-A simple C++ and OpenGL program for simulating particle collisions on a torus.
+A program for simulating particle collisions on a torus, written in C++ and OpenGL. Uses spatial hashing and multithreading to simulate collisions in real time.
 
 ![image](images/image1.png)
 

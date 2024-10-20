@@ -1,6 +1,6 @@
-# TorusParticles
+# TorusParticles: Experiment
 
-A simple C++ and OpenGL program for simulating particle collisions on a torus.
+This branch of the project [TorusParticles](https://github.com/michaelhallam123/TorusParticles.git) is used only to simulate the results used in the analysis [ParticleMotionTSA](https://github.com/michaelhallam123/ParticleMotionTSA). The following instructions pertain only to producing the data used in the analysis; for more general uses and information about the program, view the `main` branch. 
 
 ![image](images/image1.png)
 
@@ -15,10 +15,11 @@ A simple C++ and OpenGL program for simulating particle collisions on a torus.
 The latter three dependencies will be cloned and built automatically when CMake is run. Note they may require extra dependencies in order to build correctly, see e.g. [GLFW Dependencies](https://www.glfw.org/docs/3.3/compile.html#compile_deps).
 
 ### Steps
-1. Clone the git repository
+1. Clone the git repository and switch to the correct branch.
 ```bash
 git clone https://github.com/michaelhallam123/TorusParticles.git
 cd TorusParticles
+git checkout brownian-motion-experiment
 ```
 2. Make a build directory
 ```bash
@@ -38,23 +39,12 @@ cmake ..
 cmake --build .
 ```
 
-The executable is located in `build/bin` (`build/bin/Release` on Windows), along with several example preset files. 
+The executable is located in `build/bin` (`build/bin/Release` on Windows).
 
 If building with Visual Studio instead, the shaders folder and preset files must be moved to the same directory as the solution file, and TorusParticles must be set as the startup project.
 
 ## Usage
 
-### Loading presets
+Running the executable will produce a file `output.csv`, containing the position data for the large particle.
 
-To load a preset on Windows, drag and drop it onto the executable file. On linux, from the directory `build/bin`, run 
-```bash
-./TorusParticles <name_of_preset>.json
-``` 
-When run without a preset, the executable will load `preset1.json` by default.
-
-### Editing presets
-
-Numbers, sizes, colors, masses and radii of particles, as well as simulation parameters such as the timestep, can be specified in `.json` preset files. See the files in the `presets` folder for examples.
-
-When there is a large number of small particles on the screen, recommend setting the timestep `dt` to a sufficiently small number, and `antialiasing` to `false`.
-
+Multithreading is disabled to ensure reproducibility. To enable multithreading, edit the class member `NUM_THREADS` in `SpatialHashSolver.hpp`.
